@@ -27,7 +27,7 @@ const nextConfig = {
   },
   
   images: {
-    domains: ['localhost', 'contentsprout.com'],
+    domains: ['localhost', 'thinktapflow.com'],
   },
   typescript: {
     ignoreBuildErrors: false,

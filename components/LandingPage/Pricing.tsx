@@ -5,52 +5,58 @@ import { motion } from "framer-motion";
 
 const pricingTiers = [
   {
-    title: "Free",
+    title: "Starter",
     monthlyPrice: 0,
-    buttonText: "Get started for free",
+    buttonText: "Start Creating Free",
     popular: false,
     inverse: false,
     features: [
-      "Up to 5 project members",
-      "Unlimited tasks and projects",
-      "2GB storage",
-      "Integrations",
-      "Basic support",
+      "5,000 AI-generated words/month",
+      "10+ content templates",
+      "Basic grammar & style checks",
+      "Standard content export (PDF, TXT)",
+      "Email support",
+      "Personal use only",
     ],
   },
   {
-    title: "Pro",
-    monthlyPrice: 9,
-    buttonText: "Sign up now",
+    title: "Professional",
+    monthlyPrice: 29,
+    buttonText: "Upgrade to Pro",
     popular: true,
     inverse: true,
     features: [
-      "Up to 50 project members",
-      "Unlimited tasks and projects",
-      "50GB storage",
-      "Integrations",
-      "Priority support",
-      "Advanced support",
-      "Export support",
+      "50,000 AI-generated words/month",
+      "50+ premium templates",
+      "Advanced AI content optimization",
+      "Multi-format export (PDF, DOCX, HTML)",
+      "SEO content analysis",
+      "Priority email support",
+      "Commercial usage rights",
+      "Team collaboration (up to 3 users)",
+      "Content plagiarism checker",
+      "Brand voice customization",
     ],
   },
   {
-    title: "Business",
-    monthlyPrice: 19,
-    buttonText: "Sign up now",
+    title: "Enterprise",
+    monthlyPrice: 99,
+    buttonText: "Contact Sales",
     popular: false,
     inverse: false,
     features: [
-      "Up to 5 project members",
-      "Unlimited tasks and projects",
-      "200GB storage",
-      "Integrations",
+      "Unlimited AI-generated words",
+      "100+ enterprise templates",
+      "Custom AI model training",
+      "Advanced analytics & reporting",
+      "White-label solution",
       "Dedicated account manager",
-      "Custom fields",
-      "Advanced analytics",
-      "Export capabilities",
-      "API access",
-      "Advanced security features",
+      "24/7 phone & chat support",
+      "Unlimited team members",
+      "Advanced integrations (API access)",
+      "Custom content workflows",
+      "Enterprise security & compliance",
+      "Priority feature requests",
     ],
   },
 ];
@@ -60,9 +66,10 @@ export const Pricing = () => {
     <section className="py-24 bg-white">
       <div className="container">
         <div className="section-heading">
-          <h2 className="section-title">Pricing</h2>
+          <h2 className="section-title">Choose Your Content Creation Plan</h2>
           <p className="section-des mt-5">
-            Free forever. Upgrade for unlimited tasks, better security, and exclusive features.
+            Start free and scale as you grow. Unlock powerful AI content generation, 
+            advanced features, and premium support with our flexible pricing options.
           </p>
         </div>
 
@@ -93,14 +100,16 @@ export const Pricing = () => {
                       }}
                       className="bg-[linear-gradient(to_right,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF)] [background-size:200%] text-transparent bg-clip-text font-medium"
                     >
-                      Popular
+                      Most Popular
                     </motion.span>
                   </div>
                 )}
               </div>
               <div className="flex items-baseline gap-1 mt-[30px]">
                 <span className="text-4xl font-bold tracking-tighter leading-none">${monthlyPrice}</span>
-                <span className="tracking-tight font-bold text-black/50">/month</span>
+                <span className={twMerge("tracking-tight font-bold text-black/50", inverse && "text-white/50")}>
+                  {monthlyPrice === 0 ? "/forever" : "/month"}
+                </span>
               </div>
               <button
                 className={twMerge("btn btn-primary w-full mt-[30px]", inverse && "bg-white text-black")}
@@ -117,6 +126,19 @@ export const Pricing = () => {
               </ul>
             </div>
           ))}
+        </div>
+        
+        {/* Additional Info Section */}
+        <div className="mt-16 text-center">
+          <p className="text-gray-600 mb-6">
+            All plans include our core AI content generation engine and regular updates.
+          </p>
+          <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-500">
+            <span>✓ No setup fees</span>
+            <span>✓ Cancel anytime</span>
+            <span>✓ 14-day money-back guarantee</span>
+            <span>✓ Secure payment processing</span>
+          </div>
         </div>
       </div>
     </section>

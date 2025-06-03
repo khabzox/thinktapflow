@@ -55,7 +55,7 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
                 content: `Generated content for ${platform?.name}: ${content || url}`,
                 characterCount: Math.floor(Math.random() * (platform?.limit || 280)),
                 limit: platform?.limit,
-                hashtags: ["#ContentSprout", "#SocialMedia", "#AI"],
+                hashtags: ["#ThinkTapFlow", "#SocialMedia", "#AI"],
                 createdAt: new Date().toISOString(),
             }
         })

@@ -1,72 +1,72 @@
-"use client";
-import avatar1 from "/public/assets/avatar-1.png";
-import avatar2 from "/public/assets/avatar-2.png";
-import avatar3 from "/public/assets/avatar-3.png";
-import avatar4 from "/public/assets/avatar-4.png";
-import avatar5 from "/public/assets/avatar-5.png";
-import avatar6 from "/public/assets/avatar-6.png";
-import avatar7 from "/public/assets/avatar-7.png";
-import avatar8 from "/public/assets/avatar-8.png";
-import avatar9 from "/public/assets/avatar-9.png";
-import Image from "next/image";
-import React, { use } from "react";
-import { twMerge } from "tailwind-merge";
-import { motion } from "framer-motion";
+'use client';
+import avatar1 from '/public/assets/avatar-1.png';
+import avatar2 from '/public/assets/avatar-2.png';
+import avatar3 from '/public/assets/avatar-3.png';
+import avatar4 from '/public/assets/avatar-4.png';
+import avatar5 from '/public/assets/avatar-5.png';
+import avatar6 from '/public/assets/avatar-6.png';
+import avatar7 from '/public/assets/avatar-7.png';
+import avatar8 from '/public/assets/avatar-8.png';
+import avatar9 from '/public/assets/avatar-9.png';
+import Image from 'next/image';
+import React from 'react';
+import { twMerge } from 'tailwind-merge';
+import { motion } from 'framer-motion';
 
 const testimonials = [
   {
-    text: "As a seasoned designer always on the lookout for innovative tools, Framer.com instantly grabbed my attention.",
+    text: 'ThinkTapFlow AI has revolutionized my content creation process. What used to take me hours now takes minutes, and the quality is consistently impressive.',
     imageSrc: avatar1.src,
-    name: "Jamie Rivera",
-    username: "@jamietechguru00",
+    name: 'Sarah Chen',
+    username: '@sarahcontentpro',
   },
   {
-    text: "Our team's productivity has skyrocketed since we started using this tool. ",
+    text: 'As a marketing manager, I needed to scale our content output. ThinkTapFlow AI helped us increase our blog production by 300% while maintaining quality.',
     imageSrc: avatar2.src,
-    name: "Josh Smith",
-    username: "@jjsmith",
+    name: 'Marcus Rodriguez',
+    username: '@marcusmarketing',
   },
   {
-    text: "This app has completely transformed how I manage my projects and deadlines.",
+    text: "The AI understands my brand voice perfectly. It's like having a skilled copywriter who never gets tired and always delivers on-brand content.",
     imageSrc: avatar3.src,
-    name: "Morgan Lee",
-    username: "@morganleewhiz",
+    name: 'Emily Watson',
+    username: '@emilywrites',
   },
   {
-    text: "I was amazed at how quickly we were able to integrate this app into our workflow.",
+    text: 'I was skeptical about AI writing tools, but ThinkTapFlow AI completely changed my mind. The content is creative, engaging, and surprisingly human-like.',
     imageSrc: avatar4.src,
-    name: "Casey Jordan",
-    username: "@caseyj",
+    name: 'James Liu',
+    username: '@jamescopywriter',
   },
   {
-    text: "Planning and executing events has never been easier. This app helps me keep track of all the moving parts, ensuring nothing slips through the cracks.",
+    text: 'Running a content agency, efficiency is everything. ThinkTapFlow AI allows us to serve more clients without compromising quality or burning out our team.',
     imageSrc: avatar5.src,
-    name: "Taylor Kim",
-    username: "@taylorkimm",
+    name: 'Alexandra Thompson',
+    username: '@alexagency',
   },
   {
-    text: "The customizability and integration capabilities of this app are top-notch.",
+    text: 'The SEO optimization features are game-changing. My blog posts now rank higher and drive more organic traffic than ever before.',
     imageSrc: avatar6.src,
-    name: "Riley Smith",
-    username: "@rileysmith1",
+    name: 'David Park',
+    username: '@davidseo',
   },
   {
-    text: "Adopting this app for our team has streamlined our project management and improved communication across the board.",
+    text: "From social media posts to email campaigns, ThinkTapFlow AI handles all our content needs. It's like having an entire content team in one platform.",
     imageSrc: avatar7.src,
-    name: "Jordan Patels",
-    username: "@jpatelsdesign",
+    name: 'Rachel Green',
+    username: '@racheldigital',
   },
   {
-    text: "With this app, we can easily assign tasks, track progress, and manage documents all in one place.",
+    text: 'The variety of templates and customization options is incredible. I can create everything from technical documentation to creative storytelling.',
     imageSrc: avatar8.src,
-    name: "Sam Dawson",
-    username: "@dawsontechtips",
+    name: 'Michael Foster',
+    username: '@mikefostertech',
   },
   {
-    text: "Its user-friendly interface and robust features support our diverse needs.",
+    text: "ThinkTapFlow AI helped me overcome writer's block permanently. Even when I'm stuck, the AI provides inspiration and gets my creativity flowing again.",
     imageSrc: avatar9.src,
-    name: "Casey Harper",
-    username: "@casey09",
+    name: 'Lisa Anderson',
+    username: '@lisacreative',
   },
 ];
 
@@ -83,13 +83,13 @@ const TestimonialsColumn = (props: {
     <div className={props.className}>
       <motion.div
         animate={{
-          translateY: "-50%",
+          translateY: '-50%',
         }}
         transition={{
           duration: props.duration || 10,
           repeat: Infinity,
-          ease: "linear",
-          repeatType: "loop",
+          ease: 'linear',
+          repeatType: 'loop',
         }}
         className="flex flex-col gap-6 pb-6"
       >
@@ -128,20 +128,26 @@ export const Testimonials = () => {
       <div className="container">
         <div className="section-heading">
           <div className="flex justify-center">
-            <div className="tag">Testimonials</div>
+            <div className="tag">Success Stories</div>
           </div>
-
-          <h2 className="section-title mt-5">What our users say</h2>
+          <h2 className="section-title mt-5">Loved by content creators worldwide</h2>
           <p className="section-des mt-5">
-            From intuitive design to powerful features, out app has become an essential tool for users around
-            the world.
+            From solo entrepreneurs to enterprise teams, thousands of creators trust ThinkTapFlow AI
+            to produce high-quality, engaging content that drives results.
           </p>
         </div>
-
         <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">
           <TestimonialsColumn testimonials={firstColumn} duration={15} />
-          <TestimonialsColumn testimonials={secondColumn} className="hidden md:block" duration={19} />
-          <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
+          <TestimonialsColumn
+            testimonials={secondColumn}
+            className="hidden md:block"
+            duration={19}
+          />
+          <TestimonialsColumn
+            testimonials={thirdColumn}
+            className="hidden lg:block"
+            duration={17}
+          />
         </div>
       </div>
     </section>

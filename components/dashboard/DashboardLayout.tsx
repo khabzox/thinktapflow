@@ -64,7 +64,7 @@ function AppSidebar({ userRole = "user" }: AppSidebarProps) {
                         <Zap className="h-4 w-4 text-white" />
                     </div>
                     <div className="group-data-[collapsible=icon]:hidden">
-                        <span className="text-lg font-semibold">ContentSprout</span>
+                        <span className="text-lg font-semibold">ThinkTapFlow</span>
                         {isAdmin && (
                             <Badge variant="destructive" className="ml-2 text-xs">
                                 Admin

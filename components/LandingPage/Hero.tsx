@@ -1,17 +1,17 @@
-"use client";
-import ArrowIcon from "/public/assets/arrow-right.svg";
-import cogImage from "/public/assets/cog.png";
-import cylinderImage from "/public/assets/cylinder.png";
-import noodleImage from "/public/assets/noodle.png";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
-import Image from "next/image";
-import { useRef } from "react";
+'use client';
+import ArrowIcon from '/public/assets/arrow-right.svg';
+import cogImage from '/public/assets/cog.png';
+import cylinderImage from '/public/assets/cylinder.png';
+import noodleImage from '/public/assets/noodle.png';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
+import Image from 'next/image';
+import { useRef } from 'react';
 
 export const Hero = () => {
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
-    offset: ["start end", "end start"],
+    offset: ['start end', 'end start'],
   });
 
   const translateY = useTransform(scrollYProgress, [0, 1], [150, -150]);
@@ -20,25 +20,28 @@ export const Hero = () => {
     <section
       ref={heroRef}
       className="pt-8 pb-20 md:pt-5 md:pb-10 overflow-x-clip"
-      style={{ background: "radial-gradient(ellipse 200% 100% at bottom left, #183EC2, #EAEEFE 100%)" }}
+      style={{
+        background: 'radial-gradient(ellipse 200% 100% at bottom left, #183EC2, #EAEEFE 100%)',
+      }}
     >
       <div className="container">
         <div className="md:flex items-center">
           <div className="md:w-[478px]">
             <div className="text-sm inline-flex border border-[#222]/10 px-3 py-1 rounded-lg tracking-tight">
-              Version 2.0 is here
+              Transform Your Content Strategy
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-b from-black to-[#001E80] text-transparent bg-clip-text mt-6">
               Pathway to productivity
             </h1>
             <p className="text-xl text-[#010D3E] tracking-tight mt-6">
-              Celebrate the joy of accomplishment with an app designed to track your progress, motivate your
-              efforts, and celebrate your success.
+              Turn one piece of content into engaging posts for all your social platforms. Save
+              time, reach more people, and grow your audience with AI-powered content
+              transformation.
             </p>
             <div className="flex gap-1 items-center mt-[30px]">
-              <button className="btn btn-primary">Get for free</button>
+              <button className="btn btn-primary">Start Creating</button>
               <button className="btn btn-text flex gap-1">
-                <span>Learn more</span>
+                <span>Watch Demo</span>
                 {/* <ArrowIcon classname="h-2 w-2" /> */}
               </button>
             </div>
@@ -53,9 +56,9 @@ export const Hero = () => {
               }}
               transition={{
                 repeat: Infinity,
-                repeatType: "mirror",
+                repeatType: 'mirror',
                 duration: 3,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }}
             />
             <motion.img

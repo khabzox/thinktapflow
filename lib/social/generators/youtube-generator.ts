@@ -64,6 +64,6 @@ Response Format:
             ? '\n\n📋 Chapters:\n' + timestamps.map(t => `${t.time} - ${t.description}`).join('\n')
             : '';
 
-        return `${description.trim()}${timestampSection}\n\n#ContentSprout`;
+        return `${description.trim()}${timestampSection}\n\n#ThinkTapFlow`;
     }
 } 

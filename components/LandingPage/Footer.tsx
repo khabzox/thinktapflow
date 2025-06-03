@@ -1,10 +1,10 @@
-import logo from "/public/assets/logosaas.png";
-import SocialX from "/public/assets/social-x.svg";
-import SocialInsta from "/public/assets/social-insta.svg";
-import SocialLinkedin from "/public/assets/social-linkedin.svg";
-import SocialPin from "/public/assets/social-pin.svg";
-import SocialYoutube from "/public/assets/social-youtube.svg";
-import Image from "next/image";
+import logo from '/public/logo/logosaas-dark.png';
+import SocialX from '/public/assets/social-x.svg';
+import SocialInsta from '/public/assets/social-insta.svg';
+import SocialLinkedin from '/public/assets/social-linkedin.svg';
+import SocialPin from '/public/assets/social-pin.svg';
+import SocialYoutube from '/public/assets/social-youtube.svg';
+import Image from 'next/image';
 
 export const Footer = () => {
   return (
@@ -14,12 +14,10 @@ export const Footer = () => {
           <Image src={logo} alt="logo" height={40} className="relative" />
         </div>
         <nav className="flex flex-col md:flex-row md:justify-center gap-6 mt-6">
-          <a href="">About</a>
-          <a href="">Features</a>
-          <a href="">Custmers</a>
-          <a href="">Pricing</a>
-          <a href="">Help</a>
-          <a href="">Careers</a>
+          <a href="#features">Features</a>
+          <a href="#testimonials">Testimonials</a>
+          <a href="#about">About</a>
+          <a href="#help">Help</a>
         </nav>
 
         <div className="flex justify-center gap-6 mt-6">
@@ -29,7 +27,7 @@ export const Footer = () => {
           <SocialPin />
           <SocialYoutube />
         </div>
-        <p className="mt-6">&copy; 2024 Your Company, Inc. All rights reserved.</p>
+        <p className="mt-6">&copy; 2025 ThinkTapFlow, Inc. All rights reserved.</p>
       </div>
     </footer>
   );

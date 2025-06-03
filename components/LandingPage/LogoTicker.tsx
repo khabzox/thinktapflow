@@ -1,12 +1,22 @@
-"use client";
-import acmeLogo from "/public/assets/logo-acme.png";
-import quantamLogo from "/public/assets/logo-quantum.png";
-import echoLogo from "/public/assets/logo-echo.png";
-import celestialLogo from "/public/assets/logo-celestial.png";
-import pulseLogo from "/public/assets/logo-pulse.png";
-import apexLogo from "/public/assets/logo-apex.png";
-import { motion } from "framer-motion";
-import Image from "next/image";
+'use client';
+
+import xLogo from '/public/assets/logo-x.png';
+import linkedinLogo from '/public/assets/logo-linkedin.png';
+import instagramLogo from '/public/assets/logo-instagram.png';
+import facebookLogo from '/public/assets/logo-facebook.png';
+import youtubeLogo from '/public/assets/logo-ytb.png';
+import threadLogo from '/public/assets/logo-threads.png';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+
+const logos = [
+  { src: xLogo, alt: 'Twitter/X' },
+  { src: linkedinLogo, alt: 'LinkedIn' },
+  { src: instagramLogo, alt: 'Instagram' },
+  { src: facebookLogo, alt: 'Facebook' },
+  { src: youtubeLogo, alt: 'YouTube' },
+  { src: threadLogo, alt: 'Threads' },
+];
 
 export const LogoTicker = () => {
   return (
@@ -14,33 +24,32 @@ export const LogoTicker = () => {
       <div className="container">
         <div
           className="flex overflow-hidden"
-          style={{ maskImage: "linear-gradient(to right, transparent, black, transparent)" }}
+          style={{ maskImage: 'linear-gradient(to right, transparent, black, transparent)' }}
         >
           <motion.div
-            className="flex gap-14 flex-none pr-14"
+            className="flex items-center gap-14 flex-none pr-14"
             animate={{
-              translateX: "-50%",
+              translateX: '-50%',
             }}
             transition={{
               duration: 20,
               repeat: Infinity,
-              ease: "linear",
-              repeatType: "loop",
+              ease: 'linear',
+              repeatType: 'loop',
             }}
           >
-            <Image src={acmeLogo} alt="Acme logo" className="logo-ticker-image" />
-            <Image src={quantamLogo} alt="quantam logo" className="logo-ticker-image" />
-            <Image src={echoLogo} alt="Echo logo" className="logo-ticker-image" />
-            <Image src={celestialLogo} alt="celestial logo" className="logo-ticker-image" />
-            <Image src={pulseLogo} alt="Pulse logo" className="logo-ticker-image" />
-            <Image src={apexLogo} alt="Apex logo" className="logo-ticker-image" />
-
-            <Image src={acmeLogo} alt="Acme logo" className="logo-ticker-image" />
-            <Image src={quantamLogo} alt="quantam logo" className="logo-ticker-image" />
-            <Image src={echoLogo} alt="Echo logo" className="logo-ticker-image" />
-            <Image src={celestialLogo} alt="celestial logo" className="logo-ticker-image" />
-            <Image src={pulseLogo} alt="Pulse logo" className="logo-ticker-image" />
-            <Image src={apexLogo} alt="Apex logo" className="logo-ticker-image" />
+            {[...logos, ...logos].map((logo, index) => (
+              <div
+                key={index}
+                className="h-20 w-20 flex items-center justify-center shrink-0"
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  className={`max-h-full max-w-full object-contain filter grayscale ${logo.alt === 'Twitter/X' ? 'p-5 bg-white rounded-full border' : ''}`}
+                />
+              </div>
+            ))}
           </motion.div>
         </div>
       </div>

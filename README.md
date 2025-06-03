@@ -1,4 +1,4 @@
-# ContentSprout
+# ThinkTapFlow
 
 A modern SaaS application for automated content generation.
 
@@ -15,7 +15,7 @@ Required environment variables:
 ```bash
 # App
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_APP_NAME="ContentSprout"
+NEXT_PUBLIC_APP_NAME="ThinkTapFlow"
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL="your-project-url"
@@ -45,7 +45,7 @@ PADDLE_WEBHOOK_SECRET="your-paddle-webhook-secret"
 ## Project Structure
 
 ```
-contentsprout/
+thinktapflow/
 ├── app/                          # Next.js 14 App Router
 │   ├── (auth)/                  # Auth group
 │   │   ├── login/

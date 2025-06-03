@@ -4,7 +4,7 @@ import { Toaster } from "sonner"
 
 
 export const metadata: Metadata = {
-    title: "ContentSprout - AI Content Generation",
+    title: "ThinkTapFlow - AI Content Generation",
     description: "Generate engaging content across all platforms with AI",
 }
 
