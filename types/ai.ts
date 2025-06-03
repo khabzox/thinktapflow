@@ -1,50 +1,31 @@
-// Core AI service types for ContentSprout
+export type AIProviderType = 'gemini' | 'groq' | 'openai'
 
-export enum SupportedPlatforms {
-  TWITTER = 'twitter',
-  LINKEDIN = 'linkedin',
-  INSTAGRAM = 'instagram',
-  FACEBOOK = 'facebook',
-}
-
-export interface PlatformPost {
-  content: string;
-  hashtags: string[];
-  mentions: string[];
-  characterCount: number;
-}
-
-export interface GeneratedPosts {
-  [SupportedPlatforms.TWITTER]?: PlatformPost[];
-  [SupportedPlatforms.LINKEDIN]?: PlatformPost[];
-  [SupportedPlatforms.INSTAGRAM]?: PlatformPost[];
-  [SupportedPlatforms.FACEBOOK]?: PlatformPost[];
-  metadata: {
-    originalContent: string;
-    tokensUsed: number;
-    generationTime: number;
-    platforms: string[];
-    model?: string;
-    timestamp?: number;
-  };
-}
-
-export interface PlatformConstraints {
-  maxLength: number;
-  maxPosts: number;
-  tone: string;
-  hashtagCount: number;
-  format: string;
+export interface AIServiceConfig {
+  apiKey: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+  topP?: number;
+  timeout: number;
+  maxContentLength: number;
+  maxInputTokens: number;
+  maxOutputTokens: number;
 }
 
 export interface AIGenerationOptions {
   temperature?: number;
   maxOutputTokens?: number;
   topP?: number;
-  topK?: number;
-  customInstructions?: string;
   includeEmojis?: boolean;
   targetAudience?: string;
+  customInstructions?: string;
+}
+
+export interface ModelInfo {
+  name: string;
+  provider: string;
+  maxTokens: number;
+  contextWindow: number;
 }
 
 export interface ContentParsingResult {
@@ -56,12 +37,33 @@ export interface ContentParsingResult {
   readingTime: number;
 }
 
-export interface AIServiceConfig {
-  apiKey: string;
-  model?: string;
-  maxInputTokens?: number;
-  maxContentLength?: number;
-  timeout?: number;
+export interface PlatformPost {
+  content: string;
+  hashtags: string[];
+  mentions: string[];
+  characterCount: number;
+}
+
+export interface GeneratedPosts {
+  metadata: {
+    originalContent: string;
+    tokensUsed: number;
+    generationTime: number;
+    platforms: string[];
+    model: string;
+    timestamp: number;
+  };
+  twitter?: string[];
+  linkedin?: string[];
+  instagram?: string[];
+  facebook?: string[];
+  youtube?: {
+    title: string;
+    description: string;
+    tags: string[];
+    timestamps?: { time: string; description: string }[];
+  }[];
+  [key: string]: PlatformPost[] | any;
 }
 
 export interface GenerationMetrics {
@@ -74,7 +76,24 @@ export interface GenerationMetrics {
   error?: string;
 }
 
-// Error types
+export enum SupportedPlatforms {
+  Twitter = 'twitter',
+  LinkedIn = 'linkedin',
+  Instagram = 'instagram',
+  Facebook = 'facebook',
+  YouTube = 'youtube',
+  Threads = 'threads',
+  TikTok = 'tiktok'
+}
+
+export interface PlatformConstraints {
+  maxLength: number;
+  maxPosts: number;
+  hashtagCount: number;
+  tone: string;
+  format: string;
+}
+
 export class AIServiceError extends Error {
   constructor(
     message: string,
@@ -94,16 +113,5 @@ export class ContentParsingError extends Error {
   ) {
     super(message);
     this.name = 'ContentParsingError';
-  }
-}
-
-export class TokenLimitError extends Error {
-  constructor(
-    message: string,
-    public tokensUsed: number,
-    public limit: number
-  ) {
-    super(message);
-    this.name = 'TokenLimitError';
   }
 }
