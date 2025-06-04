@@ -27,6 +27,7 @@ import {
 } from "lucide-react"
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
 import { toast } from "sonner"
+import { useGenerate } from "@/hooks/use-generate"
 
 const contentTypes = [
     { id: "text", name: "Text Post", icon: FileText, description: "Social media posts, captions, and copy" },
@@ -55,7 +56,21 @@ const platforms = [
     { id: "youtube", name: "YouTube", limit: 5000, color: "#FF0000" },
 ]
 
+// Add interface for the content structure
+interface ContentItem {
+    content: string;
+    hashtags: string[];
+    mentions: string[];
+    metadata: {
+        characterCount: number;
+        platform: string;
+        timestamp: number;
+        formattedDate: string;
+    };
+}
+
 export default function GeneratePage() {
+    const { generateContent, isGenerating, error: generateError } = useGenerate()
     const [selectedType, setSelectedType] = useState("text")
     const [prompt, setPrompt] = useState("")
     const [tone, setTone] = useState("Professional")
@@ -64,8 +79,10 @@ export default function GeneratePage() {
     const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["twitter"])
     const [includeHashtags, setIncludeHashtags] = useState(true)
     const [includeEmojis, setIncludeEmojis] = useState(false)
-    const [isGenerating, setIsGenerating] = useState(false)
     const [generatedContent, setGeneratedContent] = useState("")
+    const [contentVariations, setContentVariations] = useState<string[]>([])
+    const [platformContent, setPlatformContent] = useState<Record<string, ContentItem[]>>({})
+    const [currentVariationIndexes, setCurrentVariationIndexes] = useState<Record<string, number>>({})
 
     const handleGenerate = async () => {
         if (!prompt.trim()) {
@@ -73,26 +90,66 @@ export default function GeneratePage() {
             return
         }
 
-        setIsGenerating(true)
+        const result = await generateContent({
+            content: prompt,
+            platforms: selectedPlatforms,
+            options: {
+                temperature: creativity[0],
+                includeEmojis,
+                customInstructions: `Generate content in a ${tone.toLowerCase()} tone, with${includeHashtags ? '' : 'out'} hashtags. Target length: ${length[0]} characters.`
+            }
+        })
 
-        // Simulate AI generation
-        await new Promise((resolve) => setTimeout(resolve, 3000))
+        if (result) {
+            const platformResults: Record<string, ContentItem[]> = {};
+            
+            // Process content for each platform
+            for (const platformId of selectedPlatforms) {
+                const platformContent = result.posts[platformId];
+                if (Array.isArray(platformContent)) {
+                    platformResults[platformId] = platformContent as ContentItem[];
+                } else if (platformContent) {
+                    platformResults[platformId] = [platformContent as ContentItem];
+                }
+            }
 
-        const mockContent = `🚀 Exciting news! We're revolutionizing the way you create content with AI-powered tools that understand your brand voice and audience.
+            // Set the content for all platforms
+            setPlatformContent(platformResults);
 
-✨ Key benefits:
-• Save 80% of your content creation time
-• Maintain consistent brand messaging
-• Optimize for each platform automatically
-• Generate engaging visuals and copy
-
-Ready to transform your content strategy? Let's make every post count! 
-
-#ContentCreation #AI #SocialMedia #Marketing #Innovation`
-
-        setGeneratedContent(mockContent)
-        setIsGenerating(false)
-        toast.success("Content generated successfully!")
+            // Set the main content display to the first platform's first variation
+            const firstPlatform = selectedPlatforms[0];
+            if (platformResults[firstPlatform]?.length > 0) {
+                setContentVariations(platformResults[firstPlatform].map(item => item.content));
+                setGeneratedContent(platformResults[firstPlatform][0].content);
+                toast.success("Content generated successfully!");
+            } else {
+                toast.error("No valid content generated");
+            }
+        } else if (generateError) {
+            if (generateError.code === 'LIMIT_REACHED') {
+                toast.error(
+                    <div className="space-y-2">
+                        <p>{generateError.message}</p>
+                        {generateError.details && (
+                            <div className="text-sm">
+                                <p>Current usage: {generateError.details.current}/{generateError.details.limit}</p>
+                                <p>Plan: {generateError.details.subscription_tier}</p>
+                            </div>
+                        )}
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full mt-2"
+                            onClick={() => window.location.href = '/dashboard/settings/billing'}
+                        >
+                            Upgrade Plan
+                        </Button>
+                    </div>
+                );
+            } else {
+                toast.error(generateError.message);
+            }
+        }
     }
 
     const handleCopy = () => {
@@ -109,6 +166,10 @@ Ready to transform your content strategy? Let's make every post count!
             prev.includes(platformId) ? prev.filter((id) => id !== platformId) : [...prev, platformId],
         )
     }
+
+    const handleSelectVariation = (index: number) => {
+        setGeneratedContent(contentVariations[index]);
+    };
 
     return (
         <DashboardLayout>
@@ -360,58 +421,165 @@ Ready to transform your content strategy? Let's make every post count!
                     </div>
                 </div>
 
-                {/* Generated Content */}
-                {generatedContent && (
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="flex items-center gap-2">
-                                    <Sparkles className="h-5 w-5" />
-                                    Generated Content
-                                </CardTitle>
-                                <div className="flex items-center gap-2">
-                                    <Button variant="outline" size="sm" onClick={handleRegenerate}>
-                                        <RefreshCw className="mr-2 h-4 w-4" />
-                                        Regenerate
-                                    </Button>
-                                    <Button variant="outline" size="sm" onClick={handleCopy}>
-                                        <Copy className="mr-2 h-4 w-4" />
-                                        Copy
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        <Download className="mr-2 h-4 w-4" />
-                                        Export
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div className="rounded-lg border p-4 bg-muted/50">
-                                    <pre className="whitespace-pre-wrap font-sans text-sm">{generatedContent}</pre>
-                                </div>
+                {/* Generated Content for Each Platform */}
+                {Object.keys(platformContent).length > 0 && (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-bold tracking-tight">Platform-Specific Content</h2>
+                        <div className="grid gap-6 md:grid-cols-2">
+                            {selectedPlatforms.map((platformId) => {
+                                const platform = platforms.find((p) => p.id === platformId);
+                                const variations = platformContent[platformId] || [];
+                                
+                                if (!platform || variations.length === 0) return null;
 
-                                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                    <span>Character count: {generatedContent.length}</span>
-                                    <div className="flex gap-2">
-                                        {selectedPlatforms.map((platformId) => {
-                                            const platform = platforms.find((p) => p.id === platformId)
-                                            const isWithinLimit = generatedContent.length <= (platform?.limit || 0)
-                                            return (
-                                                <Badge
-                                                    key={platformId}
-                                                    variant={isWithinLimit ? "secondary" : "destructive"}
-                                                    className="text-xs"
-                                                >
-                                                    {platform?.name}: {isWithinLimit ? "✓" : "✗"}
-                                                </Badge>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                const currentIndex = currentVariationIndexes[platformId] || 0;
+                                const currentVariation = variations[currentIndex];
+
+                                return (
+                                    <Card key={platformId}>
+                                        <CardHeader>
+                                            <div className="flex items-center justify-between">
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <div 
+                                                        className="h-3 w-3 rounded-full" 
+                                                        style={{ backgroundColor: platform.color }} 
+                                                    />
+                                                    {platform.name}
+                                                </CardTitle>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="outline">
+                                                        {variations.length} variation{variations.length !== 1 ? 's' : ''}
+                                                    </Badge>
+                                                    {variations.length > 1 && (
+                                                        <Badge variant="secondary">
+                                                            {currentIndex + 1}/{variations.length}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="space-y-4">
+                                                {variations.length > 1 && (
+                                                    <div className="flex gap-2 mb-4 flex-wrap">
+                                                        {variations.map((_, index) => (
+                                                            <Button
+                                                                key={index}
+                                                                variant={currentIndex === index ? "default" : "outline"}
+                                                                size="sm"
+                                                                onClick={() => {
+                                                                    setCurrentVariationIndexes(prev => ({
+                                                                        ...prev,
+                                                                        [platformId]: index
+                                                                    }));
+                                                                    if (platformId === selectedPlatforms[0]) {
+                                                                        setGeneratedContent(variations[index].content);
+                                                                        setContentVariations(variations.map(v => v.content));
+                                                                    }
+                                                                }}
+                                                            >
+                                                                Variation {index + 1}
+                                                            </Button>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <div className="rounded-lg border p-4 bg-muted/50">
+                                                    <pre className="whitespace-pre-wrap font-sans text-sm">
+                                                        {currentVariation.content}
+                                                    </pre>
+                                                </div>
+
+                                                {/* Hashtags */}
+                                                {currentVariation.hashtags && currentVariation.hashtags.length > 0 && (
+                                                    <div className="space-y-2">
+                                                        <Label className="text-sm text-muted-foreground">Hashtags</Label>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {currentVariation.hashtags.map((tag) => (
+                                                                <Badge key={tag} variant="secondary">
+                                                                    #{tag}
+                                                                </Badge>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Mentions */}
+                                                {currentVariation.mentions && currentVariation.mentions.length > 0 && (
+                                                    <div className="space-y-2">
+                                                        <Label className="text-sm text-muted-foreground">Mentions</Label>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {currentVariation.mentions.map((mention) => (
+                                                                <Badge key={mention} variant="outline">
+                                                                    {mention}
+                                                                </Badge>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                                                    <span>
+                                                        Characters: {currentVariation.metadata.characterCount}
+                                                    </span>
+                                                    <Badge
+                                                        variant={currentVariation.metadata.characterCount <= platform.limit ? "secondary" : "destructive"}
+                                                        className="text-xs"
+                                                    >
+                                                        Limit: {currentVariation.metadata.characterCount}/{platform.limit}
+                                                    </Badge>
+                                                </div>
+
+                                                <div className="text-xs text-muted-foreground text-right">
+                                                    Generated: {currentVariation.metadata.formattedDate}
+                                                </div>
+
+                                                <div className="flex gap-2">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        className="w-full"
+                                                        onClick={() => {
+                                                            const textToCopy = [
+                                                                currentVariation.content,
+                                                                '',
+                                                                ...currentVariation.hashtags.map(tag => `#${tag}`),
+                                                                ...currentVariation.mentions
+                                                            ].join('\n');
+                                                            navigator.clipboard.writeText(textToCopy);
+                                                            toast.success(`Copied ${platform.name} content with hashtags!`);
+                                                        }}
+                                                    >
+                                                        <Copy className="mr-2 h-4 w-4" />
+                                                        Copy All
+                                                    </Button>
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm"
+                                                        className="w-full"
+                                                        onClick={() => {
+                                                            setGeneratedContent(currentVariation.content);
+                                                            setContentVariations(variations.map(v => v.content));
+                                                            // Update the first platform's current variation
+                                                            if (platformId !== selectedPlatforms[0]) {
+                                                                setCurrentVariationIndexes(prev => ({
+                                                                    ...prev,
+                                                                    [selectedPlatforms[0]]: currentIndex
+                                                                }));
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Sparkles className="mr-2 h-4 w-4" />
+                                                        Select
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
+                        </div>
+                    </div>
                 )}
             </div>
         </DashboardLayout>

@@ -26,50 +26,7 @@ import { UsageChart } from "@/components/dashboard/UsageChart"
 import { XAxis, YAxis, CartesianGrid, ResponsiveContainer, AreaChart, Area } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
-
-// User-specific sample data
-const userPerformanceData = [
-    { month: "Jan", generations: 45, engagement: 3200, reach: 18000 },
-    { month: "Feb", generations: 78, engagement: 4500, reach: 25000 },
-    { month: "Mar", generations: 92, engagement: 5200, reach: 32000 },
-    { month: "Apr", generations: 134, engagement: 6800, reach: 45000 },
-    { month: "May", generations: 127, engagement: 7200, reach: 52000 },
-    { month: "Jun", generations: 150, engagement: 8100, reach: 68000 },
-]
-
-const userPlatformStats = [
-    { platform: "Twitter", posts: 45, engagement: 4.2, growth: 12 },
-    { platform: "LinkedIn", posts: 32, engagement: 6.8, growth: 8 },
-    { platform: "Instagram", posts: 28, engagement: 5.4, growth: 15 },
-    { platform: "Facebook", posts: 22, engagement: 3.9, growth: 5 },
-]
-
-const userRecentGenerations = [
-    {
-        id: 1,
-        content: "Product launch announcement for new AI tool",
-        platforms: ["Twitter", "LinkedIn", "Facebook"],
-        createdAt: "2 hours ago",
-        status: "completed",
-        engagement: { views: 2400, likes: 89, shares: 23 },
-    },
-    {
-        id: 2,
-        content: "Weekly newsletter content about industry trends",
-        platforms: ["Email", "Blog"],
-        createdAt: "5 hours ago",
-        status: "completed",
-        engagement: { views: 1800, likes: 67, shares: 15 },
-    },
-    {
-        id: 3,
-        content: "Holiday campaign social media posts",
-        platforms: ["Instagram", "Twitter", "TikTok"],
-        createdAt: "1 day ago",
-        status: "completed",
-        engagement: { views: 3200, likes: 145, shares: 34 },
-    },
-]
+import { useDashboard } from '@/hooks/use-dashboard'
 
 const chartConfig = {
     generations: {
@@ -87,6 +44,7 @@ const chartConfig = {
 }
 
 export default function UserDashboardPage() {
+    const { data, isLoading, error } = useDashboard()
     const [generatedPosts, setGeneratedPosts] = useState<Array<{
         id: string;
         platform: string;
@@ -114,6 +72,31 @@ export default function UserDashboardPage() {
         setGeneratedPosts(posts)
     }
 
+    if (isLoading) {
+        return (
+            <DashboardLayout userRole="user">
+                <div className="space-y-8">
+                    <div className="animate-pulse space-y-4">
+                        {/* Add loading skeletons */}
+                    </div>
+                </div>
+            </DashboardLayout>
+        )
+    }
+
+    if (error) {
+        return (
+            <DashboardLayout userRole="user">
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="text-center space-y-4">
+                        <p className="text-destructive">Failed to load dashboard data</p>
+                        <p className="text-sm text-muted-foreground">{error}</p>
+                    </div>
+                </div>
+            </DashboardLayout>
+        )
+    }
+
     return (
         <DashboardLayout userRole="user">
             <div className="space-y-8">
@@ -121,7 +104,7 @@ export default function UserDashboardPage() {
                 <div className="space-y-2">
                     <div className="flex items-center gap-2">
                         <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-popover-foreground to-foreground/70 bg-clip-text text-transparent">
-                            Welcome back, John!
+                            Welcome back, {data?.user?.email?.split('@')[0] || 'User'}!
                         </h1>
                         <Zap className="h-8 w-8 text-popover-foreground" />
                     </div>
@@ -141,7 +124,9 @@ export default function UserDashboardPage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">150</div>
+                            <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+                                {data?.generations.total || 0}
+                            </div>
                             <div className="flex items-center text-sm">
                                 <ArrowUp className="mr-1 h-3 w-3 text-green-500" />
                                 <span className="text-green-600 font-medium">+18%</span>
@@ -234,7 +219,7 @@ export default function UserDashboardPage() {
                                 <CardContent className="h-[350px]">
                                     <ChartContainer config={chartConfig}>
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={userPerformanceData}>
+                                            <AreaChart data={data?.performance.monthly || []}>
                                                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                                                 <XAxis dataKey="month" className="text-xs" />
                                                 <YAxis className="text-xs" />
@@ -324,7 +309,7 @@ export default function UserDashboardPage() {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-6">
-                                    {userPlatformStats.map((platform) => (
+                                    {data?.performance.platforms.map((platform) => (
                                         <div key={platform.platform} className="space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
@@ -373,7 +358,7 @@ export default function UserDashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {userRecentGenerations.map((generation) => (
+                            {data?.generations.recentGenerations.map((generation) => (
                                 <div
                                     key={generation.id}
                                     className="group flex items-center justify-between p-4 border rounded-xl hover:bg-muted/50 transition-all duration-200 hover:shadow-md"
