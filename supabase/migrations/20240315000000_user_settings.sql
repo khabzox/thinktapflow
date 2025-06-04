@@ -29,6 +29,7 @@ ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if they exist
 DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can view basic profile info" ON profiles;
 DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
 DROP POLICY IF EXISTS "Users can view own settings" ON user_settings;
@@ -36,9 +37,9 @@ DROP POLICY IF EXISTS "Users can update own settings" ON user_settings;
 DROP POLICY IF EXISTS "Users can insert own settings" ON user_settings;
 
 -- Create policies for profiles
-CREATE POLICY "Users can view own profile"
+CREATE POLICY "Users can view basic profile info"
     ON profiles FOR SELECT
-    USING (auth.uid() = id);
+    USING (true);
 
 CREATE POLICY "Users can update own profile"
     ON profiles FOR UPDATE

@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { FileText, Home, Settings, Zap, Sparkles, TrendingUp, Archive, Users, Shield, CreditCard } from "lucide-react"
+import { FileText, Home, Settings, Zap, Sparkles, TrendingUp, Archive, Users, Shield, CreditCard, MessagesSquare } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
     Sidebar,
@@ -24,12 +24,14 @@ import { Search } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
+import { ChatButton } from '@/components/chat/ChatButton'
 // User navigation items
 const userNavigation = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Generate", href: "/dashboard/generate", icon: Sparkles },
     { name: "Generations", href: "/dashboard/generations", icon: FileText },
     { name: "Analytics", href: "/dashboard/analytics", icon: TrendingUp },
+    { name: "Community", href: "/dashboard/community", icon: MessagesSquare },
     { name: "Content Library", href: "/dashboard/library", icon: Archive },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
@@ -212,6 +214,7 @@ export function DashboardLayout({ children, userRole = "user" }: DashboardLayout
                     </main>
                 </SidebarInset>
             </div>
+            <ChatButton />
         </SidebarProvider>
     )
 }
