@@ -1,29 +1,40 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signupSchema, type SignupFormData } from '@/lib/validations/auth';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { signupSchema, type SignupFormData } from "@/lib/validations/auth";
+import { useAuth } from "@/hooks/useAuth";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { Icons } from "@/components/ui/icons";
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormControl,
   FormMessage,
-} from '@/components/ui/form';
-import { Icons } from '@/components/ui/icons';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+} from "@/components/ui/form";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 export function SignupForm() {
   const { signUp, signInWithProvider, isLoading, error } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
+      email: "",
+      password: "",
+      confirmPassword: "",
       acceptTerms: false,
     },
   });
@@ -33,7 +44,7 @@ export function SignupForm() {
   };
 
   return (
-    <div className="grid gap-6">
+    <div className="space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {error && (
@@ -49,12 +60,16 @@ export function SignupForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="you@example.com"
-                    type="email"
-                    disabled={isLoading}
-                    {...field}
-                  />
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="you@example.com"
+                      type="email"
+                      disabled={isLoading}
+                      className="pl-10"
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -68,12 +83,29 @@ export function SignupForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="••••••••"
-                    type="password"
-                    disabled={isLoading}
-                    {...field}
-                  />
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      disabled={isLoading}
+                      className="pl-10 pr-10"
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -108,11 +140,12 @@ export function SignupForm() {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled={isLoading}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>
-                    I accept the{' '}
+                    I accept the{" "}
                     <a
                       href="/terms"
                       className="text-primary underline hover:text-primary/90"
@@ -126,7 +159,7 @@ export function SignupForm() {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button variant="btn" type="submit" className="w-full" disabled={isLoading}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
@@ -137,28 +170,30 @@ export function SignupForm() {
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <Separator className="w-full" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="bg-background px-2 text-secondary-foreground/90">
             Or continue with
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <Button
           variant="outline"
+          type="button"
           disabled={isLoading}
-          onClick={() => signInWithProvider('google')}
+          onClick={() => signInWithProvider("google")}
         >
           <Icons.google className="mr-2 h-4 w-4" />
           Google
         </Button>
         <Button
           variant="outline"
+          type="button"
           disabled={isLoading}
-          onClick={() => signInWithProvider('github')}
+          onClick={() => signInWithProvider("github")}
         >
           <Icons.gitHub className="mr-2 h-4 w-4" />
           GitHub
@@ -166,4 +201,4 @@ export function SignupForm() {
       </div>
     </div>
   );
-} 
+}
