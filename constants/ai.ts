@@ -1,62 +1,37 @@
-import { SupportedPlatforms, PlatformConstraints, AIServiceConfig } from '@/types/ai';
+import type { SupportedPlatforms, PlatformConstraints, AIServiceConfig } from '@/types/ai';
 
 export const DEFAULT_CONFIG: AIServiceConfig = {
-  apiKey: '',
-  model: 'llama3-8b-8192',
+  apiKey: process.env.GROQ_API_KEY || '',
+  model: 'llama-3.3-70b-versatile',
+  temperature: 0.7,
+  maxTokens: 8192,
+  topP: 0.8,
   timeout: 30000,
-  maxContentLength: 8000,
-  maxInputTokens: 4000,
-  maxOutputTokens: 2048,
+  maxContentLength: 10000,
+  maxInputTokens: 4096,
+  maxOutputTokens: 2048
 };
 
 export const PLATFORM_CONSTRAINTS: Record<SupportedPlatforms, PlatformConstraints> = {
-  [SupportedPlatforms.Twitter]: {
+  twitter: {
     maxLength: 280,
     maxPosts: 3,
     hashtagCount: 3,
     tone: 'conversational',
-    format: 'tweet',
+    format: 'text'
   },
-  [SupportedPlatforms.LinkedIn]: {
+  linkedin: {
     maxLength: 3000,
     maxPosts: 2,
-    hashtagCount: 5,
+    hashtagCount: 3,
     tone: 'professional',
-    format: 'article',
+    format: 'text'
   },
-  [SupportedPlatforms.Facebook]: {
-    maxLength: 63206,
-    maxPosts: 2,
-    hashtagCount: 5,
-    tone: 'casual',
-    format: 'post',
-  },
-  [SupportedPlatforms.Instagram]: {
+  instagram: {
     maxLength: 2200,
     maxPosts: 2,
-    hashtagCount: 10,
-    tone: 'visual',
-    format: 'caption',
-  },
-  [SupportedPlatforms.YouTube]: {
-    maxLength: 5000,
-    maxPosts: 1,
     hashtagCount: 15,
     tone: 'engaging',
-    format: 'video-content',
-  },
-  [SupportedPlatforms.Threads]: {
-    maxLength: 500,
-    maxPosts: 3,
-    hashtagCount: 3,
-    tone: 'conversational',
-    format: 'thread',
-  },
-  [SupportedPlatforms.TikTok]: {
-    maxLength: 2200,
-    maxPosts: 2,
-    hashtagCount: 8,
-    tone: 'energetic',
-    format: 'caption',
-  },
-};
+    format: 'text'
+  }
+} as const;

@@ -1,9 +1,17 @@
 import { z } from 'zod';
-import { SupportedPlatforms } from '@/types/ai';
+import type { SupportedPlatforms } from '@/types/ai';
+
+const supportedPlatforms = ['twitter', 'linkedin', 'instagram'] as const;
 
 export const generatePostsSchema = z.object({
   content: z.string().min(1).max(10000),
-  platforms: z.array(z.nativeEnum(SupportedPlatforms)).min(1).max(10)
+  platforms: z.array(z.enum(supportedPlatforms)).min(1).max(10),
+  options: z.object({
+    temperature: z.number().optional(),
+    includeEmojis: z.boolean().optional(),
+    targetAudience: z.string().optional(),
+    customInstructions: z.string().optional()
+  }).optional()
 });
 
 export const webhookSchema = z.object({

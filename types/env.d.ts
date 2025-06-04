@@ -13,6 +13,9 @@ declare namespace NodeJS {
     GOOGLE_AI_API_KEY: string;
     GOOGLE_AI_MODEL: string;
 
+    // Groq AI
+    GROQ_API_KEY: string;
+
     // Paddle
     NEXT_PUBLIC_PADDLE_CLIENT_TOKEN: string;
     PADDLE_SECRET_KEY: string;

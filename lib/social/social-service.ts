@@ -1,6 +1,7 @@
 import { BasePostGenerator } from './generators/base-post-generator';
 import { TwitterGenerator } from './generators/twitter-generator';
-import { YouTubeGenerator } from './generators/youtube-generator';
+import { LinkedInGenerator } from './generators/linkedin-generator';
+import { InstagramGenerator } from './generators/instagram-generator';
 import { BaseAIProvider } from '../ai/core/base-ai-provider';
 import { SupportedPlatforms, GeneratedPosts, AIGenerationOptions } from '@/types/ai';
 
@@ -9,14 +10,17 @@ export class SocialService {
 
   constructor() {
     this.registerGenerator(
-      SupportedPlatforms.Twitter,
-      new TwitterGenerator(SupportedPlatforms.Twitter)
+      'twitter',
+      new TwitterGenerator('twitter')
     );
     this.registerGenerator(
-      SupportedPlatforms.YouTube,
-      new YouTubeGenerator()
+      'linkedin',
+      new LinkedInGenerator('linkedin')
     );
-    // Add other platform generators...
+    this.registerGenerator(
+      'instagram',
+      new InstagramGenerator('instagram')
+    );
   }
 
   registerGenerator(platform: SupportedPlatforms, generator: BasePostGenerator): void {
@@ -38,13 +42,18 @@ export class SocialService {
         model: aiProvider.getModelInfo().name,
         timestamp: Date.now(),
       },
-    } as GeneratedPosts;
+      posts: {}
+    };
 
     const startTime = Date.now();
+    let totalTokens = 0;
 
     for (const platform of platforms) {
       const generator = this.generators.get(platform);
-      if (!generator) continue;
+      if (!generator) {
+        console.warn(`No generator found for platform: ${platform}`);
+        continue;
+      }
 
       try {
         const prompt = generator.generatePrompt(content, options);
@@ -52,15 +61,27 @@ export class SocialService {
         const posts = generator.processResponse(response);
 
         if (posts.length > 0) {
-          results[platform] = posts.map(post => post.content);
+          results.posts[platform] = posts.map(post => ({
+            content: post.content,
+            hashtags: post.hashtags || [],
+            mentions: post.mentions || [],
+            metadata: {
+              characterCount: post.characterCount,
+              platform,
+              timestamp: Date.now()
+            }
+          }));
+          totalTokens += response.length / 4; // Rough estimate of tokens
         }
       } catch (error) {
         console.warn(`Failed to generate posts for ${platform}:`, error);
-        // Continue with other platforms
+        results.posts[platform] = [];
       }
     }
 
     results.metadata.generationTime = Date.now() - startTime;
+    results.metadata.tokensUsed = totalTokens;
+
     return results;
   }
 }

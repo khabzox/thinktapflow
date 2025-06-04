@@ -5,7 +5,9 @@ export type ErrorCode =
   | 'UPDATE_FAILED'
   | 'INVALID_REQUEST'
   | 'WEBHOOK_INVALID'
-  | 'SUBSCRIPTION_ERROR';
+  | 'SUBSCRIPTION_ERROR'
+  | 'USER_NOT_FOUND'
+  | 'SAVE_FAILED';
 
 export class GenerationError extends Error {
   constructor(

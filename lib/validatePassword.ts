@@ -1,5 +1,3 @@
-// lib/validatePassword.ts
-
 /**
  * Returns:
  * - `requiredErrors`: rules that must be met (only "8 characters")

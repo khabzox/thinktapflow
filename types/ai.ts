@@ -44,26 +44,29 @@ export interface PlatformPost {
   characterCount: number;
 }
 
+export interface PostMetadata {
+  characterCount: number;
+  platform: SupportedPlatforms;
+  timestamp: number;
+}
+
 export interface GeneratedPosts {
   metadata: {
     originalContent: string;
     tokensUsed: number;
     generationTime: number;
-    platforms: string[];
+    platforms: SupportedPlatforms[];
     model: string;
     timestamp: number;
   };
-  twitter?: string[];
-  linkedin?: string[];
-  instagram?: string[];
-  facebook?: string[];
-  youtube?: {
-    title: string;
-    description: string;
-    tags: string[];
-    timestamps?: { time: string; description: string }[];
-  }[];
-  [key: string]: PlatformPost[] | any;
+  posts: {
+    [key in SupportedPlatforms]?: Array<{
+      content: string;
+      hashtags: string[];
+      mentions: string[];
+      metadata: PostMetadata;
+    }>;
+  };
 }
 
 export interface GenerationMetrics {
@@ -76,15 +79,7 @@ export interface GenerationMetrics {
   error?: string;
 }
 
-export enum SupportedPlatforms {
-  Twitter = 'twitter',
-  LinkedIn = 'linkedin',
-  Instagram = 'instagram',
-  Facebook = 'facebook',
-  YouTube = 'youtube',
-  Threads = 'threads',
-  TikTok = 'tiktok'
-}
+export type SupportedPlatforms = 'twitter' | 'linkedin' | 'instagram';
 
 export interface PlatformConstraints {
   maxLength: number;
@@ -95,13 +90,14 @@ export interface PlatformConstraints {
 }
 
 export class AIServiceError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public statusCode?: number
-  ) {
+  code: string;
+  statusCode: number;
+
+  constructor(message: string, code: string, statusCode: number = 500) {
     super(message);
     this.name = 'AIServiceError';
+    this.code = code;
+    this.statusCode = statusCode;
   }
 }
 

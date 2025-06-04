@@ -1,0 +1,85 @@
+-- This is a backup of the initial schema.
+-- We now use 20240102000000_update_schema.sql instead.
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Create users table
+CREATE TABLE users (
+    id UUID PRIMARY KEY REFERENCES auth.users(id),
+    email TEXT UNIQUE NOT NULL,
+    subscription_tier TEXT DEFAULT 'free',
+    usage_count INTEGER DEFAULT 0,
+    usage_limit INTEGER DEFAULT 10,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- Create generations table
+CREATE TABLE generations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL,
+    input_content TEXT NOT NULL,
+    generated_posts JSONB NOT NULL DEFAULT '{}'::jsonb,
+    platforms TEXT[] NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create indexes for faster lookups
+CREATE INDEX generations_user_id_idx ON generations(user_id);
+CREATE INDEX generations_created_at_idx ON generations(created_at DESC);
+
+-- Enable Row Level Security
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE generations ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own profile" ON users;
+DROP POLICY IF EXISTS "Users can update their own profile" ON users;
+DROP POLICY IF EXISTS "Users can view their own generations" ON generations;
+DROP POLICY IF EXISTS "Users can insert their own generations" ON generations;
+
+-- Create RLS policies
+CREATE POLICY "Users can view their own profile"
+    ON users FOR SELECT
+    USING (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile"
+    ON users FOR UPDATE
+    USING (auth.uid() = id);
+
+CREATE POLICY "Users can view their own generations"
+    ON generations FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own generations"
+    ON generations FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+-- Grant necessary permissions
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON public.users TO anon, authenticated;
+GRANT ALL ON public.generations TO anon, authenticated;
+
+-- Create function to handle new user creation
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.users (id, email, subscription_tier, usage_count, usage_limit)
+    VALUES (
+        NEW.id,
+        NEW.email,
+        'free',
+        0,
+        10
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create trigger for new user creation
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user(); 

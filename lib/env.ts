@@ -43,6 +43,9 @@ export const env = {
         apiKey: process.env.GOOGLE_AI_API_KEY as string,
         model: process.env.GOOGLE_AI_MODEL as string,
     },
+    groq: {
+        apiKey: process.env.GROQ_API_KEY as string,
+    },
     paddle: {
         clientToken: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN as string,
         secretKey: process.env.PADDLE_SECRET_KEY as string,
