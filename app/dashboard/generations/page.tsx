@@ -270,10 +270,10 @@ export default function GenerationsPage() {
                         <p className="text-muted-foreground">View and manage your content generations</p>
                     </div>
                     <Link href="/dashboard/generate">
-                        <Button className="sm:w-auto">
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            New Generation
-                        </Button>
+                    <Button className="sm:w-auto">
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        New Generation
+                    </Button>
                     </Link>
                 </div>
 
@@ -300,9 +300,9 @@ export default function GenerationsPage() {
                                 </div>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="icon">
-                                            <Filter className="h-4 w-4" />
-                                        </Button>
+                                <Button variant="outline" size="icon">
+                                    <Filter className="h-4 w-4" />
+                                </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="w-[200px]">
                                         <div className="p-2">

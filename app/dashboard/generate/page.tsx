@@ -437,16 +437,16 @@ export default function GeneratePage() {
 
                                 return (
                                     <Card key={platformId}>
-                                        <CardHeader>
-                                            <div className="flex items-center justify-between">
-                                                <CardTitle className="flex items-center gap-2">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="flex items-center gap-2">
                                                     <div 
                                                         className="h-3 w-3 rounded-full" 
                                                         style={{ backgroundColor: platform.color }} 
                                                     />
                                                     {platform.name}
-                                                </CardTitle>
-                                                <div className="flex items-center gap-2">
+                                </CardTitle>
+                                <div className="flex items-center gap-2">
                                                     <Badge variant="outline">
                                                         {variations.length} variation{variations.length !== 1 ? 's' : ''}
                                                     </Badge>
@@ -455,11 +455,11 @@ export default function GeneratePage() {
                                                             {currentIndex + 1}/{variations.length}
                                                         </Badge>
                                                     )}
-                                                </div>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="space-y-4">
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
                                                 {variations.length > 1 && (
                                                     <div className="flex gap-2 mb-4 flex-wrap">
                                                         {variations.map((_, index) => (
@@ -484,11 +484,11 @@ export default function GeneratePage() {
                                                     </div>
                                                 )}
 
-                                                <div className="rounded-lg border p-4 bg-muted/50">
+                                <div className="rounded-lg border p-4 bg-muted/50">
                                                     <pre className="whitespace-pre-wrap font-sans text-sm">
                                                         {currentVariation.content}
                                                     </pre>
-                                                </div>
+                                </div>
 
                                                 {/* Hashtags */}
                                                 {currentVariation.hashtags && currentVariation.hashtags.length > 0 && (
@@ -518,21 +518,21 @@ export default function GeneratePage() {
                                                     </div>
                                                 )}
 
-                                                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                                <div className="flex items-center justify-between text-sm text-muted-foreground">
                                                     <span>
                                                         Characters: {currentVariation.metadata.characterCount}
                                                     </span>
-                                                    <Badge
+                                                <Badge
                                                         variant={currentVariation.metadata.characterCount <= platform.limit ? "secondary" : "destructive"}
-                                                        className="text-xs"
-                                                    >
+                                                    className="text-xs"
+                                                >
                                                         Limit: {currentVariation.metadata.characterCount}/{platform.limit}
-                                                    </Badge>
+                                                </Badge>
                                                 </div>
 
                                                 <div className="text-xs text-muted-foreground text-right">
                                                     Generated: {currentVariation.metadata.formattedDate}
-                                                </div>
+                                    </div>
 
                                                 <div className="flex gap-2">
                                                     <Button 
@@ -572,10 +572,10 @@ export default function GeneratePage() {
                                                         <Sparkles className="mr-2 h-4 w-4" />
                                                         Select
                                                     </Button>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                                 );
                             })}
                         </div>

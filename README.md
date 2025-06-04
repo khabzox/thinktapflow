@@ -1,6 +1,6 @@
 # ThinkTapFlow
 
-A modern SaaS application for automated content generation.
+   A modern SaaS application for automated content generation.
 
 ## Environment Variables Setup
 

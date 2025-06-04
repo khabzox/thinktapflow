@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -16,9 +16,7 @@ import {
     Bell,
     CreditCard,
     Globe,
-    Moon,
     Shield,
-    Sun,
     User,
     Check,
     Twitter,
@@ -27,25 +25,179 @@ import {
     Instagram,
     TwitterIcon as TikTok,
     Youtube,
+    Calendar,
+    AlertCircle
 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { PlatformConnectDialog } from "@/components/ui/platform-connect-dialog"
+import { FacebookBusinessDialog } from "@/components/ui/facebook-business-dialog"
+import { InstagramBusinessDialog } from "@/components/ui/instagram-business-dialog"
+import { TwitterIntegrationDialog } from "@/components/ui/twitter-integration-dialog"
+import { LinkedInProfessionalDialog } from "@/components/ui/linkedin-professional-dialog"
+import { ContentCalendarDialog } from "@/components/ui/content-calendar-dialog"
+import { useUserSettings } from "@/hooks/use-user-settings"
+
+const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='5'/%3E%3Cpath d='M20 21a8 8 0 0 0-16 0'/%3E%3C/svg%3E"
 
 export default function SettingsPage() {
-    const [theme, setTheme] = useState("system")
+    const {
+        loading,
+        saving,
+        profile,
+        settings,
+        uploadingAvatar,
+        handleProfileChange,
+        handleSettingsChange,
+        saveProfile,
+        saveSettings,
+        updatePassword,
+        uploadAvatar
+    } = useUserSettings()
 
-    const handleSaveProfile = () => {
-        toast.success("Profile settings saved successfully")
+    const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
+    const [showFacebookBusiness, setShowFacebookBusiness] = useState(false);
+    const [showInstagramBusiness, setShowInstagramBusiness] = useState(false);
+    const [showTwitterIntegration, setShowTwitterIntegration] = useState(false);
+    const [showLinkedInProfessional, setShowLinkedInProfessional] = useState(false);
+    const [showContentCalendar, setShowContentCalendar] = useState(false);
+
+    const [currentPassword, setCurrentPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleProfileChange({ full_name: e.target.value })
     }
 
-    const handleSaveNotifications = () => {
-        toast.success("Notification preferences updated")
+    const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleProfileChange({ username: e.target.value })
     }
 
-    const handleSavePassword = () => {
-        toast.success("Password updated successfully")
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleProfileChange({ email: e.target.value })
+    }
+
+    const handleBioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleProfileChange({ bio: e.target.value })
+    }
+
+    const handleEmailNotificationsChange = (checked: boolean) => {
+        handleSettingsChange({ email_notifications: checked })
+    }
+
+    const handleContentUpdatesChange = (checked: boolean) => {
+        handleSettingsChange({ content_updates: checked })
+    }
+
+    const handleMarketingUpdatesChange = (checked: boolean) => {
+        handleSettingsChange({ marketing_updates: checked })
+    }
+
+    const handleTwoFactorChange = (checked: boolean) => {
+        handleSettingsChange({ two_factor_enabled: checked })
+    }
+
+    const handleSavePassword = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            toast.error('Please fill in all password fields')
+            return
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error('New passwords do not match')
+            return
+        }
+
+        // Password validation
+        if (newPassword.length < 8) {
+            toast.error('Password must be at least 8 characters long')
+            return
+        }
+
+        const success = await updatePassword(currentPassword, newPassword)
+        if (success) {
+            setCurrentPassword('')
+            setNewPassword('')
+            setConfirmPassword('')
+        }
+    }
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        try {
+            await uploadAvatar(file)
+        } catch (error) {
+            console.error('Error:', error)
+            toast.error('Error updating avatar')
+        }
     }
 
     const handleConnectPlatform = (platform: string) => {
-        toast.success(`Connected to ${platform}`)
+        setConnectingPlatform(platform);
+    }
+
+    const handleContinueConnect = () => {
+        if (connectingPlatform) {
+            if (connectingPlatform === "Facebook") {
+                setShowFacebookBusiness(true);
+            } else if (connectingPlatform === "Instagram") {
+                setShowInstagramBusiness(true);
+            } else if (connectingPlatform === "Twitter") {
+                setShowTwitterIntegration(true);
+            } else if (connectingPlatform === "LinkedIn") {
+                setShowLinkedInProfessional(true);
+            } else {
+                // Handle other platforms
+                toast.success(`Connected to ${connectingPlatform}`);
+            }
+            setConnectingPlatform(null);
+        }
+    }
+
+    const handleAuthorizeFacebook = () => {
+        // Here you would implement the actual Facebook authorization logic
+        toast.success("Facebook Business account connected successfully");
+        setShowFacebookBusiness(false);
+    }
+
+    const handleConnectInstagram = () => {
+        // Here you would implement the actual Instagram authorization logic
+        toast.success("Instagram Business account connected successfully");
+        setShowInstagramBusiness(false);
+    }
+
+    const handleAuthorizeTwitter = () => {
+        // Here you would implement the actual Twitter authorization logic
+        toast.success("Twitter account connected successfully");
+        setShowTwitterIntegration(false);
+    }
+
+    const handleConnectLinkedIn = () => {
+        // Here you would implement the actual LinkedIn authorization logic
+        toast.success("LinkedIn Professional account connected successfully");
+        setShowLinkedInProfessional(false);
+    }
+
+    const handleEnableCalendarSync = () => {
+        toast.success("Calendar sync enabled successfully");
+        setShowContentCalendar(false);
+    }
+
+    if (loading) {
+        return (
+            <DashboardLayout>
+                <div className="flex items-center justify-center h-full">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            </DashboardLayout>
+        )
     }
 
     return (
@@ -60,23 +212,23 @@ export default function SettingsPage() {
                     <TabsList>
                         <TabsTrigger value="profile" className="flex items-center gap-2">
                             <User className="h-4 w-4" />
-                            <span className="hidden sm:inline">Profile</span>
+                            Profile
                         </TabsTrigger>
                         <TabsTrigger value="account" className="flex items-center gap-2">
                             <Shield className="h-4 w-4" />
-                            <span className="hidden sm:inline">Account</span>
+                            Account
                         </TabsTrigger>
                         <TabsTrigger value="notifications" className="flex items-center gap-2">
                             <Bell className="h-4 w-4" />
-                            <span className="hidden sm:inline">Notifications</span>
+                            Notifications
                         </TabsTrigger>
                         <TabsTrigger value="billing" className="flex items-center gap-2">
                             <CreditCard className="h-4 w-4" />
-                            <span className="hidden sm:inline">Billing</span>
+                            Billing
                         </TabsTrigger>
                         <TabsTrigger value="integrations" className="flex items-center gap-2">
                             <Globe className="h-4 w-4" />
-                            <span className="hidden sm:inline">Integrations</span>
+                            Integrations
                         </TabsTrigger>
                     </TabsList>
 
@@ -89,131 +241,174 @@ export default function SettingsPage() {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                    <Avatar className="h-20 w-20">
-                                        <AvatarImage src="/placeholder.svg?height=80&width=80" />
-                                        <AvatarFallback>JD</AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex flex-col gap-2">
-                                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                                            Change Avatar
-                                        </Button>
-                                        <Button variant="ghost" size="sm" className="w-full sm:w-auto">
-                                            Remove
-                                        </Button>
+                                    <div className="relative">
+                                        <Avatar className="h-20 w-20 cursor-pointer" onClick={handleAvatarClick}>
+                                            <AvatarImage src={profile?.avatar_url || DEFAULT_AVATAR} />
+                                            <AvatarFallback>{profile?.full_name?.charAt(0) || "U"}</AvatarFallback>
+                                        </Avatar>
+                                        {uploadingAvatar && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleAvatarChange}
+                                    />
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium">Profile Picture</p>
+                                        <p className="text-sm text-muted-foreground">Click to upload a new avatar</p>
+                                        <p className="text-xs text-muted-foreground">Max file size: 2MB</p>
                                     </div>
                                 </div>
 
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label htmlFor="name">Full Name</Label>
-                                        <Input id="name" defaultValue="John Doe" />
+                                        <Input
+                                            id="name"
+                                            value={profile?.full_name || ""}
+                                            onChange={handleNameChange}
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="username">Username</Label>
-                                        <Input id="username" defaultValue="johndoe" />
+                                        <Input
+                                            id="username"
+                                            value={profile?.username || ""}
+                                            onChange={handleUsernameChange}
+                                        />
                                     </div>
                                     <div className="space-y-2 sm:col-span-2">
                                         <Label htmlFor="email">Email</Label>
-                                        <Input id="email" type="email" defaultValue="john.doe@example.com" />
+                                        <Input
+                                            id="email"
+                                            type="email"
+                                            value={profile?.email || ""}
+                                            onChange={handleEmailChange}
+                                        />
                                     </div>
                                     <div className="space-y-2 sm:col-span-2">
                                         <Label htmlFor="bio">Bio</Label>
-                                        <Input id="bio" defaultValue="Content creator and digital marketer" />
+                                        <Input
+                                            id="bio"
+                                            value={profile?.bio || ""}
+                                            onChange={handleBioChange}
+                                        />
                                     </div>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-end">
-                                <Button onClick={handleSaveProfile}>Save Changes</Button>
+                                <Button onClick={saveProfile} disabled={saving}>
+                                    {saving ? (
+                                        <>
+                                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        'Save Changes'
+                                    )}
+                                </Button>
                             </CardFooter>
                         </Card>
                     </TabsContent>
 
                     {/* Account Tab */}
                     <TabsContent value="account">
-                        <div className="space-y-4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Password</CardTitle>
-                                    <CardDescription>Change your password</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="current-password">Current Password</Label>
-                                        <Input id="current-password" type="password" />
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Account Security</CardTitle>
+                                <CardDescription>Manage your account security settings</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {/* Password Change Section */}
+                                <div>
+                                    <h3 className="text-lg font-medium mb-4">Change Password</h3>
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="current-password">Current Password</Label>
+                                            <Input
+                                                id="current-password"
+                                                type="password"
+                                                value={currentPassword}
+                                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="new-password">New Password</Label>
+                                            <Input
+                                                id="new-password"
+                                                type="password"
+                                                value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                            />
+                                            <p className="text-sm text-muted-foreground">
+                                                Password must be at least 8 characters long
+                                            </p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="confirm-password">Confirm New Password</Label>
+                                            <Input
+                                                id="confirm-password"
+                                                type="password"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="new-password">New Password</Label>
-                                        <Input id="new-password" type="password" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="confirm-password">Confirm New Password</Label>
-                                        <Input id="confirm-password" type="password" />
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="justify-end">
-                                    <Button onClick={handleSavePassword}>Update Password</Button>
-                                </CardFooter>
-                            </Card>
+                                </div>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Appearance</CardTitle>
-                                    <CardDescription>Customize the appearance of the application</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label>Theme</Label>
-                                        <div className="flex items-center gap-4">
-                                            <div
-                                                className={`flex cursor-pointer flex-col items-center gap-2 rounded-md border p-3 ${theme === "light" ? "border-primary bg-muted" : ""
-                                                    }`}
-                                                onClick={() => setTheme("light")}
-                                            >
-                                                <Sun className="h-5 w-5" />
-                                                <span className="text-sm">Light</span>
-                                            </div>
-                                            <div
-                                                className={`flex cursor-pointer flex-col items-center gap-2 rounded-md border p-3 ${theme === "dark" ? "border-primary bg-muted" : ""
-                                                    }`}
-                                                onClick={() => setTheme("dark")}
-                                            >
-                                                <Moon className="h-5 w-5" />
-                                                <span className="text-sm">Dark</span>
-                                            </div>
-                                            <div
-                                                className={`flex cursor-pointer flex-col items-center gap-2 rounded-md border p-3 ${theme === "system" ? "border-primary bg-muted" : ""
-                                                    }`}
-                                                onClick={() => setTheme("system")}
-                                            >
-                                                <div className="flex">
-                                                    <Sun className="h-5 w-5" />
-                                                    <Moon className="h-5 w-5" />
+                                <Separator />
+
+                                {/* Two-Factor Authentication Section */}
+                                <div>
+                                    <h3 className="text-lg font-medium mb-4">Two-Factor Authentication</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="space-y-0.5">
+                                                <div className="font-medium">Two-Factor Authentication (2FA)</div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    Add an extra layer of security to your account
                                                 </div>
-                                                <span className="text-sm">System</span>
                                             </div>
+                                            <Switch
+                                                checked={settings?.two_factor_enabled}
+                                                onCheckedChange={handleTwoFactorChange}
+                                                disabled={true}
+                                            />
+                                        </div>
+                                        <Alert>
+                                            <AlertCircle className="h-4 w-4" />
+                                            <AlertDescription>
+                                                Two-factor authentication will be available soon. This feature is currently under development.
+                                            </AlertDescription>
+                                        </Alert>
+                                        <div className="text-sm text-muted-foreground">
+                                            When enabled, you&apos;ll need to enter a code from your authenticator app in addition to your password when signing in.
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Two-Factor Authentication</CardTitle>
-                                    <CardDescription>Add an extra layer of security to your account</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-0.5">
-                                            <div className="font-medium">Two-Factor Authentication</div>
-                                            <div className="text-sm text-muted-foreground">
-                                                Secure your account with two-factor authentication
-                                            </div>
-                                        </div>
-                                        <Switch />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="justify-end space-x-2">
+                                <Button 
+                                    onClick={handleSavePassword} 
+                                    disabled={saving || !currentPassword || !newPassword || !confirmPassword}
+                                >
+                                    {saving ? (
+                                        <>
+                                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                                            Updating Password...
+                                        </>
+                                    ) : (
+                                        'Update Password'
+                                    )}
+                                </Button>
+                            </CardFooter>
+                        </Card>
                     </TabsContent>
 
                     {/* Notifications Tab */}
@@ -225,62 +420,55 @@ export default function SettingsPage() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-4">
-                                    <div>
-                                        <h3 className="mb-2 text-lg font-medium">Email Notifications</h3>
-                                        <Separator className="my-2" />
-                                    </div>
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <div className="font-medium">Content Generation</div>
+                                            <div className="font-medium">Email Notifications</div>
                                             <div className="text-sm text-muted-foreground">
-                                                Get notified when your content generation is complete
+                                                Receive email notifications for important updates
                                             </div>
                                         </div>
-                                        <Switch defaultChecked />
+                                        <Switch
+                                            checked={settings?.email_notifications}
+                                            onCheckedChange={handleEmailNotificationsChange}
+                                        />
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <div className="font-medium">Weekly Reports</div>
+                                            <div className="font-medium">Content Generation Updates</div>
                                             <div className="text-sm text-muted-foreground">
-                                                Receive weekly performance reports for your content
+                                                Get notified when your content is ready
                                             </div>
                                         </div>
-                                        <Switch defaultChecked />
+                                        <Switch
+                                            checked={settings?.content_updates}
+                                            onCheckedChange={handleContentUpdatesChange}
+                                        />
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <div className="font-medium">Product Updates</div>
-                                            <div className="text-sm text-muted-foreground">Get notified about new features and updates</div>
-                                        </div>
-                                        <Switch />
-                                    </div>
-
-                                    <div>
-                                        <h3 className="mb-2 text-lg font-medium">Push Notifications</h3>
-                                        <Separator className="my-2" />
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-0.5">
-                                            <div className="font-medium">Content Generation</div>
+                                            <div className="font-medium">Marketing Updates</div>
                                             <div className="text-sm text-muted-foreground">
-                                                Get notified when your content generation is complete
+                                                Receive updates about new features
                                             </div>
                                         </div>
-                                        <Switch defaultChecked />
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-0.5">
-                                            <div className="font-medium">Usage Limits</div>
-                                            <div className="text-sm text-muted-foreground">
-                                                Get notified when you're approaching your usage limits
-                                            </div>
-                                        </div>
-                                        <Switch defaultChecked />
+                                        <Switch
+                                            checked={settings?.marketing_updates}
+                                            onCheckedChange={handleMarketingUpdatesChange}
+                                        />
                                     </div>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-end">
-                                <Button onClick={handleSaveNotifications}>Save Preferences</Button>
+                                <Button onClick={saveSettings} disabled={saving}>
+                                    {saving ? (
+                                        <>
+                                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        'Save Preferences'
+                                    )}
+                                </Button>
                             </CardFooter>
                         </Card>
                     </TabsContent>
@@ -290,9 +478,16 @@ export default function SettingsPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Subscription Plan</CardTitle>
-                                <CardDescription>Manage your subscription and billing information</CardDescription>
+                                <CardDescription>Manage your subscription and billing</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
+                                <Alert className="bg-yellow-50 border-yellow-200">
+                                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                    <AlertDescription className="text-yellow-600">
+                                        This page is under construction. Enhanced billing features will be implemented soon.
+                                    </AlertDescription>
+                                </Alert>
+
                                 <div className="rounded-lg border p-4">
                                     <div className="flex items-center justify-between">
                                         <div>
@@ -310,10 +505,6 @@ export default function SettingsPage() {
                                         <div className="flex items-center gap-2">
                                             <Check className="h-4 w-4 text-green-500" />
                                             <span className="text-sm">All social media platforms</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Check className="h-4 w-4 text-green-500" />
-                                            <span className="text-sm">Advanced analytics</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Check className="h-4 w-4 text-green-500" />
@@ -335,37 +526,6 @@ export default function SettingsPage() {
                                         </Button>
                                     </div>
                                 </div>
-
-                                <div className="space-y-2">
-                                    <h3 className="font-semibold">Billing History</h3>
-                                    <div className="rounded-lg border">
-                                        <div className="flex items-center justify-between p-4">
-                                            <div>
-                                                <p className="font-medium">Pro Plan - Monthly</p>
-                                                <p className="text-sm text-muted-foreground">June 1, 2025</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-medium">$19.00</p>
-                                                <Badge variant="outline" className="text-xs">
-                                                    Paid
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                        <Separator />
-                                        <div className="flex items-center justify-between p-4">
-                                            <div>
-                                                <p className="font-medium">Pro Plan - Monthly</p>
-                                                <p className="text-sm text-muted-foreground">May 1, 2025</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-medium">$19.00</p>
-                                                <Badge variant="outline" className="text-xs">
-                                                    Paid
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </CardContent>
                             <CardFooter className="flex justify-between">
                                 <Button variant="outline">Download Invoices</Button>
@@ -378,11 +538,34 @@ export default function SettingsPage() {
                     <TabsContent value="integrations">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Platform Integrations</CardTitle>
+                                <CardTitle>Social Media Integrations</CardTitle>
                                 <CardDescription>Connect your social media accounts</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
+                            <CardContent>
+                                <Alert className="mb-6 bg-yellow-50 border-yellow-200">
+                                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                    <AlertDescription className="text-yellow-600">
+                                        Content library features will be implemented here. More integrations coming soon.
+                                    </AlertDescription>
+                                </Alert>
+
                                 <div className="grid gap-4 sm:grid-cols-2">
+                                    {/* Calendar Integration Card */}
+                                    <div className="flex items-center justify-between rounded-lg border p-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
+                                                <Calendar className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium">Content Calendar</p>
+                                                <p className="text-sm text-muted-foreground">Not configured</p>
+                                            </div>
+                                        </div>
+                                        <Button size="sm" onClick={() => setShowContentCalendar(true)}>
+                                            Configure
+                                        </Button>
+                                    </div>
+
                                     <div className="flex items-center justify-between rounded-lg border p-4">
                                         <div className="flex items-center gap-3">
                                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1DA1F2] text-white">
@@ -390,11 +573,11 @@ export default function SettingsPage() {
                                             </div>
                                             <div>
                                                 <p className="font-medium">Twitter</p>
-                                                <p className="text-sm text-muted-foreground">Connected as @johndoe</p>
+                                                <p className="text-sm text-muted-foreground">Not connected</p>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="sm">
-                                            Disconnect
+                                        <Button size="sm" onClick={() => handleConnectPlatform("Twitter")}>
+                                            Connect
                                         </Button>
                                     </div>
 
@@ -405,11 +588,11 @@ export default function SettingsPage() {
                                             </div>
                                             <div>
                                                 <p className="font-medium">LinkedIn</p>
-                                                <p className="text-sm text-muted-foreground">Connected as John Doe</p>
+                                                <p className="text-sm text-muted-foreground">Not connected</p>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="sm">
-                                            Disconnect
+                                        <Button size="sm" onClick={() => handleConnectPlatform("LinkedIn")}>
+                                            Connect
                                         </Button>
                                     </div>
 
@@ -420,11 +603,11 @@ export default function SettingsPage() {
                                             </div>
                                             <div>
                                                 <p className="font-medium">Facebook</p>
-                                                <p className="text-sm text-green-500">Connected</p>
+                                                <p className="text-sm text-muted-foreground">Not connected</p>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="sm">
-                                            Disconnect
+                                        <Button size="sm" onClick={() => handleConnectPlatform("Facebook")}>
+                                            Connect
                                         </Button>
                                     </div>
 
@@ -442,47 +625,43 @@ export default function SettingsPage() {
                                             Connect
                                         </Button>
                                     </div>
-
-                                    <div className="flex items-center justify-between rounded-lg border p-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
-                                                <TikTok className="h-5 w-5" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">TikTok</p>
-                                                <p className="text-sm text-muted-foreground">Not connected</p>
-                                            </div>
-                                        </div>
-                                        <Button size="sm" onClick={() => handleConnectPlatform("TikTok")}>
-                                            Connect
-                                        </Button>
-                                    </div>
-
-                                    <div className="flex items-center justify-between rounded-lg border p-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF0000] text-white">
-                                                <Youtube className="h-5 w-5" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">YouTube</p>
-                                                <p className="text-sm text-muted-foreground">Not connected</p>
-                                            </div>
-                                        </div>
-                                        <Button size="sm" onClick={() => handleConnectPlatform("YouTube")}>
-                                            Connect
-                                        </Button>
-                                    </div>
                                 </div>
                             </CardContent>
-                            <CardFooter>
-                                <p className="text-sm text-muted-foreground">
-                                    Connect your accounts to automatically post generated content
-                                </p>
-                            </CardFooter>
                         </Card>
                     </TabsContent>
                 </Tabs>
             </div>
+            <PlatformConnectDialog
+                isOpen={!!connectingPlatform}
+                onClose={() => setConnectingPlatform(null)}
+                onContinue={handleContinueConnect}
+                platformName={connectingPlatform || ""}
+            />
+            <FacebookBusinessDialog
+                isOpen={showFacebookBusiness}
+                onClose={() => setShowFacebookBusiness(false)}
+                onAuthorize={handleAuthorizeFacebook}
+            />
+            <InstagramBusinessDialog
+                isOpen={showInstagramBusiness}
+                onClose={() => setShowInstagramBusiness(false)}
+                onConnect={handleConnectInstagram}
+            />
+            <TwitterIntegrationDialog
+                isOpen={showTwitterIntegration}
+                onClose={() => setShowTwitterIntegration(false)}
+                onAuthorize={handleAuthorizeTwitter}
+            />
+            <LinkedInProfessionalDialog
+                isOpen={showLinkedInProfessional}
+                onClose={() => setShowLinkedInProfessional(false)}
+                onConnect={handleConnectLinkedIn}
+            />
+            <ContentCalendarDialog
+                isOpen={showContentCalendar}
+                onClose={() => setShowContentCalendar(false)}
+                onEnable={handleEnableCalendarSync}
+            />
         </DashboardLayout>
     )
 }
