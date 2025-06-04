@@ -17,6 +17,9 @@ export interface AIGenerationOptions {
   maxOutputTokens?: number;
   topP?: number;
   includeEmojis?: boolean;
+  includeHashtags?: boolean;
+  creativityLevel?: number;  // 0 to 100
+  contentLength?: number;    // 0 to 100
   targetAudience?: string;
   customInstructions?: string;
 }

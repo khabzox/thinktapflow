@@ -9,6 +9,9 @@ export const generatePostsSchema = z.object({
   options: z.object({
     temperature: z.number().optional(),
     includeEmojis: z.boolean().optional(),
+    includeHashtags: z.boolean().optional(),
+    creativityLevel: z.number().min(0).max(100).optional(),
+    contentLength: z.number().min(0).max(100).optional(),
     targetAudience: z.string().optional(),
     customInstructions: z.string().optional()
   }).optional()
