@@ -120,12 +120,12 @@ export default function UserDashboardPage() {
                 {/* User Dashboard Header */}
                 <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-popover-foreground to-foreground/70 bg-clip-text text-transparent">
                             Welcome back, John!
                         </h1>
-                        <Zap className="h-8 w-8 text-primary" />
+                        <Zap className="h-8 w-8 text-popover-foreground" />
                     </div>
-                    <p className="text-lg text-muted-foreground">
+                    <p className="text-lg text-secondary-foreground">
                         Ready to create amazing content? Let's see what you've accomplished.
                     </p>
                 </div>
