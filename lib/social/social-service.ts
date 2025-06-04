@@ -42,6 +42,17 @@ export class SocialService {
     this.generators.set(platform, generator);
   }
 
+  private formatTimestamp(timestamp: number): string {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }).format(new Date(timestamp));
+  }
+
   async generatePosts(
     content: string,
     platforms: SupportedPlatforms[],
@@ -56,6 +67,7 @@ export class SocialService {
         platforms,
         model: aiProvider.getModelInfo().name,
         timestamp: Date.now(),
+        formattedDate: this.formatTimestamp(Date.now())
       },
       posts: {}
     };
@@ -76,6 +88,7 @@ export class SocialService {
         const posts = generator.processResponse(response);
 
         if (posts.length > 0) {
+          const timestamp = Date.now();
           results.posts[platform] = posts.map(post => ({
             content: post.content,
             hashtags: post.hashtags || [],
@@ -83,7 +96,8 @@ export class SocialService {
             metadata: {
               characterCount: post.characterCount,
               platform,
-              timestamp: Date.now()
+              timestamp,
+              formattedDate: this.formatTimestamp(timestamp)
             }
           }));
           totalTokens += response.length / 4; // Rough estimate of tokens

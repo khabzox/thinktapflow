@@ -51,6 +51,7 @@ export interface PostMetadata {
   characterCount: number;
   platform: SupportedPlatforms;
   timestamp: number;
+  formattedDate: string;
 }
 
 export interface GeneratedPosts {
@@ -61,6 +62,7 @@ export interface GeneratedPosts {
     platforms: SupportedPlatforms[];
     model: string;
     timestamp: number;
+    formattedDate: string;
   };
   posts: {
     [key in SupportedPlatforms]?: Array<{
