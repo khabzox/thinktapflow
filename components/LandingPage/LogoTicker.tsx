@@ -46,7 +46,7 @@ export const LogoTicker = () => {
                 <Image
                   src={logo.src}
                   alt={logo.alt}
-                  className={`max-h-full max-w-full object-contain filter grayscale ${logo.alt === 'Twitter/X' ? 'p-5 bg-white rounded-full border' : ''}`}
+                  className={`max-h-full max-w-full object-contain filter grayscale ${logo.alt === 'Twitter/X' ? 'p-5' : ''}`}
                 />
               </div>
             ))}
