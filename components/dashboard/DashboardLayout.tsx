@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-
+import Image from "next/image"
 // User navigation items
 const userNavigation = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -61,7 +61,7 @@ function AppSidebar({ userRole = "user" }: AppSidebarProps) {
                         className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 hover:scale-110 ${isAdmin ? "bg-red-600" : "bg-primary"
                             }`}
                     >
-                        <Zap className="h-4 w-4 text-white" />
+                        <Image src="/logo/logosaas-dark.png" alt="ThinkTapFlow Logo" width={32} height={32} className=" text-white" />
                     </div>
                     <div className="group-data-[collapsible=icon]:hidden">
                         <span className="text-lg font-semibold">ThinkTapFlow</span>
@@ -135,9 +135,9 @@ function AppSidebar({ userRole = "user" }: AppSidebarProps) {
             </SidebarContent>
 
             <SidebarFooter className="border-t border-sidebar-border">
-                <div className="flex items-center gap-3 px-4 py-3 group-data-[collapsible=icon]:px-2">
+                <div className="flex items-center gap-3 sm:px-4 py-3 sm:group-data-[collapsible=icon]:px-2 hover:bg-sidebar-accent/80 hover:rounded-lg transition-all duration-200 hover:cursor-pointer">
                     <Avatar className="h-8 w-8 transition-all duration-200 hover:scale-110">
-                        <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                        <AvatarImage src="/assets/avatar-1.png" />
                         <AvatarFallback
                             className={`font-semibold ${isAdmin ? "bg-red-100 text-red-700" : "bg-primary/10 text-primary"}`}
                         >
@@ -146,7 +146,7 @@ function AppSidebar({ userRole = "user" }: AppSidebarProps) {
                     </Avatar>
                     <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
                         <p className="text-sm font-medium truncate">{isAdmin ? "Admin User" : "John Doe"}</p>
-                        <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                        <div className="text-xs text-muted/70 truncate flex items-center gap-1">
                             <span className={`h-2 w-2 rounded-full inline-block ${isAdmin ? "bg-red-500" : "bg-green-500"}`}></span>
                             {isAdmin ? "Administrator" : "Pro Plan"}
                         </div>

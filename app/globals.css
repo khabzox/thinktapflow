@@ -12,68 +12,99 @@
 
 @layer base {
   :root {
+    /* Base Neutrals */
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 215 100% 12%;     /* #010D3E for text */
+    --neutral-900: 240 67% 1%;      /* #010103 (Button bg) */
+    --neutral-800: 215 100% 25%;    /* #001E80 (Big titles) */
+    --neutral-750: 225 67% 6%;      /* #0a0a2a (New dark color) */
+    --neutral-700: 224 86% 43%;     /* #183EC2 (Hero gradient start) */
+    --neutral-650: 240 12% 18%;     /* #2c2c33 (New medium dark) */
+    --neutral-600: 230 95% 90%;     /* #EAEEFE (Hero gradient end) */
+    --neutral-500: 220 100% 75%;    /* Light blue between */
+    --neutral-400: 215 100% 65%;    /* Medium blue between */
+    --neutral-300: 210 100% 55%;    /* Another blue variant */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 215 100% 12%;       /* #010D3E for text */
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --popover-foreground: 215 100% 12%;    /* #010D3E for text */
+    /* Brand / Primary */
+    --primary: 224 86% 43%;         /* #183EC2 (Hero gradient start) */
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    /* Sidebar */
+    --sidebar-background: var(--neutral-900); /* #010103 (Button bg) */
+    --sidebar-hover: var(--neutral-750);      /* #0a0a2a (New dark color) */
+    --sidebar-accent: var(--neutral-650);     /* #2c2c33 (New medium dark) */
+    --sidebar-foreground: 230 95% 95%;
+    --sidebar-primary: var(--neutral-600);    /* #EAEEFE (Light) */
+    --sidebar-primary-foreground: 215 100% 12%;
+    --sidebar-border: var(--neutral-750);
+    --sidebar-ring: 224 86% 43%;
+    /* Secondary / Accent */
+    --secondary: 230 95% 85%;       /* Light tint */
+    --secondary-foreground: 215 100% 20%;  /* Hover color for text */
+    --accent: var(--neutral-700);   /* #183EC2 */
+    --accent-foreground: 0 0% 98%;
+    /* Muted / Neutral */
+    --muted: 230 95% 95%;
+    --muted-foreground: 215 100% 35%;      /* Muted text version */
+    /* Status Colors */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --info: 224 86% 43%;          /* Using hero gradient start for info */
+    --info-foreground: 0 0% 100%;
+    --warning: 36 100% 50%;
+    --warning-foreground: 0 0% 0%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    /* Inputs / Borders */
+    --border: 230 95% 85%;
+    --input: 230 95% 90%;
+    --ring: 224 86% 43%;
     --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-
-    /* Sidebar variables */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Chart Colors */
+    --chart-1: 224 86% 43%;       /* #183EC2 (Hero gradient start) */
+    --chart-2: 215 100% 25%;      /* #001E80 (Big titles) */
+    --chart-3: 215 100% 12%;      /* #010D3E (Text) */
+    --chart-4: 240 67% 1%;        /* #010103 (Button bg) */
+    --chart-5: 225 67% 6%;        /* #0a0a2a (New dark color) */
+    --chart-6: 240 12% 18%;       /* #2c2c33 (New medium dark) */
+    /* Hero Section */
+    --hero-bg: radial-gradient(ellipse 200% 100% at bottom left, #183EC2, #EAEEFE 100%);
   }
-
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --background: var(--neutral-900);        /* #010103 (Button bg) */
+    --foreground: 230 95% 95%;
+    --card: var(--neutral-900);
+    --card-foreground: 230 95% 95%;
+    --popover: var(--neutral-900);
+    --popover-foreground: 230 95% 95%;
+    --primary: var(--neutral-600);           /* #EAEEFE (Light) */
+    --primary-foreground: 215 100% 12%;      /* #010D3E */
+    --secondary: var(--neutral-800);         /* #001E80 (Big titles) */
+    --secondary-foreground: 230 95% 95%;
+    --accent: var(--neutral-700);            /* #183EC2 */
     --accent-foreground: 0 0% 98%;
+    --muted: var(--neutral-800);
+    --muted-foreground: 220 100% 75%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --info: 224 86% 43%;                     /* Hero gradient start for info */
+    --info-foreground: 0 0% 100%;
+    --warning: 36 100% 50%;
+    --warning-foreground: 0 0% 0%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: var(--neutral-800);            /* #001E80 */
+    --input: var(--neutral-800);
+    --ring: var(--neutral-600);              /* Light ring */
+    --chart-1: 230 95% 90%;                  /* #EAEEFE (Light) */
+    --chart-2: 224 86% 43%;                  /* #183EC2 (Hero gradient start) */
+    --chart-3: 215 100% 25%;                 /* #001E80 (Big titles) */
+    --chart-4: 220 100% 75%;                 /* Light blue variant */
+    --chart-5: 215 100% 65%;                 /* Medium blue variant */
+    /* Hero Section Dark */
+    --hero-bg: radial-gradient(ellipse 200% 100% at bottom left, #001E80, #010D3E 100%);
   }
 }
 
