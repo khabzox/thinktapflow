@@ -14,8 +14,11 @@ import {
     Activity,
     BarChart3,
     Zap,
+    Plus,
+    Users,
+    Settings,
 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
@@ -77,7 +80,19 @@ export default function UserDashboardPage() {
             <DashboardLayout userRole="user">
                 <div className="space-y-8">
                     <div className="animate-pulse space-y-4">
-                        {/* Add loading skeletons */}
+                        <div className="h-12 w-1/3 bg-muted rounded"></div>
+                        <div className="grid gap-6 md:grid-cols-4">
+                            {[...Array(4)].map((_, i) => (
+                                <Card key={i}>
+                                    <CardHeader className="space-y-0 pb-2">
+                                        <div className="h-4 w-1/2 bg-muted rounded"></div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="h-8 w-1/3 bg-muted rounded"></div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </DashboardLayout>
@@ -97,6 +112,8 @@ export default function UserDashboardPage() {
         )
     }
 
+    const hasGenerations = (data?.generations.total || 0) > 0
+
     return (
         <DashboardLayout userRole="user">
             <div className="space-y-8">
@@ -104,13 +121,18 @@ export default function UserDashboardPage() {
                 <div className="space-y-2">
                     <div className="flex items-center gap-2">
                         <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-popover-foreground to-foreground/70 bg-clip-text text-transparent">
-                            Welcome back, {data?.user?.email?.split('@')[0] || 'User'}!
+                            Welcome back, {data?.user?.name || data?.user?.email?.split('@')[0] || 'User'}!
                         </h1>
                         <Zap className="h-8 w-8 text-popover-foreground" />
                     </div>
-                    <p className="text-lg text-secondary-foreground">
-                        Ready to create amazing content? Let's see what you've accomplished.
-                    </p>
+                    <div className="flex items-center justify-between">
+                        <p className="text-lg text-secondary-foreground">
+                            Ready to create amazing content? Let's see what you've accomplished.
+                        </p>
+                        <Badge variant="secondary" className="text-sm">
+                            You use Free
+                        </Badge>
+                    </div>
                 </div>
 
                 {/* User-focused Stats Cards */}
@@ -128,101 +150,133 @@ export default function UserDashboardPage() {
                                 {data?.generations.total || 0}
                             </div>
                             <div className="flex items-center text-sm">
-                                <ArrowUp className="mr-1 h-3 w-3 text-green-500" />
-                                <span className="text-green-600 font-medium">+18%</span>
-                                <span className="text-muted-foreground ml-1">this month</span>
+                                <span className="text-muted-foreground">Total generations</span>
                             </div>
-                            <Progress value={75} className="mt-3 h-2" />
-                            <p className="text-xs text-muted-foreground mt-1">75% of monthly goal</p>
+                            <Progress
+                                value={((data?.user?.usage_count || 0) / (data?.user?.usage_limit || 1)) * 100}
+                                className="mt-3 h-2"
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                                {data?.user?.usage_limit && data?.user?.usage_count
+                                    ? `${data.user.usage_limit - data.user.usage_count} generations left`
+                                    : 'No usage data'
+                                }
+                            </p>
                         </CardContent>
                     </Card>
 
-                    <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/50 dark:to-green-900/30">
+                    {/* Generate Content Card */}
+                    <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/50 dark:to-green-900/30 cursor-pointer">
                         <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent" />
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">Total Reach</CardTitle>
+                            <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">Create Content</CardTitle>
                             <div className="p-2 bg-green-500/10 rounded-lg">
-                                <Globe className="h-4 w-4 text-green-600" />
+                                <Plus className="h-4 w-4 text-green-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-green-900 dark:text-green-100">68.2K</div>
-                            <div className="flex items-center text-sm">
-                                <ArrowUp className="mr-1 h-3 w-3 text-green-500" />
-                                <span className="text-green-600 font-medium">+24%</span>
-                                <span className="text-muted-foreground ml-1">this month</span>
+                            <div className="text-lg font-bold text-green-900 dark:text-green-100 mb-2">
+                                Generate Posts
                             </div>
-                            <Progress value={68} className="mt-3 h-2" />
-                            <p className="text-xs text-muted-foreground mt-1">Across all platforms</p>
+                            <p className="text-xs text-muted-foreground mb-3">
+                                Create engaging content for all your social media platforms
+                            </p>
+                            <Button
+                                size="sm"
+                                className="w-full bg-green-600 hover:bg-green-700"
+                                onClick={() => window.location.href = '/dashboard/generate'}
+                            >
+                                Start Creating
+                            </Button>
                         </CardContent>
                     </Card>
 
-                    <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/50 dark:to-purple-900/30">
+                    {/* Community Card */}
+                    <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/50 dark:to-purple-900/30 cursor-pointer">
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300">Engagement</CardTitle>
+                            <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300">Community</CardTitle>
                             <div className="p-2 bg-purple-500/10 rounded-lg">
-                                <Activity className="h-4 w-4 text-purple-600" />
+                                <Users className="h-4 w-4 text-purple-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">8.1K</div>
-                            <div className="flex items-center text-sm">
-                                <ArrowUp className="mr-1 h-3 w-3 text-green-500" />
-                                <span className="text-green-600 font-medium">+12%</span>
-                                <span className="text-muted-foreground ml-1">avg. rate 5.4%</span>
+                            <div className="text-lg font-bold text-purple-900 dark:text-purple-100 mb-2">
+                                Join Community
                             </div>
-                            <Progress value={54} className="mt-3 h-2" />
-                            <p className="text-xs text-muted-foreground mt-1">Above average</p>
+                            <p className="text-xs text-muted-foreground mb-3">
+                                Connect with creators and share your experiences
+                            </p>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full border-purple-200 hover:bg-purple-50"
+                                onClick={() => window.location.href = '/community'}
+                            >
+                                Explore Community
+                            </Button>
                         </CardContent>
                     </Card>
 
-                    <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/30">
+                    {/* Settings Card */}
+                    <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/50 dark:to-orange-900/30 cursor-pointer">
                         <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent" />
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-300">Plan Usage</CardTitle>
+                            <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-300">Settings</CardTitle>
                             <div className="p-2 bg-orange-500/10 rounded-lg">
-                                <Target className="h-4 w-4 text-orange-600" />
+                                <Settings className="h-4 w-4 text-orange-600" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-orange-900 dark:text-orange-100">127/200</div>
-                            <div className="flex items-center text-sm">
-                                <span className="text-muted-foreground">73 generations left</span>
+                            <div className="text-lg font-bold text-orange-900 dark:text-orange-100 mb-2">
+                                Preferences
                             </div>
-                            <Progress value={63.5} className="mt-3 h-2" />
-                            <p className="text-xs text-muted-foreground mt-1">Pro Plan</p>
+                            <p className="text-xs text-muted-foreground mb-3">
+                                Customize your account and content preferences
+                            </p>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full border-orange-200 hover:bg-orange-50"
+                                onClick={() => window.location.href = '/dashboard/settings'}
+                            >
+                                Manage Settings
+                            </Button>
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* User Dashboard Content */}
-                <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <TabsList className="grid w-full max-w-md grid-cols-3">
-                            <TabsTrigger value="overview">Overview</TabsTrigger>
-                            <TabsTrigger value="create">Create</TabsTrigger>
-                            <TabsTrigger value="performance">Performance</TabsTrigger>
-                        </TabsList>
-                    </div>
-
-                    <TabsContent value="overview" className="space-y-6">
-                        <div className="grid gap-6 lg:grid-cols-3">
-                            <Card className="lg:col-span-2 border-0 shadow-lg">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <BarChart3 className="h-5 w-5 text-primary" />
-                                        Your Content Performance
-                                    </CardTitle>
-                                    <CardDescription>Monthly generation and engagement trends</CardDescription>
-                                </CardHeader>
-                                <CardContent className="h-[350px]">
-                                    <ChartContainer config={chartConfig}>
+                {hasGenerations ? (
+                    <>
+                        <Card className="border-0 shadow-lg">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-2">
+                                    <BarChart3 className="h-5 w-5 text-primary" />
+                                    Your Content Performance
+                                </CardTitle>
+                                <CardDescription>Monthly generation and engagement trends</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-4">
+                                <div className="h-[250px] w-full">
+                                    <ChartContainer config={chartConfig} className="h-full w-full">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={data?.performance.monthly || []}>
+                                            <AreaChart
+                                                data={data?.performance?.monthly || []}
+                                                margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
+                                            >
                                                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                                                <XAxis dataKey="month" className="text-xs" />
-                                                <YAxis className="text-xs" />
+                                                <XAxis
+                                                    dataKey="month"
+                                                    className="text-xs"
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                />
+                                                <YAxis
+                                                    className="text-xs"
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                />
                                                 <ChartTooltip content={<ChartTooltipContent />} />
                                                 <Area
                                                     type="monotone"
@@ -243,166 +297,82 @@ export default function UserDashboardPage() {
                                             </AreaChart>
                                         </ResponsiveContainer>
                                     </ChartContainer>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                            <div className="space-y-6">
-                                <UsageChart />
-                            </div>
-                        </div>
-                    </TabsContent>
+                        {/* Generated Posts */}
+                        {generatedPosts.length > 0 && <PostsDisplay posts={generatedPosts} />}
 
-                    <TabsContent value="create" className="space-y-6">
-                        <div className="grid gap-6 lg:grid-cols-2">
-                            <GenerationForm onGenerate={handleGeneration} />
-                            <Card className="border-0 shadow-lg">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Sparkles className="h-5 w-5 text-primary" />
-                                        Quick Tips
-                                    </CardTitle>
-                                    <CardDescription>Maximize your content's impact</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-3">
-                                        <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30">
-                                            <div className="h-2 w-2 rounded-full bg-blue-500 mt-2"></div>
-                                            <div>
-                                                <h4 className="font-medium text-blue-900 dark:text-blue-100">Be Specific</h4>
-                                                <p className="text-sm text-blue-700 dark:text-blue-300">
-                                                    The more detailed your prompt, the better the AI can understand your needs.
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-950/30">
-                                            <div className="h-2 w-2 rounded-full bg-green-500 mt-2"></div>
-                                            <div>
-                                                <h4 className="font-medium text-green-900 dark:text-green-100">Platform Optimization</h4>
-                                                <p className="text-sm text-green-700 dark:text-green-300">
-                                                    Select multiple platforms to get optimized content for each one.
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30">
-                                            <div className="h-2 w-2 rounded-full bg-purple-500 mt-2"></div>
-                                            <div>
-                                                <h4 className="font-medium text-purple-900 dark:text-purple-100">Engage Your Audience</h4>
-                                                <p className="text-sm text-purple-700 dark:text-purple-300">
-                                                    Include questions or calls-to-action to boost engagement rates.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </TabsContent>
-
-                    <TabsContent value="performance" className="space-y-6">
+                        {/* Recent Generations */}
                         <Card className="border-0 shadow-lg">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <TrendingUp className="h-5 w-5 text-primary" />
-                                    Platform Performance
-                                </CardTitle>
-                                <CardDescription>How your content performs across platforms</CardDescription>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Clock className="h-5 w-5 text-primary" />
+                                            Recent Generations
+                                        </CardTitle>
+                                        <CardDescription>Your latest content with performance metrics</CardDescription>
+                                    </div>
+                                    <Button variant="outline" size="sm" asChild>
+                                        <a href="/dashboard/generations">View All</a>
+                                    </Button>
+                                </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-6">
-                                    {data?.performance.platforms.map((platform) => (
-                                        <div key={platform.platform} className="space-y-3">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                                        <span className="text-sm font-semibold text-primary">{platform.platform.charAt(0)}</span>
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-semibold">{platform.platform}</h3>
-                                                        <p className="text-sm text-muted-foreground">{platform.posts} posts this month</p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className="text-lg font-bold">{platform.engagement}%</div>
-                                                    <div className="flex items-center text-sm text-green-600">
-                                                        <ArrowUp className="h-3 w-3 mr-1" />+{platform.growth}%
+                                <div className="space-y-4">
+                                    {data?.generations?.recentGenerations?.map((generation) => (
+                                        <div
+                                            key={generation.id}
+                                            className="group flex items-center justify-between p-4 border rounded-xl hover:bg-muted/50 transition-all duration-200 hover:shadow-md"
+                                        >
+                                            <div className="space-y-2 flex-1">
+                                                <p className="text-sm font-medium leading-none">{generation.content}</p>
+                                                <div className="flex items-center gap-4">
+                                                    <p className="text-xs text-muted-foreground">{new Date(generation.created_at).toLocaleString()}</p>
+                                                    <div className="flex gap-1">
+                                                        {generation.platforms.map((platform) => (
+                                                            <Badge key={platform} variant="secondary" className="text-xs">
+                                                                {platform}
+                                                            </Badge>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <Progress value={platform.engagement * 10} className="h-2" />
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant="outline" className="text-green-600 border-green-600">
+                                                    {generation.status}
+                                                </Badge>
+                                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    View
+                                                </Button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             </CardContent>
                         </Card>
-                    </TabsContent>
-                </Tabs>
-
-                {/* Generated Posts */}
-                {generatedPosts.length > 0 && <PostsDisplay posts={generatedPosts} />}
-
-                {/* Recent Generations */}
-                <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Clock className="h-5 w-5 text-primary" />
-                                    Recent Generations
-                                </CardTitle>
-                                <CardDescription>Your latest content with performance metrics</CardDescription>
-                            </div>
-                            <Button variant="outline" size="sm" asChild>
-                                <a href="/dashboard/generations">View All</a>
+                    </>
+                ) : (
+                    <Card className="border-dashed">
+                        <CardHeader>
+                            <CardTitle>Get Started</CardTitle>
+                            <CardDescription>
+                                Create your first content to see analytics and performance metrics.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex flex-col items-center justify-center py-8">
+                            <Sparkles className="h-12 w-12 text-muted-foreground mb-4" />
+                            <p className="text-center text-muted-foreground mb-4">
+                                No content generated yet. Start creating amazing content for your social media platforms!
+                            </p>
+                            <Button onClick={() => window.location.href = '/dashboard/generate'}>
+                                Create Your First Post
                             </Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {data?.generations.recentGenerations.map((generation) => (
-                                <div
-                                    key={generation.id}
-                                    className="group flex items-center justify-between p-4 border rounded-xl hover:bg-muted/50 transition-all duration-200 hover:shadow-md"
-                                >
-                                    <div className="space-y-2 flex-1">
-                                        <p className="text-sm font-medium leading-none">{generation.content}</p>
-                                        <div className="flex items-center gap-4">
-                                            <p className="text-xs text-muted-foreground">{generation.createdAt}</p>
-                                            <div className="flex gap-1">
-                                                {generation.platforms.map((platform) => (
-                                                    <Badge key={platform} variant="secondary" className="text-xs">
-                                                        {platform}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                            <div className="flex items-center gap-1">
-                                                <Eye className="h-3 w-3" />
-                                                {generation.engagement.views}
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <Heart className="h-3 w-3" />
-                                                {generation.engagement.likes}
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <Share2 className="h-3 w-3" />
-                                                {generation.engagement.shares}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant="outline" className="text-green-600 border-green-600">
-                                            {generation.status}
-                                        </Badge>
-                                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                            View
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
         </DashboardLayout>
     )

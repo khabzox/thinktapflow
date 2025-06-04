@@ -245,7 +245,7 @@ export default function SettingsPage() {
                                         <Avatar className="h-20 w-20 cursor-pointer" onClick={handleAvatarClick}>
                                             <AvatarImage src={profile?.avatar_url || DEFAULT_AVATAR} />
                                             <AvatarFallback>{profile?.full_name?.charAt(0) || "U"}</AvatarFallback>
-                                        </Avatar>
+                                    </Avatar>
                                         {uploadingAvatar && (
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
                                                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
@@ -319,27 +319,27 @@ export default function SettingsPage() {
 
                     {/* Account Tab */}
                     <TabsContent value="account">
-                        <Card>
-                            <CardHeader>
+                            <Card>
+                                <CardHeader>
                                 <CardTitle>Account Security</CardTitle>
                                 <CardDescription>Manage your account security settings</CardDescription>
-                            </CardHeader>
+                                </CardHeader>
                             <CardContent className="space-y-6">
                                 {/* Password Change Section */}
                                 <div>
                                     <h3 className="text-lg font-medium mb-4">Change Password</h3>
                                     <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="current-password">Current Password</Label>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="current-password">Current Password</Label>
                                             <Input
                                                 id="current-password"
                                                 type="password"
                                                 value={currentPassword}
                                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                             />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="new-password">New Password</Label>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="new-password">New Password</Label>
                                             <Input
                                                 id="new-password"
                                                 type="password"
@@ -349,9 +349,9 @@ export default function SettingsPage() {
                                             <p className="text-sm text-muted-foreground">
                                                 Password must be at least 8 characters long
                                             </p>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="confirm-password">Confirm New Password</Label>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="confirm-password">Confirm New Password</Label>
                                             <Input
                                                 id="confirm-password"
                                                 type="password"
@@ -360,7 +360,7 @@ export default function SettingsPage() {
                                             />
                                         </div>
                                     </div>
-                                </div>
+                                            </div>
 
                                 <Separator />
 
@@ -387,12 +387,12 @@ export default function SettingsPage() {
                                                 Two-factor authentication will be available soon. This feature is currently under development.
                                             </AlertDescription>
                                         </Alert>
-                                        <div className="text-sm text-muted-foreground">
+                                            <div className="text-sm text-muted-foreground">
                                             When enabled, you&apos;ll need to enter a code from your authenticator app in addition to your password when signing in.
                                         </div>
                                     </div>
-                                </div>
-                            </CardContent>
+                                    </div>
+                                </CardContent>
                             <CardFooter className="justify-end space-x-2">
                                 <Button 
                                     onClick={handleSavePassword} 
@@ -408,7 +408,7 @@ export default function SettingsPage() {
                                     )}
                                 </Button>
                             </CardFooter>
-                        </Card>
+                            </Card>
                     </TabsContent>
 
                     {/* Notifications Tab */}
