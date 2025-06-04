@@ -2,6 +2,9 @@ import { BasePostGenerator } from './generators/base-post-generator';
 import { TwitterGenerator } from './generators/twitter-generator';
 import { LinkedInGenerator } from './generators/linkedin-generator';
 import { InstagramGenerator } from './generators/instagram-generator';
+import { FacebookGenerator } from './generators/facebook-generator';
+import { YouTubeGenerator } from './generators/youtube-generator';
+import { TikTokGenerator } from './generators/tiktok-generator';
 import { BaseAIProvider } from '../ai/core/base-ai-provider';
 import { SupportedPlatforms, GeneratedPosts, AIGenerationOptions } from '@/types/ai';
 
@@ -20,6 +23,18 @@ export class SocialService {
     this.registerGenerator(
       'instagram',
       new InstagramGenerator('instagram')
+    );
+    this.registerGenerator(
+      'facebook',
+      new FacebookGenerator('facebook')
+    );
+    this.registerGenerator(
+      'youtube',
+      new YouTubeGenerator('youtube')
+    );
+    this.registerGenerator(
+      'tiktok',
+      new TikTokGenerator('tiktok')
     );
   }
 

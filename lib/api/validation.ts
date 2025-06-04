@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { SupportedPlatforms } from '@/types/ai';
 
-const supportedPlatforms = ['twitter', 'linkedin', 'instagram'] as const;
+const supportedPlatforms = ['twitter', 'linkedin', 'instagram', 'facebook', 'youtube', 'tiktok'] as const;
 
 export const generatePostsSchema = z.object({
   content: z.string().min(1).max(10000),

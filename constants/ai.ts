@@ -33,5 +33,26 @@ export const PLATFORM_CONSTRAINTS: Record<SupportedPlatforms, PlatformConstraint
     hashtagCount: 15,
     tone: 'engaging',
     format: 'text'
+  },
+  facebook: {
+    maxLength: 63206,
+    maxPosts: 2,
+    hashtagCount: 5,
+    tone: 'casual',
+    format: 'text'
+  },
+  youtube: {
+    maxLength: 5000,
+    maxPosts: 1,
+    hashtagCount: 15,
+    tone: 'engaging',
+    format: 'video-description'
+  },
+  tiktok: {
+    maxLength: 2200,
+    maxPosts: 2,
+    hashtagCount: 10,
+    tone: 'trendy',
+    format: 'video-caption'
   }
 } as const;

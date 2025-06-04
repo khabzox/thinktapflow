@@ -1,69 +1,80 @@
 import { BasePostGenerator } from './base-post-generator';
-import { AIGenerationOptions, SupportedPlatforms, PlatformPost } from '@/types/ai';
-import { PLATFORM_CONSTRAINTS } from '@/constants/ai';
+import { AIGenerationOptions, PlatformPost, AIServiceError, SupportedPlatforms } from '@/types/ai';
 
 export class YouTubeGenerator extends BasePostGenerator {
-    constructor() {
-        super(SupportedPlatforms.YouTube);
+    constructor(platform: SupportedPlatforms) {
+        super(platform);
     }
 
-    generatePrompt(content: string, options?: AIGenerationOptions): string {
-        const constraints = PLATFORM_CONSTRAINTS[SupportedPlatforms.YouTube];
+    generatePrompt(content: string, options: AIGenerationOptions = {}): string {
+        return `Create engaging YouTube video content from this:
 
-        return `
-Generate engaging YouTube video content based on the following content.
-
-Original Content:
-${content.slice(0, 2000)}
+${content}
 
 Requirements:
 - Create a compelling title (max 100 characters)
-- Write an engaging description (max ${constraints.maxLength} characters)
-- Include up to ${constraints.hashtagCount} relevant hashtags
-- Add 3-5 key timestamps/chapters for the video
-- Maintain an ${constraints.tone} tone
-- Optimize for YouTube SEO
+- Write an SEO-friendly description
+- Include relevant hashtags (max 15)
+- Add timestamps/chapters
+- Include call-to-action
+${options.includeEmojis ? '- Include relevant emojis' : ''}
+${options.targetAudience ? `- Target audience: ${options.targetAudience}` : ''}
 
-${options?.customInstructions ? `Additional Instructions:\n${options.customInstructions}` : ''}
-
-Response Format:
-{
-  "title": "Engaging Video Title",
-  "description": "Main description with proper formatting and line breaks",
-  "tags": ["tag1", "tag2", "tag3"],
-  "timestamps": [
-    { "time": "0:00", "description": "Introduction" },
-    { "time": "2:30", "description": "Main Topic" }
-  ]
-}
-`;
+Return ONLY a JSON array of objects with this exact format:
+[
+  {
+    "title": "Your attention-grabbing video title here",
+    "description": "Main description with proper formatting\\n\\nKey Points:\\n- Point 1\\n- Point 2\\n\\nTimestamps:\\n0:00 - Intro\\n1:30 - Main Topic\\n\\nLinks and CTA:\\n▶ Subscribe for more!\\n▶ Follow us on social media",
+    "hashtags": ["hashtag1", "hashtag2", "...up to 15 hashtags"],
+    "mentions": ["@channel1", "@creator2"],
+    "characterCount": 123,
+    "timestamps": [
+      { "time": "0:00", "label": "Introduction" },
+      { "time": "1:30", "label": "Main Topic" }
+    ]
+  }
+]`;
     }
 
     processResponse(response: string): PlatformPost[] {
         try {
-            const parsed = JSON.parse(response);
-            return [{
-                content: this.formatDescription(parsed.description, parsed.timestamps),
-                hashtags: parsed.tags || [],
-                mentions: [],
-                characterCount: parsed.description.length
-            }];
-        } catch (error) {
-            console.error('Failed to parse YouTube response:', error);
-            return [];
+            const posts = JSON.parse(response) as any[];
+            return posts
+                .map((post) => {
+                    const formattedContent = this.formatVideoContent(
+                        post.title,
+                        post.description,
+                        post.timestamps || []
+                    );
+                    return {
+                        content: formattedContent,
+                        hashtags: (post.hashtags || []).slice(0, 15),
+                        mentions: post.mentions || [],
+                        characterCount: formattedContent.length || 0,
+                        title: post.title,
+                        timestamps: post.timestamps || []
+                    };
+                })
+                .filter((post) => this.validatePost(post));
+        } catch {
+            throw new AIServiceError('Failed to parse YouTube response', 'PARSE_ERROR');
         }
     }
 
-    validatePost(post: PlatformPost): boolean {
-        return post.content.length <= this.constraints.maxLength &&
-            post.hashtags.length <= this.constraints.hashtagCount;
-    }
-
-    private formatDescription(description: string, timestamps: { time: string; description: string }[]): string {
-        const timestampSection = timestamps?.length
-            ? '\n\n📋 Chapters:\n' + timestamps.map(t => `${t.time} - ${t.description}`).join('\n')
+    private formatVideoContent(title: string, description: string, timestamps: Array<{ time: string; label: string }> = []): string {
+        const timestampSection = timestamps.length > 0
+            ? '\n\n⏰ Timestamps:\n' + timestamps.map(t => `${t.time} - ${t.label}`).join('\n')
             : '';
 
-        return `${description.trim()}${timestampSection}\n\n#ThinkTapFlow`;
+        return `📺 ${title}\n\n${description}${timestampSection}`;
+    }
+
+    validatePost(post: PlatformPost & { title?: string }): boolean {
+        return (
+            post.content.length > 0 &&
+            post.content.length <= 5000 &&
+            post.hashtags.length <= 15 &&
+            (!post.title || post.title.length <= 100)
+        );
     }
 } 

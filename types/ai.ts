@@ -79,7 +79,7 @@ export interface GenerationMetrics {
   error?: string;
 }
 
-export type SupportedPlatforms = 'twitter' | 'linkedin' | 'instagram';
+export type SupportedPlatforms = 'twitter' | 'linkedin' | 'instagram' | 'facebook' | 'youtube' | 'tiktok';
 
 export interface PlatformConstraints {
   maxLength: number;
