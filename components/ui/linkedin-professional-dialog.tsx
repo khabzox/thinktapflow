@@ -4,7 +4,6 @@ import {
     DialogDescription,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -12,14 +11,11 @@ import { Switch } from "@/components/ui/switch"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { 
     Briefcase, 
-    Clock, 
     FileText, 
     Building2, 
     BarChart2,
-    Image as ImageIcon,
     CalendarClock
 } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useState } from "react"
 
 interface LinkedInProfessionalDialogProps {

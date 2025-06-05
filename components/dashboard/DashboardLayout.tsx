@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { FileText, Home, Settings, Zap, Sparkles, TrendingUp, Archive, Users, Shield, CreditCard, MessagesSquare } from "lucide-react"
+import { FileText, Home, Settings, Sparkles, TrendingUp, Archive, Users, Shield, CreditCard, MessagesSquare } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
     Sidebar,

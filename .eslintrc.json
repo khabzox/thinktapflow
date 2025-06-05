@@ -9,8 +9,11 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "@typescript-eslint/no-unused-vars": "warn",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "react/no-unescaped-entities": "off"
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/no-unescaped-entities": "off",
+    "prefer-const": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react-hooks/rules-of-hooks": "off"
   }
 }

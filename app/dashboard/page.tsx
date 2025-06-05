@@ -2,16 +2,8 @@
 
 import { useState } from "react"
 import {
-    TrendingUp,
     Clock,
-    Target,
     Sparkles,
-    Globe,
-    ArrowUp,
-    Eye,
-    Heart,
-    Share2,
-    Activity,
     BarChart3,
     Zap,
     Plus,
@@ -22,10 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { GenerationForm } from "@/components/dashboard/GenerationForm"
 import { PostsDisplay } from "@/components/dashboard/PostsDisplay"
-import { UsageChart } from "@/components/dashboard/UsageChart"
 import { XAxis, YAxis, CartesianGrid, ResponsiveContainer, AreaChart, Area } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
@@ -59,7 +48,6 @@ export default function UserDashboardPage() {
         hashtags: string[];
         createdAt: string;
     }>>([])
-    const [selectedTab, setSelectedTab] = useState("overview")
 
     const handleGeneration = (posts: Array<{
         id: string;

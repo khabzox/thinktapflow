@@ -23,8 +23,6 @@ import {
     Linkedin,
     Facebook,
     Instagram,
-    TwitterIcon as TikTok,
-    Youtube,
     Calendar,
     AlertCircle
 } from "lucide-react"

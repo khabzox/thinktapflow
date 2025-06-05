@@ -4,7 +4,6 @@ import {
     DialogDescription,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -14,11 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { 
     Calendar,
     Bell,
-    Users,
     CheckSquare,
     Globe,
-    Clock,
-    BarChart2,
     AlertCircle
 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"

@@ -9,7 +9,7 @@ import { Testimonials } from '@/components/LandingPage/Testimonials';
 
 export default function Home() {
   return (
-    <div>
+    <>
       <Header />
       <Hero />
       <LogoTicker />
@@ -18,6 +18,6 @@ export default function Home() {
       <Testimonials />
       <CallToAction />
       <Footer />
-    </div>
+    </>
   );
 }

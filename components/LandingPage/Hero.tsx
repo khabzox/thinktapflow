@@ -1,10 +1,8 @@
 'use client';
-import ArrowIcon from '/public/assets/arrow-right.svg';
 import cogImage from '/public/assets/cog.png';
 import cylinderImage from '/public/assets/cylinder.png';
 import noodleImage from '/public/assets/noodle.png';
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
-import Image from 'next/image';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 
 export const Hero = () => {

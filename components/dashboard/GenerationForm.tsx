@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Link, Type, Sparkles } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import { AIService } from "@/lib/ai"
 
 const platforms = [
     { id: "twitter", name: "Twitter", icon: "🐦", limit: 280 },

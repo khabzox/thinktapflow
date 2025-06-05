@@ -34,14 +34,6 @@ interface OnlineUser {
     last_seen: string
 }
 
-interface DbMessage {
-    id: string
-    user_id: string
-    content: string
-    created_at: string
-    profiles: Profile | null
-}
-
 export default function CommunityPage() {
     const [messages, setMessages] = useState<Message[]>([])
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])

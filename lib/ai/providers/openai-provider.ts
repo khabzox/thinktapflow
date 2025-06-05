@@ -13,7 +13,7 @@ export class OpenAIProvider extends BaseAIProvider {
   async generateCompletion(prompt: string, options: AIGenerationOptions = {}): Promise<string> {
     const completion = await this.client.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: this.config.model,
+      model: this.config.model || 'gpt-3.5-turbo',
       temperature: options.temperature ?? 0.7,
       max_tokens: options.maxOutputTokens ?? 2048,
       top_p: options.topP ?? 0.8,
@@ -36,7 +36,7 @@ export class OpenAIProvider extends BaseAIProvider {
 
   getModelInfo(): ModelInfo {
     return {
-      name: this.config.model,
+      name: this.config.model || 'gpt-3.5-turbo',
       provider: 'openai',
       maxTokens: 4096,
       contextWindow: 16384,

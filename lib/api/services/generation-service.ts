@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { GenerationError } from '../errors';
 import { SubscriptionTier } from '@/types/subscription';
 import { GeneratedPosts, SupportedPlatforms } from '@/types/ai';
-import { Database } from '@/types/supabase';
+// import { Database } from '@/types/supabase';
 
 export class GenerationService {
   private supabase;

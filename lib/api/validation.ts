@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { SupportedPlatforms } from '@/types/ai';
+// import type { SupportedPlatforms } from '@/types/ai';
 
 const supportedPlatforms = ['twitter', 'linkedin', 'instagram', 'facebook', 'youtube', 'tiktok'] as const;
 

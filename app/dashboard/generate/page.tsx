@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
@@ -19,7 +18,6 @@ import {
     Mic,
     Settings,
     Copy,
-    Download,
     RefreshCw,
     Zap,
     Target,

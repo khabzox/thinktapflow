@@ -4,17 +4,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Download, Loader2, FileText, MoreVertical } from "lucide-react"
 import { Generation } from "@/hooks/use-generations"
 import { useState, useRef } from "react"
 import { toast } from "sonner"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 
 interface PostContentDialogProps {
     isOpen: boolean
