@@ -10,6 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Link, Type, Sparkles } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "sonner"
+import { AIService } from "@/lib/ai"
 
 const platforms = [
     { id: "twitter", name: "Twitter", icon: "🐦", limit: 280 },
@@ -66,6 +68,34 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
         setUrl("")
     }
 
+    const handleUrlExtraction = async (url: string) => {
+        try {
+            setIsGenerating(true);
+            
+            const response = await fetch('/api/extract-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'Failed to extract content');
+            }
+
+            setContent(data.data.content);
+            toast.success('Successfully extracted content from URL');
+            setInputType('text'); // Switch to text input to show extracted content
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to extract content');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     const characterCount = content.length
     const isValid = (content || url) && selectedPlatforms.length > 0
 
@@ -115,14 +145,32 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
                     <TabsContent value="url" className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="url">Website URL</Label>
-                            <Input
-                                id="url"
-                                type="url"
-                                placeholder="https://example.com/article"
-                                value={url}
-                                onChange={(e) => setUrl(e.target.value)}
-                            />
-                            <p className="text-sm text-muted-foreground">We'll extract content from this URL to generate posts</p>
+                            <div className="flex gap-2">
+                                <Input
+                                    id="url"
+                                    type="url"
+                                    placeholder="https://example.com/article"
+                                    value={url}
+                                    onChange={(e) => setUrl(e.target.value)}
+                                />
+                                <Button 
+                                    onClick={() => handleUrlExtraction(url)}
+                                    disabled={!url || isGenerating}
+                                    variant="secondary"
+                                >
+                                    {isGenerating ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Extracting...
+                                        </>
+                                    ) : (
+                                        'Extract'
+                                    )}
+                                </Button>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                We'll extract content from this URL to generate posts
+                            </p>
                         </div>
                     </TabsContent>
                 </Tabs>

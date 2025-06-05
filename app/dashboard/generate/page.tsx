@@ -24,16 +24,21 @@ import {
     Zap,
     Target,
     Palette,
+    Link,
+    Type,
+    Loader2,
 } from "lucide-react"
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
 import { toast } from "sonner"
 import { useGenerate } from "@/hooks/use-generate"
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const contentTypes = [
-    { id: "text", name: "Text Post", icon: FileText, description: "Social media posts, captions, and copy" },
-    { id: "image", name: "Image Content", icon: ImageIcon, description: "Visual content with AI-generated images" },
-    { id: "video", name: "Video Script", icon: Video, description: "Video scripts and storyboards" },
-    { id: "audio", name: "Audio Content", icon: Mic, description: "Podcast scripts and voice content" },
+    { id: "text", name: "Text & URL", icon: FileText, description: "Generate from text or website URL" },
+    { id: "image", name: "Image Content", icon: ImageIcon, description: "Visual content with AI-generated images", comingSoon: true },
+    { id: "video", name: "Video Script", icon: Video, description: "Video scripts and storyboards", comingSoon: true },
+    { id: "audio", name: "Audio Content", icon: Mic, description: "Podcast scripts and voice content", comingSoon: true },
 ]
 
 const toneOptions = [
@@ -83,6 +88,8 @@ export default function GeneratePage() {
     const [contentVariations, setContentVariations] = useState<string[]>([])
     const [platformContent, setPlatformContent] = useState<Record<string, ContentItem[]>>({})
     const [currentVariationIndexes, setCurrentVariationIndexes] = useState<Record<string, number>>({})
+    const [inputType, setInputType] = useState<"text" | "url">("text")
+    const [url, setUrl] = useState("")
 
     const handleGenerate = async () => {
         if (!prompt.trim()) {
@@ -171,6 +178,30 @@ export default function GeneratePage() {
         setGeneratedContent(contentVariations[index]);
     };
 
+    const handleUrlExtraction = async (url: string) => {
+        try {
+            const response = await fetch('/api/extract-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'Failed to extract content');
+            }
+
+            setPrompt(data.data.content);
+            toast.success('Successfully extracted content from URL');
+            setInputType('text'); // Switch to text input to show extracted content
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to extract content');
+        }
+    };
+
     return (
         <DashboardLayout>
             <div className="space-y-6">
@@ -197,9 +228,10 @@ export default function GeneratePage() {
                                     {contentTypes.map((type) => (
                                         <div
                                             key={type.id}
-                                            className={`cursor-pointer rounded-lg border p-4 transition-all hover:shadow-md ${selectedType === type.id ? "border-primary bg-primary/5" : "hover:border-primary/50"
-                                                }`}
-                                            onClick={() => setSelectedType(type.id)}
+                                            className={`relative rounded-lg border p-4 transition-all hover:shadow-md ${
+                                                selectedType === type.id ? "border-primary bg-primary/5" : type.comingSoon ? "opacity-50" : "hover:border-primary/50"
+                                            }`}
+                                            onClick={() => !type.comingSoon && setSelectedType(type.id)}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <type.icon className="h-5 w-5" />
@@ -208,36 +240,135 @@ export default function GeneratePage() {
                                                     <p className="text-xs text-muted-foreground">{type.description}</p>
                                                 </div>
                                             </div>
+                                            {type.comingSoon && (
+                                                <Badge className="absolute top-2 right-2" variant="secondary">
+                                                    Coming Soon
+                                                </Badge>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Prompt Input */}
+                        {/* Content Input */}
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Sparkles className="h-5 w-5" />
-                                    Content Prompt
+                                    Content Input
                                 </CardTitle>
-                                <CardDescription>Describe what you want to create</CardDescription>
+                                <CardDescription>Enter your content or provide a URL</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="prompt">Your Prompt</Label>
-                                    <Textarea
-                                        id="prompt"
-                                        placeholder="e.g., Create a social media post about our new AI-powered content generation tool that helps marketers save time..."
-                                        value={prompt}
-                                        onChange={(e) => setPrompt(e.target.value)}
-                                        className="min-h-[120px] resize-none"
-                                    />
-                                    <div className="flex justify-between text-sm text-muted-foreground">
-                                        <span>Characters: {prompt.length}</span>
-                                        <span>Be specific for better results</span>
-                                    </div>
-                                </div>
+                                <Tabs value={inputType} onValueChange={(value) => setInputType(value as "text" | "url")}>
+                                    <TabsList className="grid w-full grid-cols-2">
+                                        <TabsTrigger value="text" className="flex items-center gap-2">
+                                            <Type className="h-4 w-4" />
+                                            Text Input
+                                        </TabsTrigger>
+                                        <TabsTrigger value="url" className="flex items-center gap-2">
+                                            <Link className="h-4 w-4" />
+                                            URL Input
+                                        </TabsTrigger>
+                                    </TabsList>
+
+                                    <TabsContent value="text" className="space-y-4">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <Label htmlFor="prompt">Your Content</Label>
+                                                {inputType === "text" && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-auto p-0 text-muted-foreground hover:text-primary"
+                                                        onClick={() => setInputType("url")}
+                                                    >
+                                                        <Link className="h-4 w-4 mr-1" />
+                                                        Switch to URL input
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <Textarea
+                                                id="prompt"
+                                                placeholder="e.g., Create a social media post about our new AI-powered content generation tool that helps marketers save time..."
+                                                value={prompt}
+                                                onChange={(e) => setPrompt(e.target.value)}
+                                                className="min-h-[120px] resize-none"
+                                            />
+                                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                                                <span>Characters: {prompt.length}</span>
+                                                <Badge variant={prompt.length > 5000 ? "destructive" : "secondary"}>
+                                                    {prompt.length > 5000 ? "Too long" : "Good length"}
+                                                </Badge>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">
+                                                Write your content directly or paste it here. You can also extract content from a URL using the URL input tab.
+                                            </p>
+                                        </div>
+                                    </TabsContent>
+
+                                    <TabsContent value="url" className="space-y-4">
+                                        <div className="space-y-4">
+                                            {/* Info Card */}
+                                            <Card className="bg-muted/50 border-dashed">
+                                                <CardContent className="pt-4">
+                                                    <div className="flex items-start gap-4">
+                                                        <div className="p-2 bg-primary/10 rounded-lg">
+                                                            <Link className="h-5 w-5 text-primary" />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <h4 className="text-sm font-medium">URL Content Extraction</h4>
+                                                            <p className="text-sm text-muted-foreground">
+                                                                Enter a website URL to automatically extract its content. Works best with:
+                                                            </p>
+                                                            <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                                                                <li>Blog posts and articles</li>
+                                                                <li>News websites</li>
+                                                                <li>Product descriptions</li>
+                                                                <li>Company pages</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="url">Website URL</Label>
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        id="url"
+                                                        type="url"
+                                                        placeholder="https://example.com/article"
+                                                        value={url}
+                                                        onChange={(e) => setUrl(e.target.value)}
+                                                    />
+                                                    <Button 
+                                                        onClick={() => handleUrlExtraction(url)}
+                                                        disabled={!url || isGenerating}
+                                                        variant="secondary"
+                                                    >
+                                                        {isGenerating ? (
+                                                            <>
+                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                Extracting...
+                                                            </>
+                                                        ) : (
+                                                            'Extract'
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                                <div className="flex items-start gap-2 mt-2 text-sm text-muted-foreground">
+                                                    <div className="p-1">ℹ️</div>
+                                                    <p>
+                                                        After extraction, you can review and edit the content before generating posts. 
+                                                        The extracted content will appear in the text input tab.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </TabsContent>
+                                </Tabs>
                             </CardContent>
                         </Card>
 
@@ -303,18 +434,10 @@ export default function GeneratePage() {
                                 {/* Tone */}
                                 <div className="space-y-2">
                                     <Label>Tone of Voice</Label>
-                                    <Select value={tone} onValueChange={setTone}>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {toneOptions.map((option) => (
-                                                <SelectItem key={option} value={option}>
-                                                    {option}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="outline">Professional</Badge>
+                                        <span className="text-xs text-muted-foreground">(Fixed)</span>
+                                    </div>
                                 </div>
 
                                 {/* Creativity */}

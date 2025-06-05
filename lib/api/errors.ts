@@ -7,7 +7,10 @@ export type ErrorCode =
   | 'WEBHOOK_INVALID'
   | 'SUBSCRIPTION_ERROR'
   | 'USER_NOT_FOUND'
-  | 'SAVE_FAILED';
+  | 'SAVE_FAILED'
+  | 'EXTRACTION_FAILED'
+  | 'INVALID_URL'
+  | 'UNKNOWN_ERROR';
 
 export class GenerationError extends Error {
   constructor(
@@ -31,33 +34,27 @@ export class WebhookError extends Error {
   }
 }
 
-export const handleApiError = (error: unknown) => {
-  if (error instanceof GenerationError || error instanceof WebhookError) {
-    return new Response(
-      JSON.stringify({
-        error: {
-          message: error.message,
-          code: error.code
-        }
-      }),
-      {
-        status: error.statusCode,
-        headers: { 'Content-Type': 'application/json' }
+export function handleApiError(error: unknown) {
+  if (error instanceof GenerationError) {
+    return Response.json({
+      success: false,
+      error: {
+        message: error.message,
+        code: error.code
       }
-    );
+    }, {
+      status: error.statusCode
+    });
   }
 
   console.error('Unhandled API error:', error);
-  return new Response(
-    JSON.stringify({
-      error: {
-        message: 'Internal server error',
-        code: 'INTERNAL_ERROR'
-      }
-    }),
-    {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
+  return Response.json({
+    success: false,
+    error: {
+      message: 'An unexpected error occurred',
+      code: 'UNKNOWN_ERROR'
     }
-  );
-}; 
+  }, {
+    status: 500
+  });
+} 

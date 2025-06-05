@@ -129,9 +129,6 @@ export default function UserDashboardPage() {
                         <p className="text-lg text-secondary-foreground">
                             Ready to create amazing content? Let's see what you've accomplished.
                         </p>
-                        <Badge variant="secondary" className="text-sm">
-                            You use Free
-                        </Badge>
                     </div>
                 </div>
 
@@ -325,7 +322,7 @@ export default function UserDashboardPage() {
                                     {data?.generations?.recentGenerations?.map((generation) => (
                                         <div
                                             key={generation.id}
-                                            className="group flex items-center justify-between p-4 border rounded-xl hover:bg-muted/50 transition-all duration-200 hover:shadow-md"
+                                            className="flex items-center justify-between p-4 border rounded-xl hover:bg-muted/50 transition-all duration-200 hover:shadow-md"
                                         >
                                             <div className="space-y-2 flex-1">
                                                 <p className="text-sm font-medium leading-none">{generation.content}</p>
@@ -342,11 +339,8 @@ export default function UserDashboardPage() {
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <Badge variant="outline" className="text-green-600 border-green-600">
-                                                    {generation.status}
+                                                    Completed
                                                 </Badge>
-                                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    View
-                                                </Button>
                                             </div>
                                         </div>
                                     ))}
