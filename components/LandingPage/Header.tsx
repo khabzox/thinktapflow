@@ -2,6 +2,7 @@ import ArrowRight from '/public/assets/arrow-right.svg';
 import Logo from '/public/logo/logosaas-dark.png';
 import Image from 'next/image';
 import MenuIcon from '/public/assets/menu.svg';
+import Link from 'next/link';
 
 export const Header = () => {
   return (
@@ -10,10 +11,10 @@ export const Header = () => {
         <p className="text-white/60 hidden md:block">
           Generate high-quality content 10x faster with AI-powered writing
         </p>
-        <div className="inline-flex gap-1 items-center">
+        <Link href={"/dashboard"} className="inline-flex gap-1 items-center">
           <p>Start creating free</p>
           <ArrowRight className="h-4 w-4 inline-flex justify-center items-center" />
-        </div>
+        </Link>
       </div>
 
       <div className="py-5">

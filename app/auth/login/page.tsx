@@ -5,6 +5,9 @@ import Image from "next/image"
 import { LoginForm } from "@/components/auth/LoginForm"
 import { useSearchParams } from "next/navigation"
 
+import coverImage from '/public/assets/dark-auth-page.jpg';
+
+
 // Separate component that uses useSearchParams
 function LoginContent() {
   const searchParams = useSearchParams()
@@ -42,22 +45,12 @@ function LoginContent() {
       {/* Image Section */}
       <div className="hidden bg-muted lg:block relative">
         <Image
-          src="/placeholder.svg?height=1080&width=1920"
+          src={coverImage}
           alt="Login cover image"
           fill
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute bottom-8 left-8 text-white">
-          <blockquote className="space-y-2">
-            <p className="text-lg font-medium">
-              "This application has transformed how we manage our workflow. The interface is intuitive and the features
-              are exactly what we needed."
-            </p>
-            <footer className="text-sm opacity-80">— Sarah Johnson, Product Manager</footer>
-          </blockquote>
-        </div>
       </div>
     </div>
   )

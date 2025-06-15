@@ -3,6 +3,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { SignupForm } from "@/components/auth/SignupForm"
 
+import coverImage from '/public/assets/dark-auth-page.jpg';
+
 export default function SignupPage() {
   return (
     <div className="w-full bg-background lg:grid lg:min-h-screen lg:grid-cols-2">
@@ -36,22 +38,12 @@ export default function SignupPage() {
       {/* Image Section */}
       <div className="hidden bg-muted lg:block relative">
         <Image
-          src="/placeholder.svg?height=1080&width=1920"
+          src={coverImage}
           alt="Signup cover image"
           fill
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute bottom-8 left-8 text-white">
-          <blockquote className="space-y-2">
-            <p className="text-lg font-medium">
-              "Getting started was incredibly easy. The onboarding process is smooth and the platform is intuitive to
-              use."
-            </p>
-            <footer className="text-sm opacity-80">— Michael Chen, Software Engineer</footer>
-          </blockquote>
-        </div>
       </div>
     </div>
   )

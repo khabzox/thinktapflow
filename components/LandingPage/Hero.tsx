@@ -4,6 +4,8 @@ import cylinderImage from '/public/assets/cylinder.png';
 import noodleImage from '/public/assets/noodle.png';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export const Hero = () => {
   const heroRef = useRef(null);
@@ -13,6 +15,8 @@ export const Hero = () => {
   });
 
   const translateY = useTransform(scrollYProgress, [0, 1], [150, -150]);
+
+  const router = useRouter();
 
   return (
     <section
@@ -37,8 +41,10 @@ export const Hero = () => {
               transformation.
             </p>
             <div className="flex gap-1 items-center mt-[30px]">
-              <button className="btn btn-primary">Start Creating</button>
-              <button className="btn btn-text flex gap-1">
+              <button className="btn btn-primary" onClick={() => router.push('/dashboard')}>
+                Start Creating
+              </button>
+              <button className="btn btn-text flex gap-1" onClick={() => router.push('/hi')}>
                 <span>Watch Demo</span>
                 {/* <ArrowIcon classname="h-2 w-2" /> */}
               </button>
