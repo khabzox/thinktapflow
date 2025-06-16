@@ -1,4 +1,4 @@
-    import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { UserPlus, Settings } from 'lucide-react'
@@ -6,10 +6,10 @@ import { UserProfile } from '@/types/community'
 import { ProfileCompletionModal } from './ProfileCompletionModal'
 
 interface ProfileIncompleteScreenProps {
-    userProfile: UserProfile | null
+    userProfile: UserProfile
     showProfileModal: boolean
     setShowProfileModal: (show: boolean) => void
-    onCompleteProfile: () => void
+    onCompleteProfile: () => Promise<void>
     onRedirectToSettings: () => void
 }
 
