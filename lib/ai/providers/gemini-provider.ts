@@ -1,3 +1,6 @@
+// TODO: Implement Gemini provider 
+// under development
+
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { BaseAIProvider } from '../core/base-ai-provider';
 import type { AIServiceConfig, AIGenerationOptions, GeneratedPosts, ModelInfo } from '@/types/ai';

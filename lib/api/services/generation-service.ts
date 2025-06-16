@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { GenerationError } from '../errors';
 import { SubscriptionTier } from '@/types/subscription';
 import { GeneratedPosts, SupportedPlatforms } from '@/types/ai';
+import { getGenerationLimitConfig } from '@/constants/ai/api/services';
 // import { Database } from '@/types/supabase';
 
 export class GenerationService {
@@ -22,10 +23,10 @@ export class GenerationService {
   ): Promise<GeneratedPosts> {
     try {
       // Check subscription and usage limits
-      const { remaining, allowed } = await this.checkUsageLimits(userId);
+      const { remaining } = await this.checkUsageLimits(userId);
       if (remaining <= 0) {
         throw new GenerationError(
-          'Monthly generation limit reached',
+          `Monthly generation limit reached. You have ${remaining} generations left.`,
           'LIMIT_REACHED',
           429
         );
@@ -90,7 +91,7 @@ export class GenerationService {
 
   private async updateUsage(userId: string) {
     const monthYear = this.getCurrentMonthYear();
-    
+
     const { error } = await this.supabase.rpc('increment_monthly_usage', {
       p_user_id: userId,
       p_month_year: monthYear
@@ -105,12 +106,6 @@ export class GenerationService {
   }
 
   private getGenerationLimit(tier: SubscriptionTier): number {
-    const limits: Record<SubscriptionTier, number> = {
-      free: 5,
-      starter: 50,
-      pro: 200,
-      plus: 1000
-    };
-    return limits[tier] || limits.free;
+    return getGenerationLimitConfig(tier);
   }
 } 

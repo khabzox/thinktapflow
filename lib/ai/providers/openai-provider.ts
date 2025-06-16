@@ -1,3 +1,6 @@
+// TODO: Implement OpenAI provider
+// under development
+
 import OpenAI from 'openai';
 import { BaseAIProvider } from '../core/base-ai-provider';
 import { AIGenerationOptions, ModelInfo, AIServiceError, AIServiceConfig } from '@/types/ai';
