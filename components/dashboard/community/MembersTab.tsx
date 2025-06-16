@@ -9,6 +9,13 @@ interface MembersTabProps {
     onlineUsers: OnlineUser[]
 }
 
+/**
+ * Displays a card listing online community members with avatars, usernames, and last active times.
+ *
+ * Shows a message if no members are currently online. Each online member is presented with their avatar, full name, username, and a formatted indication of when they were last active.
+ *
+ * @param onlineUsers - Array of currently online users to display.
+ */
 export function MembersTab({ onlineUsers }: MembersTabProps) {
     return (
         <Card>

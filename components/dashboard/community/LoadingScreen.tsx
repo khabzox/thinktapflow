@@ -1,5 +1,10 @@
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 
+/**
+ * Displays a centered loading indicator within the dashboard layout.
+ *
+ * Renders a spinning animation and a message indicating that the community content is loading.
+ */
 export function LoadingScreen() {
     return (
         <DashboardLayout>

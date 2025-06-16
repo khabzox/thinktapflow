@@ -61,6 +61,13 @@ interface ContentType {
     icon: React.ComponentType<{ className?: string }>
 }
 
+/**
+ * Renders the content library page with filtering, sorting, and view mode options.
+ *
+ * Displays a collection of content items with support for searching, filtering by category and type, sorting, and toggling between grid and list views. Users can select items for batch actions and view summary statistics.
+ *
+ * @returns The content library page component.
+ */
 export default function LibraryPage() {
     const [searchTerm, setSearchTerm] = useState<string>("")
     const [selectedCategory, setSelectedCategory] = useState<string>("all")

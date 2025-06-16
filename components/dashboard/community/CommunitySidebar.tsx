@@ -7,6 +7,14 @@ interface CommunitySidebarProps {
     onlineUsersCount: number
 }
 
+/**
+ * Renders a sidebar displaying community guidelines and quick statistics for a messaging community.
+ *
+ * Shows a list of community rules and a summary of today's message count, active users, and total messages.
+ *
+ * @param messages - Array of message objects to calculate statistics and display totals.
+ * @param onlineUsersCount - Number of currently active users to display in the stats section.
+ */
 export function CommunitySidebar({ messages, onlineUsersCount }: CommunitySidebarProps) {
     const todayMessages = messages.filter(m =>
         new Date(m.created_at).toDateString() === new Date().toDateString()

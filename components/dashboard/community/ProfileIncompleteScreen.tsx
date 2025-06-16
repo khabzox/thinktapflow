@@ -1,4 +1,4 @@
-    import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { UserPlus, Settings } from 'lucide-react'
@@ -13,6 +13,17 @@ interface ProfileIncompleteScreenProps {
     onRedirectToSettings: () => void
 }
 
+/**
+ * Displays a screen prompting the user to complete their profile before joining the community chat.
+ *
+ * Renders a card listing missing profile fields and provides options to open a profile completion modal or redirect to settings.
+ *
+ * @param userProfile - The current user's profile, or null if not available.
+ * @param showProfileModal - Whether the profile completion modal is visible.
+ * @param setShowProfileModal - Callback to toggle the profile completion modal.
+ * @param onCompleteProfile - Callback invoked after the profile is completed.
+ * @param onRedirectToSettings - Callback to redirect the user to the settings page.
+ */
 export function ProfileIncompleteScreen({
     userProfile,
     showProfileModal,

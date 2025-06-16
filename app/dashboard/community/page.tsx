@@ -5,6 +5,11 @@ import { LoadingScreen } from '@/components/dashboard/community/LoadingScreen'
 import { ProfileIncompleteScreen } from '@/components/dashboard/community/ProfileIncompleteScreen'
 import { CommunityMain } from '@/components/dashboard/community/CommunityMain'
 
+/**
+ * Renders the community chat page, displaying either a loading screen, a profile completion prompt, or the main community interface based on user profile and loading state.
+ *
+ * @returns The appropriate React component for the current community page state.
+ */
 export default function CommunityPage() {
     const {
         // State

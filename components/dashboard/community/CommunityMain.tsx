@@ -19,6 +19,22 @@ interface CommunityMainProps {
     onDeleteMessage: (messageId: string) => void
 }
 
+/**
+ * Renders the main community interface with chat and members tabs, displaying messages, online users, and a sidebar.
+ *
+ * @param messages - Array of chat messages to display in the chat tab and sidebar.
+ * @param onlineUsers - List of users currently online, shown in the members tab and header.
+ * @param messagesLoading - Indicates if messages are currently being loaded.
+ * @param newMessage - The current value of the message input field.
+ * @param setNewMessage - Handler to update the message input value.
+ * @param onSendMessage - Handler to send a new message.
+ * @param sending - Indicates if a message is currently being sent.
+ * @param currentUserId - The ID of the current user, used for message actions.
+ * @param onEditMessage - Handler to edit an existing message.
+ * @param onDeleteMessage - Handler to delete a message.
+ *
+ * @returns The community dashboard layout with chat, members, and sidebar components.
+ */
 export function CommunityMain({
     messages,
     onlineUsers,
