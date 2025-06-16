@@ -19,7 +19,7 @@ export default function CommunityPage() {
         messagesLoading,
         sending,
         currentUserId,
-        
+
         // Actions
         handleSendMessage,
         handleCompleteProfile,

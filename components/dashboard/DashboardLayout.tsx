@@ -137,7 +137,7 @@ function AppSidebar({ userRole = "user" }: AppSidebarProps) {
             </SidebarContent>
 
             <SidebarFooter className="border-t border-sidebar-border">
-                <div className="flex items-center gap-3 sm:px-4 py-3 sm:group-data-[collapsible=icon]:px-2 hover:bg-sidebar-accent/80 hover:rounded-lg transition-all duration-200 hover:cursor-pointer">
+                <div className="flex items-center gap-3 sm:px-4 py-3 sm:group-data-[collapsible=icon]:px-0 hover:bg-sidebar-accent/80 hover:rounded-lg transition-all duration-200 hover:cursor-pointer">
                     <Avatar className="h-8 w-8 transition-all duration-200 hover:scale-110">
                         <AvatarImage src="/assets/avatar-1.png" />
                         <AvatarFallback

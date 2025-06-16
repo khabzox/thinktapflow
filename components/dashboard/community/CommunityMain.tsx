@@ -15,8 +15,8 @@ interface CommunityMainProps {
     onSendMessage: (e: React.FormEvent) => void
     sending: boolean
     currentUserId: string | null
-    onEditMessage: (messageId: string, content: string) => void
-    onDeleteMessage: (messageId: string) => void
+    onEditMessage: (messageId: string, content: string) => Promise<void>
+    onDeleteMessage: (messageId: string) => Promise<void>
 }
 
 export function CommunityMain({
