@@ -10,7 +10,7 @@ import { formatTimeAgo, getInitials } from '@/utils/communityUtils'
 interface MessageItemProps {
     message: Message
     currentUserId: string | null
-    onEdit: (messageId: string, content: string) => Promise<void>
+    onEdit: (messageId: string, content: string) => Promise<boolean> // Fixed: Return Promise<boolean>
     onDelete: (messageId: string) => Promise<void>
 }
 
@@ -28,11 +28,16 @@ export const MessageItem = ({ message, currentUserId, onEdit, onDelete }: Messag
         if (!editContent.trim()) return
 
         setIsUpdating(true)
-        const success = await onEdit(message.id, editContent)
-        if (success) {
-            setIsEditing(false)
+        try {
+            const success = await onEdit(message.id, editContent)
+            if (success) {
+                setIsEditing(false) // Only close if successful
+            }
+        } catch (error) {
+            console.error('Error editing message:', error)
+        } finally {
+            setIsUpdating(false)
         }
-        setIsUpdating(false)
     }
 
     const handleCancelEdit = () => {
@@ -65,7 +70,6 @@ export const MessageItem = ({ message, currentUserId, onEdit, onDelete }: Messag
                     {getInitials(message.profiles?.full_name)}
                 </AvatarFallback>
             </Avatar>
-
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm">
@@ -86,7 +90,6 @@ export const MessageItem = ({ message, currentUserId, onEdit, onDelete }: Messag
                         </span>
                     )}
                 </div>
-
                 {isEditing ? (
                     <div className="flex gap-2 items-center">
                         <Input
@@ -117,7 +120,6 @@ export const MessageItem = ({ message, currentUserId, onEdit, onDelete }: Messag
                     <p className="text-sm leading-relaxed break-words">{message.content}</p>
                 )}
             </div>
-
             {isOwner && !isEditing && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
