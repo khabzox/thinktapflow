@@ -10,7 +10,7 @@ import {
   GenerationMetrics,
   SupportedPlatforms,
 } from '@/types/ai';
-import { DEFAULT_CONFIG } from '@/constants/ai/ai';
+import { DEFAULT_CONFIG } from '@/constants/ai';
 
 export class AIService {
   private aiProvider: BaseAIProvider;

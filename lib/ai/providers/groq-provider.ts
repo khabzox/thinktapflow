@@ -1,7 +1,7 @@
 import Groq from 'groq-sdk';
 import { BaseAIProvider } from '../core/base-ai-provider';
 import { AIGenerationOptions, ModelInfo, AIServiceError, AIServiceConfig } from '@/types/ai';
-import { DEFAULT_CONFIG } from '@/constants/ai/ai';
+import { DEFAULT_CONFIG } from '@/constants/ai';
 
 export class GroqProvider extends BaseAIProvider {
   private client: Groq;
