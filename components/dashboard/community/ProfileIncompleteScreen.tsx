@@ -59,6 +59,7 @@ export function ProfileIncompleteScreen({
                 <ProfileCompletionModal
                     open={showProfileModal}
                     onOpenChange={setShowProfileModal}
+                    // fix: userProfile is not defined
                     userProfile={userProfile}
                     onComplete={onCompleteProfile}
                     onRedirectToSettings={onRedirectToSettings}
