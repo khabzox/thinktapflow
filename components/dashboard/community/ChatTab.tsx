@@ -66,6 +66,7 @@ export function ChatTab({
                                     key={message.id}
                                     message={message}
                                     currentUserId={currentUserId}
+                                    // fix: onEditMessage is not defined
                                     onEdit={onEditMessage}
                                     onDelete={onDeleteMessage}
                                 />
