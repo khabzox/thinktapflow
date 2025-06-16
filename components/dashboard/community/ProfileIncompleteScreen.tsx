@@ -13,6 +13,11 @@ interface ProfileIncompleteScreenProps {
     onRedirectToSettings: () => void
 }
 
+/**
+ * Displays a screen prompting the user to complete their profile before joining the community chat.
+ *
+ * Renders a card indicating which profile fields are missing and provides options to open a profile completion modal or navigate to settings.
+ */
 export function ProfileIncompleteScreen({
     userProfile,
     showProfileModal,

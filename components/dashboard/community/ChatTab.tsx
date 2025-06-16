@@ -19,6 +19,11 @@ interface ChatTabProps {
     onDeleteMessage: (messageId: string) => Promise<void>
 }
 
+/**
+ * Renders a community chat interface with message display, input, and message management features.
+ *
+ * Displays a scrollable list of messages, supports sending new messages, and allows editing or deleting messages if handlers are provided. Automatically scrolls to the latest message when new messages arrive. Shows loading and empty states as appropriate.
+ */
 export function ChatTab({
     messages,
     messagesLoading,
