@@ -84,7 +84,7 @@ export class ThinkTapFlowAPI {
     }
 
     // Subscription methods
-    async updateSubscription(tier: 'free' | 'pro' | 'enterprise') {
+    async updateSubscription(tier: 'free' | 'pro' | 'plus') {
         return this.request<{ user: User }>('/subscription/update', {
             method: 'POST',
             body: JSON.stringify({ tier }),

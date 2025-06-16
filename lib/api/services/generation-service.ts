@@ -109,7 +109,7 @@ export class GenerationService {
       free: 5,
       starter: 50,
       pro: 200,
-      enterprise: 1000
+      plus: 1000
     };
     return limits[tier] || limits.free;
   }

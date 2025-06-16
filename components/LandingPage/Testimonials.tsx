@@ -131,8 +131,7 @@ export const Testimonials = () => {
           </div>
           <h2 className="section-title mt-5">Loved by content creators worldwide</h2>
           <p className="section-des mt-5">
-            From solo entrepreneurs to enterprise teams, thousands of creators trust ThinkTapFlow AI
-            to produce high-quality, engaging content that drives results.
+            From solo creators to scaling startups, thousands rely on ThinkTapFlow to generate engaging, high-quality content effortlessly and efficiently.
           </p>
         </div>
         <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">

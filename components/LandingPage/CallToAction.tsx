@@ -4,6 +4,7 @@ import starImage from '/public/assets/star.png';
 import springImage from '/public/assets/spring.png';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import { PrimaryBtn, SecondaryBtn } from '../common/btn';
 
 export const CallToAction = () => {
   const sectionRef = useRef(null);
@@ -47,12 +48,9 @@ export const CallToAction = () => {
           />
         </div>
 
-        <div className="flex gap-2 mt-10 justify-center">
-          <button className="btn btn-primary">Start Creating Free</button>
-          <button className="btn btn-text gap-1">
-            <span>View Demo</span>
-            <ArrowRight className="h-5 w-5" />
-          </button>
+        <div className="flex gap-2 mt-10 items-center justify-center">
+          <PrimaryBtn href={"/dashboard"} textContent={"Start Creating Free"} />
+          <SecondaryBtn href={"/dashboard"} textContent={"View Demo"} icon={<ArrowRight className="h-5 w-5" />} />
         </div>
 
         {/* Additional value props */}

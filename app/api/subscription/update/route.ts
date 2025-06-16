@@ -5,7 +5,7 @@ import { handleApiError } from '@/lib/api/errors';
 const TIER_LIMITS = {
     free: 10,
     pro: 100,
-    enterprise: 1000,
+    plus: 1000,
 };
 
 export async function POST(req: NextRequest) {
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { tier } = body;
 
-        if (!['free', 'pro', 'enterprise'].includes(tier)) {
+        if (!['free', 'pro', 'plus'].includes(tier)) {
             return NextResponse.json(
                 { success: false, error: { message: 'Invalid subscription tier', code: 'INVALID_TIER' } },
                 { status: 400 }

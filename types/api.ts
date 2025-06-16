@@ -3,7 +3,7 @@ import { GeneratedPosts } from './ai';
 export interface User {
     id: string;
     email: string;
-    subscription_tier: 'free' | 'pro' | 'enterprise';
+    subscription_tier: 'free' | 'pro' | 'plus';
     usage_count: number;
     usage_limit: number;
     created_at: string;

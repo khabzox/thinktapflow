@@ -3,6 +3,7 @@ import Logo from '/public/logo/logosaas-dark.png';
 import Image from 'next/image';
 import MenuIcon from '/public/assets/menu.svg';
 import Link from 'next/link';
+import { PrimaryBtn } from '@/components/common/btn';
 
 export const Header = () => {
   return (
@@ -20,19 +21,19 @@ export const Header = () => {
       <div className="py-5">
         <div className="container">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Image src={Logo} alt="ThinkTapFlow logo" height={40} width={40} />
-              <span className="text-xl font-semibold tracking-tight">ThinkTapFlow</span>
-            </div>
+            <Link href="/">
+              <div className="flex items-center gap-2">
+                <Image src={Logo} alt="ThinkTapFlow logo" height={40} width={40} />
+                <span className="text-xl font-semibold tracking-tight">ThinkTapFlow</span>
+              </div>
+            </Link>
             <MenuIcon className="h-5 w-5 md:hidden" />
             <nav className="hidden md:flex gap-6 text-black/60 items-center">
-              <a href="#features">Features</a>
-              <a href="#testimonials">Testimonials</a>
-              <a href="#about">About</a>
-              <a href="#help">Help</a>
-              <button className="bg-black text-white px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center tracking-tight">
-                Start Creating
-              </button>
+              <Link href="#features">Features</Link>
+              <Link href="#testimonials">Testimonials</Link>
+              <Link href="#about">About</Link>
+              <Link href="#help">Help</Link>
+              <PrimaryBtn href={"/dashboard"} textContent={"Start Creating"} />
             </nav>
           </div>
         </div>

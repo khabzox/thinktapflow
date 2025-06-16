@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 const pricingTiers = [
   {
-    title: "Starter",
+    title: "Free",
     monthlyPrice: 0,
     buttonText: "Start Creating Free",
     popular: false,
@@ -20,8 +20,8 @@ const pricingTiers = [
     ],
   },
   {
-    title: "Professional",
-    monthlyPrice: 29,
+    title: "Pro",
+    monthlyPrice: 19,
     buttonText: "Upgrade to Pro",
     popular: true,
     inverse: true,
@@ -39,27 +39,28 @@ const pricingTiers = [
     ],
   },
   {
-    title: "Enterprise",
-    monthlyPrice: 99,
-    buttonText: "Contact Sales",
+    title: "Plus",
+    monthlyPrice: 79,
+    buttonText: "Get in Touch",
     popular: false,
     inverse: false,
     features: [
       "Unlimited AI-generated words",
-      "100+ enterprise templates",
-      "Custom AI model training",
+      "100+ premium templates",
+      "Custom AI model tuning",
       "Advanced analytics & reporting",
-      "White-label solution",
-      "Dedicated account manager",
-      "24/7 phone & chat support",
+      "Brand white-labeling",
+      "Dedicated support manager",
+      "24/7 priority support",
       "Unlimited team members",
-      "Advanced integrations (API access)",
+      "API access & integrations",
       "Custom content workflows",
-      "Enterprise security & compliance",
-      "Priority feature requests",
+      "Enterprise-grade security",
+      "Priority roadmap features",
     ],
   },
 ];
+
 
 export const Pricing = () => {
   return (
@@ -68,7 +69,7 @@ export const Pricing = () => {
         <div className="section-heading">
           <h2 className="section-title">Choose Your Content Creation Plan</h2>
           <p className="section-des mt-5">
-            Start free and scale as you grow. Unlock powerful AI content generation, 
+            Start free and scale as you grow. Unlock powerful AI content generation,
             advanced features, and premium support with our flexible pricing options.
           </p>
         </div>
@@ -127,7 +128,7 @@ export const Pricing = () => {
             </div>
           ))}
         </div>
-        
+
         {/* Additional Info Section */}
         <div className="mt-16 text-center">
           <p className="text-gray-600 mb-6">
