@@ -1,10 +1,11 @@
 import Groq from 'groq-sdk';
 import { BaseAIProvider } from '../core/base-ai-provider';
 import { AIGenerationOptions, ModelInfo, AIServiceError, AIServiceConfig } from '@/types/ai';
+import { DEFAULT_CONFIG } from '@/constants/ai/ai';
 
 export class GroqProvider extends BaseAIProvider {
   private client: Groq;
-  private defaultModel = 'llama-3.3-70b-versatile';
+  private defaultModel = DEFAULT_CONFIG.model as string;
 
   constructor(config: AIServiceConfig) {
     super(config);
@@ -15,9 +16,9 @@ export class GroqProvider extends BaseAIProvider {
     const completion = await this.client.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
       model: this.config.model || this.defaultModel,
-      temperature: options.temperature ?? 0.7,
-      max_tokens: options.maxOutputTokens ?? 2048,
-      top_p: options.topP ?? 0.8,
+      temperature: options.temperature ?? DEFAULT_CONFIG.temperature,
+      max_tokens: options.maxOutputTokens ?? DEFAULT_CONFIG.maxOutputTokens,
+      top_p: options.topP ?? DEFAULT_CONFIG.topP,
     });
 
     const content = completion.choices[0]?.message?.content;
@@ -39,8 +40,8 @@ export class GroqProvider extends BaseAIProvider {
     return {
       name: this.config.model || this.defaultModel,
       provider: 'groq',
-      maxTokens: 8192,
-      contextWindow: 32768,
+      maxTokens: DEFAULT_CONFIG.maxTokens as number,
+      contextWindow: DEFAULT_CONFIG.maxInputTokens as number,
     };
   }
 }

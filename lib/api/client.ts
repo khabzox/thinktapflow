@@ -1,3 +1,4 @@
+import { getGenerationsConfig } from '@/constants/ai/api/client';
 import { APIResponse, User, GenerationRequest, GenerationResponse } from '@/types/api';
 
 export class ThinkTapFlowAPI {
@@ -43,14 +44,10 @@ export class ThinkTapFlowAPI {
     }
 
     async register(email: string, password: string, full_name: string) {
-        return this.request<{ user: any; message: string }>('/auth/register', {
+        return this.request<{ user: any; message: string }>('/auth/', {
             method: 'POST',
             body: JSON.stringify({ email, password, full_name }),
         });
-    }
-
-    async getMe() {
-        return this.request<{ user: User }>('/auth/me');
     }
 
     // Generation methods
@@ -65,7 +62,7 @@ export class ThinkTapFlowAPI {
         });
     }
 
-    async getGenerations(page = 1, limit = 10) {
+    async getGenerations(page = getGenerationsConfig.page, limit = getGenerationsConfig.limit) {
         return this.request<{
             generations: GenerationResponse[];
             pagination: any;
