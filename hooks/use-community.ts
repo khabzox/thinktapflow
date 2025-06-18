@@ -4,6 +4,13 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Message, OnlineUser, UserProfile } from '@/types/community'
 
+/**
+ * Provides state and handlers for a real-time community chat with user presence and profile management.
+ *
+ * This React hook manages chat messages, online user presence, user profile completion, message editing and deletion, and real-time updates using Supabase as the backend. It exposes state variables and action handlers for integrating a community chat feature into components.
+ *
+ * @returns An object containing chat messages, online users, user profile data, UI state, and action handlers for sending, editing, and deleting messages, managing user presence, completing profiles, and utility functions.
+ */
 export function useCommunity() {
     const [messages, setMessages] = useState<Message[]>([])
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
