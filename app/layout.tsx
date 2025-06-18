@@ -1,9 +1,14 @@
-import { Analytics } from "@vercel/analytics/next"
+import "./globals.css";
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+
 import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
+
+import { ZipyAnalytics } from '@/components/analytics/ZipyAnalytics'
+import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -54,6 +59,8 @@ export default function RootLayout({
           {children}
           {/* Vercel Analytics */}
           <Analytics />
+          {/* Zipy Analytics*/}
+          <ZipyAnalytics/>
         </SupabaseProvider>
       </body>
     </html>

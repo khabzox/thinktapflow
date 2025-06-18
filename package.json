@@ -54,6 +54,7 @@
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "zipyai": "^1.7.39",
     "zod": "^3.25.49"
   },
   "devDependencies": {
