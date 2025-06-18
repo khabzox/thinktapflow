@@ -38,6 +38,14 @@ export default function RootLayout({
         <Script id="plausible-init">
           {`window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`}
         </Script>
+
+        {/* Umami Cloud Tracking */}
+        <Script
+          src="https://cloud.umami.is/script.js"
+          data-website-id="dbec4b2a-b11d-40f9-838f-65b0f51cf687"
+          strategy="afterInteractive"
+          defer
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#EAEEFE]`}
