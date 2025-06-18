@@ -9,8 +9,48 @@ import { env } from '@/lib/env';
 
 export const runtime = 'edge';
 
+// Type definitions
+type SubscriptionTier = 'free' | 'pro' | 'plus';
+
+interface TierLimit {
+    monthly_words: number; // -1 for unlimited
+    daily_generations: number; // -1 for unlimited
+}
+
+interface UserProfile {
+    id: string;
+    email: string;
+    subscription_tier: SubscriptionTier;
+    daily_usage_count: number;
+    daily_usage_limit: number;
+    monthly_words_used: number;
+    monthly_words_limit: number;
+    daily_reset_date: string | null;
+    monthly_reset_date: string | null;
+    updated_at?: string;
+}
+
+interface GenerationResult {
+    posts: Record<string, any>;
+    metadata?: {
+        tokensUsed?: number;
+    };
+}
+
+interface Post {
+    content?: string;
+}
+
+interface UpdateData {
+    daily_usage_count?: number;
+    daily_reset_date?: string;
+    monthly_words_used?: number;
+    monthly_reset_date?: string;
+    updated_at?: string;
+}
+
 // Updated tier limits based on your pricing plans
-const TIER_LIMITS = {
+const TIER_LIMITS: Record<SubscriptionTier, TierLimit> = {
     free: {
         monthly_words: 5000,
         daily_generations: 5,
@@ -23,7 +63,7 @@ const TIER_LIMITS = {
         monthly_words: -1, // unlimited
         daily_generations: -1, // unlimited
     }
-};
+} as const;
 
 // Helper function to check if it's a new day
 function isNewDay(lastResetDate: string | null): boolean {
@@ -43,13 +83,13 @@ function getMonthStart(): string {
 }
 
 // Helper function to estimate words from posts
-function estimateWordsFromPosts(posts: any): number {
+function estimateWordsFromPosts(posts: Record<string, any>): number {
     let totalWords = 0;
 
     for (const platform in posts) {
         const platformPosts = posts[platform];
         if (Array.isArray(platformPosts)) {
-            platformPosts.forEach(post => {
+            platformPosts.forEach((post: string | Post) => {
                 if (typeof post === 'string') {
                     totalWords += post.split(/\s+/).filter(word => word.length > 0).length;
                 } else if (post && typeof post.content === 'string') {
@@ -63,7 +103,11 @@ function estimateWordsFromPosts(posts: any): number {
 }
 
 // Helper function to backfill monthly words usage for existing user
-async function backfillMonthlyWordsUsage(supabase: any, userId: string, monthStart: string) {
+async function backfillMonthlyWordsUsage(
+    supabase: any,
+    userId: string,
+    monthStart: string
+): Promise<number> {
     try {
         // Get all generations for this user in the current month
         const { data: monthlyGenerations, error } = await supabase
@@ -78,7 +122,7 @@ async function backfillMonthlyWordsUsage(supabase: any, userId: string, monthSta
         }
 
         // Sum up all words generated this month
-        const totalWordsThisMonth = monthlyGenerations.reduce((sum, gen) => {
+        const totalWordsThisMonth = monthlyGenerations.reduce((sum: number, gen: any) => {
             return sum + (gen.words_generated || 0);
         }, 0);
 
@@ -96,7 +140,7 @@ async function backfillMonthlyWordsUsage(supabase: any, userId: string, monthSta
     }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
         // Initialize services
         const cookieStore = cookies();
@@ -138,7 +182,7 @@ export async function POST(req: NextRequest) {
                 .upsert({
                     id: user.id,
                     email: user.email,
-                    subscription_tier: 'free',
+                    subscription_tier: 'free' as SubscriptionTier,
                     daily_usage_count: 0,
                     daily_usage_limit: TIER_LIMITS.free.daily_generations,
                     monthly_words_used: 0,
@@ -168,14 +212,17 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            profile = newProfile;
+            profile = newProfile as UserProfile;
+        }
+
+        // Type guard for subscription tier
+        const subscriptionTier = profile.subscription_tier as SubscriptionTier;
+        if (!TIER_LIMITS[subscriptionTier]) {
+            throw new GenerationError('Invalid subscription tier', 'INVALID_TIER', 400);
         }
 
         // Get tier limits
-        const tierLimits = TIER_LIMITS[profile.subscription_tier as keyof typeof TIER_LIMITS];
-        if (!tierLimits) {
-            throw new GenerationError('Invalid subscription tier', 'INVALID_TIER', 400);
-        }
+        const tierLimits = TIER_LIMITS[subscriptionTier];
 
         // Check if daily reset is needed
         const needsDailyReset = isNewDay(profile.daily_reset_date);
@@ -187,7 +234,7 @@ export async function POST(req: NextRequest) {
 
         // Reset counters if needed
         if (needsDailyReset || needsMonthlyReset) {
-            const updateData: any = {};
+            const updateData: UpdateData = {};
 
             if (needsDailyReset) {
                 updateData.daily_usage_count = 0;
@@ -218,7 +265,7 @@ export async function POST(req: NextRequest) {
             if (resetError) {
                 console.error('[Reset] Error:', resetError);
             } else {
-                profile = { ...profile, ...updatedProfile };
+                profile = { ...profile, ...updatedProfile } as UserProfile;
                 console.log('[Reset] Profile updated successfully');
             }
         }
@@ -247,7 +294,7 @@ export async function POST(req: NextRequest) {
         });
 
         // Generate posts
-        const result = await aiService.generateSocialPosts(
+        const result: GenerationResult = await aiService.generateSocialPosts(
             validatedData.data.content,
             validatedData.data.platforms,
             validatedData.data.options
@@ -300,7 +347,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Update usage counts
-        const updateData: any = {
+        const updateData: UpdateData = {
             daily_usage_count: profile.daily_usage_count + 1,
             updated_at: new Date().toISOString()
         };
@@ -355,6 +402,18 @@ export async function POST(req: NextRequest) {
         });
     } catch (error) {
         console.error('[API] Error:', error);
-        return handleApiError(error);
+        const errorResponse = handleApiError(error);
+
+        // Convert Response to NextResponse if needed
+        if (errorResponse instanceof Response && !(errorResponse instanceof NextResponse)) {
+            const body = await errorResponse.text();
+            return new NextResponse(body, {
+                status: errorResponse.status,
+                statusText: errorResponse.statusText,
+                headers: errorResponse.headers
+            });
+        }
+
+        return errorResponse as NextResponse;
     }
 }
