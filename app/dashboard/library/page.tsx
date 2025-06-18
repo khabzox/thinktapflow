@@ -202,10 +202,10 @@ export default function LibraryPage() {
         // Sort content
         switch (sortBy) {
             case "recent":
-                filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+                filtered.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
                 break
             case "oldest":
-                filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
                 break
             case "popular":
                 filtered.sort((a, b) => b.views - a.views)
