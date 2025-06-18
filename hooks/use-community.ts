@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { Message, OnlineUser, UserProfile, ProfileForm } from '@/types/community'
+import { Message, OnlineUser, UserProfile } from '@/types/community'
 
-export const useCommunity = () => {
+export function useCommunity() {
     const [messages, setMessages] = useState<Message[]>([])
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([])
     const [newMessage, setNewMessage] = useState('')
@@ -12,9 +12,11 @@ export const useCommunity = () => {
     const [sending, setSending] = useState(false)
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
     const [showProfileModal, setShowProfileModal] = useState(false)
-    const [profileForm, setProfileForm] = useState<ProfileForm>({ full_name: '', username: '' })
+    const [profileForm, setProfileForm] = useState({ full_name: '', username: '' })
     const [updatingProfile, setUpdatingProfile] = useState(false)
     const [checkingProfile, setCheckingProfile] = useState(true)
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
+    const [editingContent, setEditingContent] = useState('')
     const [currentUserId, setCurrentUserId] = useState<string | null>(null)
     const [isMounted, setIsMounted] = useState(true)
     const [messagesLoading, setMessagesLoading] = useState(false)
@@ -27,26 +29,48 @@ export const useCommunity = () => {
     const supabase = createClientComponentClient()
     const router = useRouter()
 
-    // Initialize component
+    const [deleteConfirmation, setDeleteConfirmation] = useState<{ isOpen: boolean; messageId: string | null }>({
+        isOpen: false,
+        messageId: null
+    });
+
+    // Initialize community
     useEffect(() => {
         setIsMounted(true)
         checkUserProfile()
 
         return () => {
-            cleanup()
+            setIsMounted(false)
+
+            // Clear connection timeout
+            if (connectionTimeoutRef.current) {
+                clearTimeout(connectionTimeoutRef.current)
+            }
+
+            // Cleanup all channels
+            channelsRef.current.forEach(item => {
+                if (item.cleanup) {
+                    item.cleanup()
+                } else {
+                    supabase.removeChannel(item)
+                }
+            })
+            channelsRef.current = []
+
+            // Clear presence interval
+            if (presenceIntervalRef.current) {
+                clearInterval(presenceIntervalRef.current)
+                presenceIntervalRef.current = null
+            }
         }
     }, [])
 
-    // Initialize community when profile is complete
+    // Initialize community features when profile is complete
     useEffect(() => {
         if (userProfile && isProfileComplete(userProfile)) {
             initializeCommunity()
         }
     }, [userProfile])
-
-    const isProfileComplete = (profile: UserProfile | null): boolean => {
-        return !!(profile?.full_name?.trim() && profile?.username?.trim())
-    }
 
     const checkUserProfile = async () => {
         if (!isMounted) return
@@ -94,6 +118,10 @@ export const useCommunity = () => {
                 setCheckingProfile(false)
             }
         }
+    }
+
+    const isProfileComplete = (profile: UserProfile | null): boolean => {
+        return !!(profile?.full_name?.trim() && profile?.username?.trim())
     }
 
     const initializeCommunity = () => {
@@ -181,7 +209,6 @@ export const useCommunity = () => {
 
     const loadOnlineUsers = async () => {
         if (!isMounted) return
-
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -204,6 +231,48 @@ export const useCommunity = () => {
         }
     }
 
+    const updateUserPresence = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            await supabase
+                .from('profiles')
+                .update({ last_seen: new Date().toISOString() })
+                .eq('id', user.id)
+        } catch (error) {
+            console.error('Error updating presence:', error)
+        }
+    }
+
+    const subscribeToUserPresence = () => {
+        const channel = supabase
+            .channel(`online_users_${Date.now()}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'profiles'
+                },
+                () => {
+                    if (isMounted) {
+                        loadOnlineUsers()
+                    }
+                }
+            )
+            .subscribe()
+
+        channelsRef.current.push(channel)
+
+        return () => {
+            if (channel) {
+                supabase.removeChannel(channel)
+                channelsRef.current = channelsRef.current.filter(c => c !== channel)
+            }
+        }
+    }
+
     const subscribeToMessages = () => {
         const channel = supabase
             .channel(`chat_messages_${Date.now()}`)
@@ -216,7 +285,6 @@ export const useCommunity = () => {
                 },
                 async (payload) => {
                     if (!isMounted) return
-
                     const { data: messageData, error: messageError } = await supabase
                         .from('chat_messages')
                         .select('*')
@@ -269,73 +337,6 @@ export const useCommunity = () => {
         }
     }
 
-    const subscribeToUserPresence = () => {
-        const channel = supabase
-            .channel(`online_users_${Date.now()}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'profiles'
-                },
-                () => {
-                    if (isMounted) {
-                        loadOnlineUsers()
-                    }
-                }
-            )
-            .subscribe()
-
-        channelsRef.current.push(channel)
-
-        return () => {
-            if (channel) {
-                supabase.removeChannel(channel)
-                channelsRef.current = channelsRef.current.filter(c => c !== channel)
-            }
-        }
-    }
-
-    const updateUserPresence = async () => {
-        try {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
-
-            await supabase
-                .from('profiles')
-                .update({ last_seen: new Date().toISOString() })
-                .eq('id', user.id)
-        } catch (error) {
-            console.error('Error updating presence:', error)
-        }
-    }
-
-    const cleanup = () => {
-        setIsMounted(false)
-
-        // Clear connection timeout
-        if (connectionTimeoutRef.current) {
-            clearTimeout(connectionTimeoutRef.current)
-        }
-
-        // Cleanup all channels
-        channelsRef.current.forEach(item => {
-            if (item.cleanup) {
-                item.cleanup()
-            } else {
-                supabase.removeChannel(item)
-            }
-        })
-        channelsRef.current = []
-
-        // Clear presence interval
-        if (presenceIntervalRef.current) {
-            clearInterval(presenceIntervalRef.current)
-            presenceIntervalRef.current = null
-        }
-    }
-
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!newMessage.trim()) return
@@ -365,6 +366,73 @@ export const useCommunity = () => {
             toast.error('Error sending message')
         } finally {
             setSending(false)
+        }
+    }
+
+    const handleEditMessage = (message: Message) => {
+        setEditingMessageId(message.id)
+        setEditingContent(message.content)
+    }
+
+    const handleSaveEdit = async (messageId: string) => {
+        if (!editingContent.trim()) {
+            toast.error('Message cannot be empty')
+            return
+        }
+
+        try {
+            const { error } = await supabase
+                .from('chat_messages')
+                .update({
+                    content: editingContent.trim(),
+                    updated_at: new Date().toISOString(),
+                    is_edited: true
+                })
+                .eq('id', messageId)
+
+            if (error) throw error
+
+            // Update local state
+            setMessages(prev => prev.map(msg =>
+                msg.id === messageId
+                    ? {
+                        ...msg,
+                        content: editingContent.trim(),
+                        updated_at: new Date().toISOString(),
+                        is_edited: true
+                    }
+                    : msg
+            ))
+
+            setEditingMessageId(null)
+            setEditingContent('')
+            toast.success('Message updated')
+        } catch (error) {
+            console.error('Error updating message:', error)
+            toast.error('Error updating message')
+        }
+    }
+
+    const handleCancelEdit = () => {
+        setEditingMessageId(null)
+        setEditingContent('')
+    }
+
+    const handleDeleteMessage = async (messageId: string) => {
+        try {
+            const { error } = await supabase
+                .from('chat_messages')
+                .delete()
+                .eq('id', messageId)
+
+            if (error) throw error
+
+            setMessages(prev => prev.filter(msg => msg.id !== messageId))
+            setDeleteConfirmation({ isOpen: false, messageId: null })
+            toast.success('Message deleted')
+        } catch (error) {
+            console.error('Error deleting message:', error)
+            toast.error('Error deleting message')
         }
     }
 
@@ -422,58 +490,6 @@ export const useCommunity = () => {
         }
     }
 
-    const handleEditMessage = async (messageId: string, content: string): Promise<void> => {
-        if (!content.trim()) {
-            toast.error('Message cannot be empty')
-            return
-        }
-
-        try {
-            const { error } = await supabase
-                .from('chat_messages')
-                .update({
-                    content: content.trim(),
-                    is_edited: true,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', messageId)
-
-            if (error) throw error
-
-            // Update local state
-            setMessages(prev => prev.map(msg =>
-                msg.id === messageId
-                    ? { ...msg, content: content.trim(), is_edited: true }
-                    : msg
-            ))
-
-            toast.success('Message updated')
-        } catch (error) {
-            console.error('Error updating message:', error)
-            toast.error('Error updating message')
-            throw error
-        }
-    }
-
-    const handleDeleteMessage = async (messageId: string): Promise<void> => {
-        try {
-            const { error } = await supabase
-                .from('chat_messages')
-                .delete()
-                .eq('id', messageId)
-
-            if (error) throw error
-
-            // Update local state
-            setMessages(prev => prev.filter(msg => msg.id !== messageId))
-            toast.success('Message deleted')
-        } catch (error) {
-            console.error('Error deleting message:', error)
-            toast.error('Error deleting message')
-            throw error
-        }
-    }
-
     const redirectToSettings = () => {
         router.push('/dashboard/settings')
     }
@@ -491,40 +507,37 @@ export const useCommunity = () => {
 
     return {
         // State
-        messages, setMessages,
-        onlineUsers, setOnlineUsers,
-        newMessage, setNewMessage,
-        loading, setLoading,
-        sending, setSending,
-        userProfile, setUserProfile,
-        showProfileModal, setShowProfileModal,
-        profileForm, setProfileForm,
-        updatingProfile, setUpdatingProfile,
+        messages,
+        onlineUsers,
+        newMessage,
+        setNewMessage,
+        loading,
+        sending,
+        userProfile,
+        showProfileModal,
+        setShowProfileModal,
+        profileForm,
+        setProfileForm,
+        updatingProfile,
         checkingProfile,
+        editingMessageId,
+        editingContent,
+        setEditingContent,
         currentUserId,
-        isMounted,
-        messagesLoading, setMessagesLoading,
-        isConnected, setIsConnected,
-
-        // Refs
-        channelsRef,
-        presenceIntervalRef,
-        connectionTimeoutRef,
-
-        // Utils
-        supabase,
-        router,
-        isProfileComplete,
-        checkUserProfile,
-        updateUserPresence,
-        cleanup,
-        formatTimeAgo,
+        messagesLoading,
+        isConnected,
+        deleteConfirmation,
+        setDeleteConfirmation,
 
         // Actions
         handleSendMessage,
-        handleCompleteProfile,
         handleEditMessage,
+        handleSaveEdit,
+        handleCancelEdit,
         handleDeleteMessage,
+        handleCompleteProfile,
         redirectToSettings,
+        formatTimeAgo,
+        isProfileComplete
     }
 }
