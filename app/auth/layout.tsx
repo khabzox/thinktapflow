@@ -1,3 +1,6 @@
+import { pageMetadata } from '@/constants/metadata';
+export const metadata = pageMetadata.auth;
+
 export default function AuthLayout({
   children,
 }: {

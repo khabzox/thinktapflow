@@ -2,11 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Toaster } from "sonner"
 
+import { pageMetadata } from '@/constants/metadata';
 
-export const metadata: Metadata = {
-    title: "ThinkTapFlow - AI Content Generation",
-    description: "Generate engaging content across all platforms with AI",
-}
+export const metadata = pageMetadata.dashboard;
 
 export default function RootLayout({
     children,
