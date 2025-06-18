@@ -2,11 +2,12 @@
 
 import { useEffect } from "react";
 import zipy from "zipyai";
+import { ZipyAnalyticsProps } from "@/types/analytics"
 
-export function ZipyAnalytics() {
+export function ZipyAnalytics({ id }: ZipyAnalyticsProps) {
     useEffect(() => {
-        zipy.init("b2f9120d");
-    }, []);
+        zipy.init(id);
+    }, [id]);
 
     return null;
 }

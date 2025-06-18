@@ -16,6 +16,10 @@ const requiredEnvVars = [
     'NEXT_PUBLIC_PADDLE_CLIENT_TOKEN',
     'PADDLE_SECRET_KEY',
     'PADDLE_WEBHOOK_SECRET',
+
+    // Analytics
+    'ZIPY_ANALYTICS_ID',
+    'UMAMI_ANALYTICS_ID',
 ] as const;
 
 export function validateEnv() {
@@ -58,5 +62,9 @@ export const env = {
     features: {
         enableBlogGeneration: process.env.NEXT_PUBLIC_ENABLE_BLOG_GENERATION === 'true',
         enableSocialGeneration: process.env.NEXT_PUBLIC_ENABLE_SOCIAL_GENERATION === 'true',
+    },
+    analytics: {
+        zipyId: process.env.ZIPY_ANALYTICS_ID as string,
+        umamiId: process.env.UMAMI_ANALYTICS_ID as string,
     },
 } as const;

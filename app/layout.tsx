@@ -8,6 +8,7 @@ import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
 import { ZipyAnalytics } from '@/components/analytics/ZipyAnalytics'
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script";
+import { env } from '@/lib/env';
 
 
 const geistSans = localFont({
@@ -47,7 +48,7 @@ export default function RootLayout({
         {/* Umami Cloud Tracking */}
         <Script
           src="https://cloud.umami.is/script.js"
-          data-website-id="dbec4b2a-b11d-40f9-838f-65b0f51cf687"
+          data-website-id={env.analytics.umamiId}
           strategy="afterInteractive"
           defer
         />
@@ -60,7 +61,7 @@ export default function RootLayout({
           {/* Vercel Analytics */}
           <Analytics />
           {/* Zipy Analytics*/}
-          <ZipyAnalytics/>
+          <ZipyAnalytics id={env.analytics.zipyId} />
         </SupabaseProvider>
       </body>
     </html>
