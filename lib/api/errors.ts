@@ -10,6 +10,10 @@ export type ErrorCode =
   | 'SAVE_FAILED'
   | 'EXTRACTION_FAILED'
   | 'INVALID_URL'
+  | 'DAILY_LIMIT_REACHED'
+  | 'INVALID_REQUEST'
+  | 'MONTHLY_LIMIT_REACHED'
+  | 'INVALID_TIER'
   | 'UNKNOWN_ERROR';
 
 export class GenerationError extends Error {
