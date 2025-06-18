@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
+import Script from "next/script";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,11 +28,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="relative">
+      <head>
+        {/* Plausible Analytics Script */}
+        <Script
+          defer
+          data-domain="thinktapflow.vercel.app"
+          src="https://plausible.io/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"
+        />
+        <Script id="plausible-init">
+          {`window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`}
+        </Script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#EAEEFE]`}
       >
         <SupabaseProvider>
           {children}
+          {/* Vercel Analytics */}
           <Analytics />
         </SupabaseProvider>
       </body>
