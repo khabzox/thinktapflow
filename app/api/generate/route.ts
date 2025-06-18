@@ -91,9 +91,9 @@ function estimateWordsFromPosts(posts: Record<string, any>): number {
         if (Array.isArray(platformPosts)) {
             platformPosts.forEach((post: string | Post) => {
                 if (typeof post === 'string') {
-                    totalWords += post.split(/\s+/).filter(word => word.length > 0).length;
+                    totalWords += post.split(/\s+/).filter((word: string) => word.length > 0).length;
                 } else if (post && typeof post.content === 'string') {
-                    totalWords += post.content.split(/\s+/).filter(word => word.length > 0).length;
+                    totalWords += post.content.split(/\s+/).filter((word: string) => word.length > 0).length;
                 }
             });
         }
