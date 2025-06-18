@@ -1,12 +1,5 @@
-import Link from 'next/link';
-import { Metadata } from 'next';
 import { Header } from '@/components/LandingPage/Header';
 import { Footer } from '@/components/LandingPage/Footer';
-
-export const metadata: Metadata = {
-    title: 'Privacy Policy | ThinkTapFlow',
-    description: 'Privacy Policy for ThinkTapFlow - AI-powered content generation platform',
-}
 
 export default function PrivacyPage() {
     return (

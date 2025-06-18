@@ -1,12 +1,6 @@
-import Link from 'next/link';
-import { Metadata } from 'next';
+
 import { Header } from '@/components/LandingPage/Header';
 import { Footer } from '@/components/LandingPage/Footer';
-
-export const metadata: Metadata = {
-    title: 'Terms of Service | ThinkTapFlow',
-    description: 'Terms of Service for ThinkTapFlow - AI-powered content generation platform',
-}
 
 export default function TermsPage() {
     return (
