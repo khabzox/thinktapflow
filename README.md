@@ -2,9 +2,7 @@
 
 A modern SaaS application for automated content generation powered by AI.
 
-===============================================================================
-📊 ERROR MONITORING
-===============================================================================
+## 📊 ERROR MONITORING
 
 Sentry integration provides:
 
@@ -15,9 +13,7 @@ Sentry integration provides:
 - Debug information capture
 - Production issue resolution
 
-===============================================================================
-🚀 FEATURES
-===============================================================================
+## 🚀 FEATURES
 
 - AI-Powered Content Generation: Leverage Google's Gemini AI for high-quality content creation
 - Multi-Platform Support: Generate content for various social media platforms and use cases
@@ -27,9 +23,7 @@ Sentry integration provides:
 - Responsive Design: Modern UI built with Tailwind CSS and shadcn/ui
 - Real-time Analytics: Monitor usage and performance
 
-===============================================================================
-🛠️ TECH STACK
-===============================================================================
+## 🛠️ TECH STACK
 
 Frontend:
 - Next.js 14 (App Router)
@@ -44,51 +38,34 @@ Backend:
 - Paddle (Payments)
 - Sentry (Error Monitoring)
 
-===============================================================================
 📁 PROJECT STRUCTURE
-===============================================================================
 
-thinktapflow/
-├── app/                          # Next.js 14 App Router
-│   ├── (auth)/                   # Authentication pages
-│   │   ├── login/
-│   │   └── signup/
-│   ├── dashboard/                # Protected dashboard area
-│   │   ├── history/             # Content generation history
-│   │   ├── billing/             # Subscription management
-│   │   ├── settings/            # User settings
-│   │   └── workspace/           # Content generation workspace
-│   ├── pricing/                 # Pricing page
-│   ├── api/                     # API routes
-│   │   ├── auth/                # Authentication endpoints
-│   │   ├── generate/            # Content generation endpoints
-│   │   ├── billing/             # Payment webhooks
-│   │   └── user/                # User management
-│   └── globals.css              # Global styles
-├── components/                   # Reusable React components
-│   ├── ui/                      # shadcn/ui components
-│   ├── layout/                  # Layout components
-│   ├── auth/                    # Authentication components
-│   ├── dashboard/               # Dashboard-specific components
-│   ├── landing/                 # Landing page components
-│   ├── common/                  # Shared components
-│   └── providers/               # Context providers
-├── lib/                         # Utility functions and configurations
-│   ├── supabase/               # Supabase client and utilities
-│   ├── ai/                     # AI service integrations
-│   ├── validations/            # Form validation schemas
-│   └── utils/                  # General utilities
-├── hooks/                       # Custom React hooks
-├── types/                       # TypeScript type definitions
-├── constants/                   # Application constants
-├── config/                      # Configuration files
-│   └── env.template.txt        # Environment variables template
-└── public/                      # Static assets
-    └── logo/                   # Brand assets
+      thinktapflow/
+      ├── app/                          # Next.js 14 App Router
+      │   ├── (auth)/                   # Auth pages
+      │   ├── dashboard/                # Authenticated dashboard routes
+      │   ├── pricing/                  # Pricing page
+      │   └── api/                      # API route handlers
+      ├── components/                   # Reusable UI components
+      │   ├── ui/                       # shadcn/ui base
+      │   ├── auth/                     # Auth-specific UI
+      │   ├── dashboard/                # Dashboard-specific UI
+      │   ├── landing/                  # Landing page UI
+      │   └── common/                   # General shared components
+      ├── lib/                          # Logic (AI, API, social, validations, etc.)
+      │   ├── ai/                       # AI Providers and Services
+      │   ├── api/                      # API client, errors, validation logic
+      │   ├── content/                  # Content extraction services
+      │   ├── social/                   # Social post generators
+      │   ├── validations/              # Input validations
+      ├── hooks/                        # Custom React hooks
+      ├── constants/                    # Static constants
+      ├── config/                       # Config templates
+      ├── public/                       # Static assets (e.g. logo)
+      ├── types/                        # Global TypeScript types
 
-===============================================================================
-🏗️ GETTING STARTED
-===============================================================================
+
+## 🏗️ GETTING STARTED
 
 Prerequisites:
 - Node.js 18+
@@ -101,11 +78,13 @@ Prerequisites:
 Installation Steps:
 
 1. Clone the repository
-   git clone https://github.com/yourusername/thinktapflow.git
-   cd thinktapflow
+
+         git clone https://github.com/yourusername/thinktapflow.git
+         cd thinktapflow
 
 2. Install dependencies
-   npm install
+         
+         npm install
 
 3. Set up environment variables
    Copy the template from config/env.template.txt and create:
@@ -120,52 +99,52 @@ Installation Steps:
    - Configure authentication providers
 
 6. Run the development server
-   npm run dev
+  
+       npm run dev
 
 7. Open your browser
    Navigate to http://localhost:3000
 
-===============================================================================
-🌐 ENVIRONMENT VARIABLES
-===============================================================================
+## 🌐 ENVIRONMENT VARIABLES
 
 Required environment variables:
 
 # App Configuration
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_APP_NAME="ThinkTapFlow"
+     
+      NEXT_PUBLIC_APP_URL="http://localhost:3000"
+      NEXT_PUBLIC_APP_NAME="ThinkTapFlow"
 
 # Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL="your-supabase-project-url"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
-SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
+
+      NEXT_PUBLIC_SUPABASE_URL="your-supabase-project-url"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
+      SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
 
 # Groq AI Configuration
-GROQ_API_KEY="your-groq-api-key"
+
+      GROQ_API_KEY="your-groq-api-key"
 
 # Sentry Configuration
-SENTRY_DSN="your-sentry-dsn"
-SENTRY_ORG="your-sentry-org"
-SENTRY_PROJECT="your-sentry-project"
+
+      SENTRY_DSN="your-sentry-dsn"
+      SENTRY_ORG="your-sentry-org"
+      SENTRY_PROJECT="your-sentry-project"
 
 # Paddle Configuration
-NEXT_PUBLIC_PADDLE_CLIENT_TOKEN="your-paddle-client-token"
-PADDLE_SECRET_KEY="your-paddle-secret-key"
-PADDLE_WEBHOOK_SECRET="your-paddle-webhook-secret"
 
-===============================================================================
-🔧 AVAILABLE SCRIPTS
-===============================================================================
+      NEXT_PUBLIC_PADDLE_CLIENT_TOKEN="your-paddle-client-token"
+      PADDLE_SECRET_KEY="your-paddle-secret-key"
+      PADDLE_WEBHOOK_SECRET="your-paddle-webhook-secret"
 
-npm run dev       - Start development server
-npm run build     - Build application for production
-npm run start     - Start production server
-npm run lint      - Run ESLint for code linting
-npm run type-check - Run TypeScript type checking
+## 🔧 AVAILABLE SCRIPTS
 
-===============================================================================
-🗄️ DATABASE SETUP
-===============================================================================
+      npm run dev       - Start development server
+      npm run build     - Build application for production
+      npm run start     - Start production server
+      npm run lint      - Run ESLint for code linting
+      npm run type-check - Run TypeScript type checking
+
+## 🗄️ DATABASE SETUP
 
 The application uses Supabase as the backend. Required tables:
 
@@ -174,9 +153,7 @@ The application uses Supabase as the backend. Required tables:
 - generations: Content generation history
 - usage_tracking: API usage tracking
 
-===============================================================================
-🔐 AUTHENTICATION
-===============================================================================
+## 🔐 AUTHENTICATION
 
 ThinkTapFlow uses Supabase Auth with support for:
 
@@ -185,9 +162,7 @@ ThinkTapFlow uses Supabase Auth with support for:
 - Password recovery
 - Email verification
 
-===============================================================================
-💳 PAYMENT INTEGRATION
-===============================================================================
+## 💳 PAYMENT INTEGRATION
 
 Integrated with Paddle for subscription management:
 
@@ -196,9 +171,7 @@ Integrated with Paddle for subscription management:
 - Webhook handling for subscription events
 - Usage-based billing
 
-===============================================================================
-🤖 AI INTEGRATION
-===============================================================================
+## 🤖 AI INTEGRATION
 
 Groq AI integration provides:
 
@@ -209,9 +182,7 @@ Groq AI integration provides:
 - Customizable generation parameters
 - Cost-effective AI processing
 
-===============================================================================
-🚀 DEPLOYMENT
-===============================================================================
+## 🚀 DEPLOYMENT
 
 Vercel (Recommended):
 1. Push code to GitHub
@@ -225,9 +196,7 @@ Other supported platforms:
 - DigitalOcean App Platform
 - AWS Amplify
 
-===============================================================================
-📝 ENVIRONMENT VARIABLES REFERENCE
-===============================================================================
+## 📝 ENVIRONMENT VARIABLES REFERENCE
 
 Variable                          | Description                    | Required
 -----------------------------------|--------------------------------|---------
@@ -244,9 +213,7 @@ SENTRY_DSN                        | Sentry DSN for error tracking | Yes
 SENTRY_ORG                        | Sentry organization           | Yes
 SENTRY_PROJECT                    | Sentry project name           | Yes
 
-===============================================================================
-🤝 CONTRIBUTING
-===============================================================================
+## 🤝 CONTRIBUTING
 
 1. Fork the repository
 2. Create a feature branch (git checkout -b feature/amazing-feature)
@@ -254,15 +221,11 @@ SENTRY_PROJECT                    | Sentry project name           | Yes
 4. Push to the branch (git push origin feature/amazing-feature)
 5. Open a Pull Request
 
-===============================================================================
-📄 LICENSE
-===============================================================================
+## 📄 LICENSE
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-===============================================================================
-🆘 SUPPORT
-===============================================================================
+## 🆘 SUPPORT
 
 If you encounter issues:
 
@@ -270,9 +233,7 @@ If you encounter issues:
 2. Create a new issue if your problem isn't already reported
 3. Provide detailed information about your environment and the issue
 
-===============================================================================
-🙏 ACKNOWLEDGMENTS
-===============================================================================
+## 🙏 ACKNOWLEDGMENTS
 
 - Next.js - The React framework
 - Supabase - Backend as a Service
@@ -282,6 +243,6 @@ If you encounter issues:
 - Paddle - Payment infrastructure
 - Sentry - Error monitoring and performance tracking
 
-===============================================================================
+
 
 Built with ❤️ by the ThinkTapFlow team
