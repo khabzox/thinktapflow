@@ -8,9 +8,6 @@
 [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff)](#)
 [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff)](#)
 
-
-
-
 </div>
 
 A modern SaaS application for automated content generation powered by AI.
@@ -51,7 +48,7 @@ Backend:
 - Paddle (Payments)
 - Sentry (Error Monitoring)
 
-📁 PROJECT STRUCTURE
+## 📁 PROJECT STRUCTURE
 
       thinktapflow/
       ├── app/                          # Next.js 14 App Router
