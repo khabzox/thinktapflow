@@ -1,6 +1,7 @@
 import type { SupportedPlatforms, PlatformConstraints, AIServiceConfig } from '@/types/ai';
 
 export const DEFAULT_CONFIG: AIServiceConfig = {
+  provider: 'groq',
   apiKey: process.env.GROQ_API_KEY || '',
   model: 'llama-3.3-70b-versatile',
   temperature: 0.7,
