@@ -1,66 +1,67 @@
 import { z } from 'zod';
 
-// Environment variables schema
-const envSchema = z.object({
+// Base environment variables schema (development)
+const baseEnvSchema = z.object({
   // Database
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
-
-  // Authentication
-  // NEXTAUTH_SECRET: z.string().min(1).optional(),
-  // NEXTAUTH_URL: z.string().url().optional(),
 
   // Payment
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1).optional(),
   STRIPE_SECRET_KEY: z.string().min(1).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
 
-  // AI Services - GROQ is primary and required
+  // AI Services
   GROQ_API_KEY: z.string().min(1).optional(),
-  // OPENAI_API_KEY: z.string().min(1).optional(),
-  // ANTHROPIC_API_KEY: z.string().min(1).optional(),
 
   // App
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   // Analytics
-  // NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: z.string().optional(),
   ZIPY_ANALYTICS_ID: z.string().optional(),
   UMAMI_ANALYTICS_ID: z.string().optional(),
-
-  // Email
-  // RESEND_API_KEY: z.string().optional(),
-  // EMAIL_FROM: z.string().email().optional(),
-
-  // Social Media APIs
-  // TWITTER_API_KEY: z.string().optional(),
-  // TWITTER_API_SECRET: z.string().optional(),
-  // FACEBOOK_APP_ID: z.string().optional(),
-  // FACEBOOK_APP_SECRET: z.string().optional(),
-  // LINKEDIN_CLIENT_ID: z.string().optional(),
-  // LINKEDIN_CLIENT_SECRET: z.string().optional(),
 });
 
-// Production-only required fields schema
-const productionRequiredSchema = z.object({
+// Production environment variables schema (required fields)
+const productionEnvSchema = z.object({
+  // Database - Required in production
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+
+  // AI Services - Required in production
   GROQ_API_KEY: z.string().min(1),
+
+  // Payment - Optional but validated if present
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1).optional(),
+  STRIPE_SECRET_KEY: z.string().min(1).optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
+
+  // App
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
+
+  // Analytics
+  ZIPY_ANALYTICS_ID: z.string().optional(),
+  UMAMI_ANALYTICS_ID: z.string().optional(),
 });
 
-// Enhanced environment validation with better error handling
-let env: z.infer<typeof envSchema>;
+// Enhanced environment validation
+let env: z.infer<typeof baseEnvSchema>;
 
 try {
-  // First, validate the base schema (all optional in dev)
-  env = envSchema.parse(process.env);
+  const isProduction = process.env.NODE_ENV === 'production';
   
-  // In production, validate required fields
-  if (process.env.NODE_ENV === 'production') {
-    const requiredFields = productionRequiredSchema.parse(process.env);
-    console.log('✅ All required production environment variables are set');
+  if (isProduction) {
+    // Use production schema with required fields
+    env = productionEnvSchema.parse(process.env);
+    console.log('✅ Production environment variables validated successfully');
+  } else {
+    // Use base schema with optional fields for development
+    env = baseEnvSchema.parse(process.env);
+    console.log('✅ Development environment variables validated');
   }
 } catch (error) {
   if (error instanceof z.ZodError) {
@@ -72,34 +73,50 @@ try {
     });
 
     console.error('\n🔧 To fix this issue:');
-    console.error('1. Copy example.env.local to .env.local');
-    console.error('2. Fill in the required values:');
+    console.error('1. Ensure your .env.local file exists with the required values');
+    console.error('2. Required environment variables for production:');
     console.error('   - NEXT_PUBLIC_SUPABASE_URL: Get from Supabase dashboard');
     console.error('   - NEXT_PUBLIC_SUPABASE_ANON_KEY: Get from Supabase dashboard');
     console.error('   - GROQ_API_KEY: Get from https://console.groq.com/keys');
-    console.error('3. Restart your development server');
+    console.error('3. Restart your application');
 
-    // In development, provide fallback values to prevent complete failure
-    if (process.env.NODE_ENV !== 'production') {
+    // Don't use fallbacks in production - fail fast
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Required environment variables are missing in production');
+    } else {
+      // Provide fallbacks for development
       console.warn('\n⚠️  Using fallback values for development...');
       env = {
         ...process.env,
         NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
-      } as z.infer<typeof envSchema>;
-    } else {
-      throw error;
+      } as z.infer<typeof baseEnvSchema>;
     }
   } else {
     throw error;
   }
 }
 
-// Helper function to get config value with fallback
-function getConfigValue<T>(value: T | undefined, fallback: T, required = false): T {
-  if (value) return value;
+// Helper function to get config value with proper fallbacks
+function getConfigValue<T>(
+  value: T | undefined, 
+  fallback: T, 
+  fieldName?: string
+): T {
+  if (value !== undefined && value !== null && value !== '') {
+    return value;
+  }
   
-  if (required && env.NODE_ENV === 'production') {
-    throw new Error(`Required environment variable is missing in production`);
+  // In production, don't allow fallbacks for critical fields
+  if (env.NODE_ENV === 'production' && fieldName) {
+    const criticalFields = [
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY', 
+      'GROQ_API_KEY'
+    ];
+    
+    if (criticalFields.includes(fieldName)) {
+      throw new Error(`Critical environment variable ${fieldName} is missing in production`);
+    }
   }
   
   return fallback;
@@ -108,16 +125,18 @@ function getConfigValue<T>(value: T | undefined, fallback: T, required = false):
 export const config = {
   // Database
   database: {
-    url: getConfigValue(env.NEXT_PUBLIC_SUPABASE_URL, 'https://placeholder.supabase.co'),
-    anonKey: getConfigValue(env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 'placeholder-anon-key'),
+    url: getConfigValue(
+      env.NEXT_PUBLIC_SUPABASE_URL, 
+      'https://placeholder.supabase.co',
+      'NEXT_PUBLIC_SUPABASE_URL'
+    ),
+    anonKey: getConfigValue(
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 
+      'placeholder-anon-key',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    ),
     serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
   },
-
-  // Authentication
-  // auth: {
-  //   secret: env.NEXTAUTH_SECRET,
-  //   url: env.NEXTAUTH_URL,
-  // },
 
   // Payment
   stripe: {
@@ -129,14 +148,12 @@ export const config = {
   // AI Services
   ai: {
     groq: {
-      apiKey: getConfigValue(env.GROQ_API_KEY, 'placeholder-groq-key'),
+      apiKey: getConfigValue(
+        env.GROQ_API_KEY, 
+        'placeholder-groq-key',
+        'GROQ_API_KEY'
+      ),
     },
-    // openai: {
-    //   apiKey: env.OPENAI_API_KEY,
-    // },
-    // anthropic: {
-    //   apiKey: env.ANTHROPIC_API_KEY,
-    // },
   },
 
   // App
@@ -149,31 +166,8 @@ export const config = {
 
   // Analytics
   analytics: {
-    // googleAnalyticsId: env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
     zipyAnalyticsId: env.ZIPY_ANALYTICS_ID,
     umamiAnalyticsId: env.UMAMI_ANALYTICS_ID,
-  },
-
-  // Email
-  email: {
-    // apiKey: env.RESEND_API_KEY,
-    // from: env.EMAIL_FROM || 'noreply@thinktapflow.com',
-  },
-
-  // Social Media APIs
-  social: {
-    // twitter: {
-    //   apiKey: env.TWITTER_API_KEY,
-    //   apiSecret: env.TWITTER_API_SECRET,
-    // },
-    // facebook: {
-    //   appId: env.FACEBOOK_APP_ID,
-    //   appSecret: env.FACEBOOK_APP_SECRET,
-    // },
-    // linkedin: {
-    //   clientId: env.LINKEDIN_CLIENT_ID,
-    //   clientSecret: env.LINKEDIN_CLIENT_SECRET,
-    // },
   },
 } as const;
 
