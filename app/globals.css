@@ -12,99 +12,157 @@
 
 @layer base {
   :root {
-    /* Base Neutrals */
+    /* Modern Color Palette - Light Mode */
     --background: 0 0% 100%;
-    --foreground: 215 100% 12%;     /* #010D3E for text */
-    --neutral-900: 240 67% 1%;      /* #010103 (Button bg) */
-    --neutral-800: 215 100% 25%;    /* #001E80 (Big titles) */
-    --neutral-750: 225 67% 6%;      /* #0a0a2a (New dark color) */
-    --neutral-700: 224 86% 43%;     /* #183EC2 (Hero gradient start) */
-    --neutral-650: 240 12% 18%;     /* #2c2c33 (New medium dark) */
-    --neutral-600: 230 95% 90%;     /* #EAEEFE (Hero gradient end) */
-    --neutral-500: 220 100% 75%;    /* Light blue between */
-    --neutral-400: 215 100% 65%;    /* Medium blue between */
-    --neutral-300: 210 100% 55%;    /* Another blue variant */
-    --card: 0 0% 100%;
-    --card-foreground: 215 100% 12%;       /* #010D3E for text */
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 100% 12%;    /* #010D3E for text */
-    /* Brand / Primary */
-    --primary: 224 86% 43%;         /* #183EC2 (Hero gradient start) */
+    --foreground: 224 71% 4%;       /* Rich dark navy */
+    
+    /* Brand Colors - Beautiful gradients */
+    --primary: 262 83% 58%;         /* Beautiful purple #8B5CF6 */
     --primary-foreground: 0 0% 98%;
-    /* Sidebar */
-    --sidebar-background: var(--neutral-900); /* #010103 (Button bg) */
-    --sidebar-hover: var(--neutral-750);      /* #0a0a2a (New dark color) */
-    --sidebar-accent: var(--neutral-650);     /* #2c2c33 (New medium dark) */
-    --sidebar-foreground: 230 95% 95%;
-    --sidebar-primary: var(--neutral-600);    /* #EAEEFE (Light) */
-    --sidebar-primary-foreground: 215 100% 12%;
-    --sidebar-border: var(--neutral-750);
-    --sidebar-ring: 224 86% 43%;
-    /* Secondary / Accent */
-    --secondary: 230 95% 85%;       /* Light tint */
-    --secondary-foreground: 215 100% 20%;  /* Hover color for text */
-    --accent: var(--neutral-700);   /* #183EC2 */
+    --primary-light: 270 91% 65%;   /* Lighter purple variant */
+    --primary-dark: 256 87% 45%;    /* Darker purple variant */
+    
+    /* Secondary - Complementary colors */
+    --secondary: 217 91% 60%;       /* Beautiful blue #3B82F6 */
+    --secondary-foreground: 0 0% 98%;
+    --secondary-light: 213 97% 87%; /* Light blue background */
+    
+    /* Accent - Energetic colors */
+    --accent: 142 86% 28%;          /* Modern green #059669 */
     --accent-foreground: 0 0% 98%;
-    /* Muted / Neutral */
-    --muted: 230 95% 95%;
-    --muted-foreground: 215 100% 35%;      /* Muted text version */
+    --accent-light: 142 76% 36%;    /* Lighter green */
+    
+    /* Neutral Scale */
+    --neutral-50: 220 14% 96%;     /* Very light gray */
+    --neutral-100: 220 13% 91%;    /* Light gray */
+    --neutral-200: 220 13% 87%;    /* */
+    --neutral-300: 220 9% 46%;     /* Medium gray */
+    --neutral-400: 220 9% 46%;     /* */
+    --neutral-500: 220 9% 46%;     /* */
+    --neutral-600: 220 13% 18%;    /* Dark gray */
+    --neutral-700: 224 71% 4%;     /* Very dark */
+    --neutral-800: 224 84% 5%;     /* Almost black */
+    --neutral-900: 224 71% 4%;     /* Deep dark */
+    
+    /* Card and Surface Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --card-border: 220 13% 91%;
+    
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    
+    /* Sidebar - Modern dark theme */
+    --sidebar-background: 224 84% 5%;      /* Deep navy */
+    --sidebar-foreground: 220 14% 96%;     /* Light text */
+    --sidebar-primary: 262 83% 58%;        /* Purple accent */
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 224 71% 4%;          /* Darker accent */
+    --sidebar-accent-foreground: 220 14% 96%;
+    --sidebar-border: 220 13% 18%;         /* Subtle border */
+    --sidebar-ring: 262 83% 58%;           /* Purple ring */
+    
+    /* Input and Border */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262 83% 58%;            /* Purple focus ring */
+    
     /* Status Colors */
-    --success: 142 71% 45%;
+    --success: 142 71% 45%;         /* Green */
     --success-foreground: 0 0% 100%;
-    --info: 224 86% 43%;          /* Using hero gradient start for info */
-    --info-foreground: 0 0% 100%;
-    --warning: 36 100% 50%;
+    --warning: 38 92% 50%;          /* Orange */
     --warning-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;       /* Red */
     --destructive-foreground: 0 0% 98%;
-    /* Inputs / Borders */
-    --border: 230 95% 85%;
-    --input: 230 95% 90%;
-    --ring: 224 86% 43%;
-    --radius: 0.5rem;
+    --info: 217 91% 60%;           /* Blue */
+    --info-foreground: 0 0% 100%;
+    
+    /* Muted */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    
+    /* Radius */
+    --radius: 0.75rem;              /* Slightly more rounded */
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+    --gradient-secondary: linear-gradient(135deg, #3B82F6 0%, #059669 100%);
+    --gradient-hero: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #059669 100%);
+    
     /* Chart Colors */
-    --chart-1: 224 86% 43%;       /* #183EC2 (Hero gradient start) */
-    --chart-2: 215 100% 25%;      /* #001E80 (Big titles) */
-    --chart-3: 215 100% 12%;      /* #010D3E (Text) */
-    --chart-4: 240 67% 1%;        /* #010103 (Button bg) */
-    --chart-5: 225 67% 6%;        /* #0a0a2a (New dark color) */
-    --chart-6: 240 12% 18%;       /* #2c2c33 (New medium dark) */
-    /* Hero Section */
-    --hero-bg: radial-gradient(ellipse 200% 100% at bottom left, #183EC2, #EAEEFE 100%);
+    --chart-1: 262 83% 58%;         /* Purple */
+    --chart-2: 217 91% 60%;         /* Blue */
+    --chart-3: 142 86% 28%;         /* Green */
+    --chart-4: 38 92% 50%;          /* Orange */
+    --chart-5: 0 84% 60%;           /* Red */
   }
+  
   .dark {
-    --background: var(--neutral-900);        /* #010103 (Button bg) */
-    --foreground: 230 95% 95%;
-    --card: var(--neutral-900);
-    --card-foreground: 230 95% 95%;
-    --popover: var(--neutral-900);
-    --popover-foreground: 230 95% 95%;
-    --primary: var(--neutral-600);           /* #EAEEFE (Light) */
-    --primary-foreground: 215 100% 12%;      /* #010D3E */
-    --secondary: var(--neutral-800);         /* #001E80 (Big titles) */
-    --secondary-foreground: 230 95% 95%;
-    --accent: var(--neutral-700);            /* #183EC2 */
-    --accent-foreground: 0 0% 98%;
-    --muted: var(--neutral-800);
-    --muted-foreground: 220 100% 75%;
+    /* Modern Color Palette - Dark Mode */
+    --background: 224 84% 5%;           /* Deep navy background */
+    --foreground: 220 14% 96%;         /* Light text */
+    
+    /* Brand Colors - Adjusted for dark mode */
+    --primary: 262 83% 58%;             /* Purple - same as light */
+    --primary-foreground: 224 84% 5%;   /* Dark text on purple */
+    --primary-light: 270 91% 65%;
+    --primary-dark: 256 87% 45%;
+    
+    /* Secondary */
+    --secondary: 217 91% 60%;           /* Blue - same as light */
+    --secondary-foreground: 224 84% 5%;
+    --secondary-light: 217 32% 17%;     /* Dark blue background */
+    
+    /* Accent */
+    --accent: 142 86% 28%;              /* Green - same as light */
+    --accent-foreground: 220 14% 96%;
+    --accent-light: 142 39% 15%;        /* Dark green background */
+    
+    /* Cards and Surfaces */
+    --card: 220 13% 18%;                /* Dark card background */
+    --card-foreground: 220 14% 96%;
+    --card-border: 220 13% 28%;         /* Lighter border for contrast */
+    
+    /* Popover */
+    --popover: 220 13% 18%;
+    --popover-foreground: 220 14% 96%;
+    
+    /* Sidebar - Even darker */
+    --sidebar-background: 224 71% 4%;       /* Almost black */
+    --sidebar-foreground: 220 14% 96%;
+    --sidebar-primary: 262 83% 58%;         /* Purple accent */
+    --sidebar-primary-foreground: 224 84% 5%;
+    --sidebar-accent: 220 13% 28%;          /* Lighter accent for contrast */
+    --sidebar-accent-foreground: 220 14% 96%;
+    --sidebar-border: 220 13% 28%;
+    --sidebar-ring: 262 83% 58%;
+    
+    /* Input and Border */
+    --border: 220 13% 28%;              /* Lighter border for dark mode */
+    --input: 220 13% 18%;               /* Dark input background */
+    --ring: 262 83% 58%;                /* Purple focus ring */
+    
+    /* Status Colors - Adjusted for dark mode */
     --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-    --info: 224 86% 43%;                     /* Hero gradient start for info */
-    --info-foreground: 0 0% 100%;
-    --warning: 36 100% 50%;
-    --warning-foreground: 0 0% 0%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: var(--neutral-800);            /* #001E80 */
-    --input: var(--neutral-800);
-    --ring: var(--neutral-600);              /* Light ring */
-    --chart-1: 230 95% 90%;                  /* #EAEEFE (Light) */
-    --chart-2: 224 86% 43%;                  /* #183EC2 (Hero gradient start) */
-    --chart-3: 215 100% 25%;                 /* #001E80 (Big titles) */
-    --chart-4: 220 100% 75%;                 /* Light blue variant */
-    --chart-5: 215 100% 65%;                 /* Medium blue variant */
-    /* Hero Section Dark */
-    --hero-bg: radial-gradient(ellipse 200% 100% at bottom left, #001E80, #010D3E 100%);
+    --success-foreground: 224 84% 5%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 224 84% 5%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 220 14% 96%;
+    --info: 217 91% 60%;
+    --info-foreground: 224 84% 5%;
+    
+    /* Muted */
+    --muted: 220 13% 18%;
+    --muted-foreground: 220 9% 46%;
+    
+    /* Chart Colors - Same as light mode */
+    --chart-1: 262 83% 58%;
+    --chart-2: 217 91% 60%;
+    --chart-3: 142 86% 28%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 0 84% 60%;
   }
 }
 
@@ -162,14 +220,13 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* Interactive card hover effects */
+/* Interactive card hover effects - simplified */
 .card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.2s ease;
 }
 
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Sidebar enhancements */
@@ -200,13 +257,13 @@
 }
 
 .btn-glow::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: left 0.6s;
 }
 
@@ -253,12 +310,14 @@
 /* Glassmorphism effects */
 .glass {
   background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .glass-dark {
   background: rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -323,5 +382,165 @@
 
   .card {
     @apply p-10 rounded-3xl border border-[#F1F1F1] shadow-[0_7px_14px_#EAEAEA] max-w-xs w-full;
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(white, white) padding-box, 
+                linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary))) border-box;
+    border: 2px solid transparent;
+    border-radius: 12px;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: gradient-shift 3s ease-in-out infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.15);
+  }
+
+  .shadow-glow-hover:hover {
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .interactive-scale {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .interactive-scale:hover {
+    transform: scale(1.05);
+  }
+
+  .interactive-scale:active {
+    transform: scale(0.95);
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+    background-size: 400px 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  /* Enhanced card styles - no animations, subtle shadows */
+  .card-enhanced {
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)/0.3) 100%);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+  }
+
+  .card-enhanced:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    border-color: hsl(var(--primary)/0.2);
+  }
+
+  /* Search input improvements - fix blue color issue */
+  .search-input {
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+
+  .search-input::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 2px hsl(var(--primary)/0.1);
+  }
+
+  /* Enhanced button colors and styles */
+  .btn-primary-enhanced {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+    color: hsl(var(--primary-foreground));
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary-enhanced:hover {
+    background: linear-gradient(135deg, hsl(var(--primary-dark)) 0%, hsl(var(--primary)) 100%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary-enhanced {
+    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--secondary)/0.8) 100%);
+    color: hsl(var(--secondary-foreground));
+    border: 1px solid hsl(var(--secondary)/0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-secondary-enhanced:hover {
+    background: linear-gradient(135deg, hsl(var(--secondary)/0.9) 0%, hsl(var(--secondary)) 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  .btn-accent-enhanced {
+    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent)/0.8) 100%);
+    color: hsl(var(--accent-foreground));
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-accent-enhanced:hover {
+    background: linear-gradient(135deg, hsl(var(--accent)/0.9) 0%, hsl(var(--accent)) 100%);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Input field enhancements */
+  input[type="text"],
+  input[type="email"], 
+  input[type="password"],
+  textarea {
+    background: hsl(var(--background)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  textarea:focus {
+    border-color: hsl(var(--primary)) !important;
+    box-shadow: 0 0 0 2px hsl(var(--primary)/0.1) !important;
+    outline: none !important;
+  }
+
+  /* Remove excessive animations */
+  .no-animate {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .subtle-animate {
+    transition: opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   }
 }

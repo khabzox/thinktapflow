@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
 import { PrimaryBtn, SecondaryBtn } from '@/components/common/btn';
+import { ArrowRight, Play } from 'lucide-react';
 
 export const Hero = () => {
   const heroRef = useRef(null);
@@ -23,28 +24,35 @@ export const Hero = () => {
   return (
     <section
       ref={heroRef}
-      className="pt-8 pb-20 md:pt-5 md:pb-10 overflow-x-clip"
-      style={{
-        background: 'radial-gradient(ellipse 200% 100% at bottom left, #183EC2, #EAEEFE 100%)',
-      }}
+      className="pt-8 pb-20 md:pt-5 md:pb-10 overflow-x-clip bg-gradient-to-br from-primary via-primary-light to-secondary"
     >
       <div className="container">
         <div className="md:flex items-center">
           <div className="md:w-[478px]">
-            <div className="text-sm inline-flex border border-[#222]/10 px-3 py-1 rounded-lg tracking-tight">
-              Transform Your Content Strategy
+            <div className="text-sm inline-flex border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full tracking-tight text-white shadow-lg">
+              ✨ Transform Your Content Strategy
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-b from-black to-[#001E80] text-transparent bg-clip-text mt-6">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-b from-white via-white to-white/80 text-transparent bg-clip-text mt-6 drop-shadow-lg">
               Pathway to productivity
             </h1>
-            <p className="text-xl text-[#010D3E] tracking-tight mt-6">
+            <p className="text-xl text-white/90 tracking-tight mt-6 drop-shadow-md">
               Turn one piece of content into engaging posts for all your social platforms. Save
               time, reach more people, and grow your audience with AI-powered content
               transformation.
             </p>
-            <div className="flex gap-1 items-center mt-[30px]">
-              <PrimaryBtn href={"/dashboard"} textContent={"Start Creating"} />
-              <SecondaryBtn href={"/dashboard"} textContent={"Watch Demo"} />
+            <div className="flex gap-4 items-center mt-8">
+              <PrimaryBtn 
+                href={"/dashboard"} 
+                textContent={"Start Creating"} 
+                icon={<ArrowRight size={18} />}
+                className="bg-white text-primary hover:bg-white/90 shadow-xl"
+              />
+              <SecondaryBtn 
+                href={"/dashboard"} 
+                textContent={"Watch Demo"} 
+                icon={<Play size={18} />}
+                className="border-white/30 text-white hover:bg-white/10"
+              />
             </div>
           </div>
           <div className="mt-20 md:mt-0 md:h-[648px] md:flex-1 relative">

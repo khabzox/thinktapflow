@@ -29,11 +29,14 @@ module.exports = {
   			foreground: 'hsl(var(--foreground))',
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				foreground: 'hsl(var(--primary-foreground))',
+  				light: 'hsl(var(--primary-light))',
+  				dark: 'hsl(var(--primary-dark))'
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
+  				foreground: 'hsl(var(--secondary-foreground))',
+  				light: 'hsl(var(--secondary-light))'
   			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
@@ -45,7 +48,8 @@ module.exports = {
   			},
   			accent: {
   				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
+  				foreground: 'hsl(var(--accent-foreground))',
+  				light: 'hsl(var(--accent-light))'
   			},
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
@@ -53,7 +57,8 @@ module.exports = {
   			},
   			card: {
   				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  				foreground: 'hsl(var(--card-foreground))',
+  				border: 'hsl(var(--card-border))'
   			},
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar-background))',
@@ -64,6 +69,18 @@ module.exports = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			success: {
+  				DEFAULT: 'hsl(var(--success))',
+  				foreground: 'hsl(var(--success-foreground))'
+  			},
+  			warning: {
+  				DEFAULT: 'hsl(var(--warning))',
+  				foreground: 'hsl(var(--warning-foreground))'
+  			},
+  			info: {
+  				DEFAULT: 'hsl(var(--info))',
+  				foreground: 'hsl(var(--info-foreground))'
   			}
   		},
   		borderRadius: {
