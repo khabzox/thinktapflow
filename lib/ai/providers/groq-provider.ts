@@ -41,7 +41,7 @@ export class GroqProvider extends BaseAIProvider {
       name: this.config.model || this.defaultModel,
       provider: 'groq',
       maxTokens: DEFAULT_CONFIG.maxTokens as number,
-      contextWindow: DEFAULT_CONFIG.maxInputTokens as number,
+      contextWindow: DEFAULT_CONFIG.maxTokens as number,
     };
   }
 }
