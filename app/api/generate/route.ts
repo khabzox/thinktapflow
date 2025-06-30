@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase';
 import { cookies } from 'next/headers';
-import { createAIService, DEFAULT_CONFIG } from '@/lib/ai';
+import { aiProvider } from '@/lib/ai';
+import { DEFAULT_AI_PROVIDER, AI_DEFAULTS, AI_LIMITS } from '@/constants/ai';
 import { generatePostsSchema } from '@/lib/api/validation';
 import { handleApiError } from '@/lib/api/errors';
 import { GenerationError } from '@/lib/api/errors';
@@ -287,18 +288,41 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             throw new GenerationError('Invalid request data', 'INVALID_REQUEST', 400);
         }
 
-        // Initialize AI service with API key
-        const aiService = createAIService('groq', {
-            apiKey: env.groq.apiKey,
-            model: DEFAULT_CONFIG.model
-        });
-
-        // Generate posts
-        const result: GenerationResult = await aiService.generateSocialPosts(
+        // Use the Groq AI provider directly
+        const generatedArray = await aiProvider.generateContent(
             validatedData.data.content,
             validatedData.data.platforms,
             validatedData.data.options
         );
+
+        // Transform the array into the expected GenerationResult shape
+        const result: GenerationResult = {
+            posts: Array.isArray(generatedArray)
+                ? generatedArray.reduce((acc: Record<string, any>, item: any) => {
+                    if (item.platform && item.content) {
+                        // Return the full GeneratedContent object, not just the content string
+                        acc[item.platform] = [{
+                            content: item.content,
+                            platform: item.platform,
+                            characterCount: item.characterCount || item.content?.length || 0,
+                            hashtags: item.hashtags || [],
+                            mentions: item.mentions || [],
+                            metadata: {
+                                characterCount: item.characterCount || item.content?.length || 0,
+                                model: item.metadata?.model || 'groq',
+                                timestamp: item.metadata?.timestamp || Date.now(),
+                                formattedDate: new Date(item.metadata?.timestamp || Date.now()).toLocaleString(),
+                                tokens: item.metadata?.tokens || 0
+                            }
+                        }];
+                    }
+                    return acc;
+                }, {})
+                : {},
+            metadata: Array.isArray(generatedArray) && generatedArray[0]?.metadata
+                ? { tokensUsed: generatedArray[0].metadata.tokens }
+                : undefined
+        };
 
         console.log('[Generation] Result:', {
             platforms: validatedData.data.platforms,

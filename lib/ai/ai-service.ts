@@ -1,5 +1,5 @@
 import { BaseAIProvider } from './core/base-ai-provider';
-import { AIProviderFactory, AIProviderType } from './factory/provider-factory';
+import { createAIProvider, AIProviderType } from './factory/provider-factory';
 import { ContentService } from '../content/content-service';
 import { SocialService } from '../social/social-service';
 import {
@@ -10,41 +10,59 @@ import {
   GenerationMetrics,
   SupportedPlatforms,
 } from '@/types/ai';
-import { DEFAULT_CONFIG } from '@/constants/ai';
+import { AI_DEFAULTS, DEFAULT_AI_PROVIDER, AI_LIMITS } from '../../constants/ai';
 
-export class AIService {
-  private aiProvider: BaseAIProvider;
-  private contentService: ContentService;
-  private socialService: SocialService;
-  private metrics: GenerationMetrics[] = [];
+// Build default config using our AI constants
+const buildDefaultConfig = (): AIServiceConfig => ({
+  provider: DEFAULT_AI_PROVIDER,
+  apiKey: process.env.GROQ_API_KEY || '',
+  temperature: AI_DEFAULTS.TEMPERATURE,
+  maxTokens: AI_LIMITS.MAX_TOKENS,
+  topP: AI_DEFAULTS.TOP_P,
+  timeout: AI_LIMITS.TIMEOUT_MS,
+  maxContentLength: AI_LIMITS.MAX_INPUT_LENGTH,
+  maxInputTokens: AI_LIMITS.MAX_TOKENS,
+  maxOutputTokens: AI_LIMITS.MAX_OUTPUT_LENGTH
+});
 
-  constructor(providerType: AIProviderType = 'groq', config: Partial<AIServiceConfig> = {}) {
-    const fullConfig = { ...DEFAULT_CONFIG, ...config };
-    this.aiProvider = AIProviderFactory.create(providerType, fullConfig);
-    this.contentService = new ContentService();
-    this.socialService = new SocialService();
-  }
+// Functional AI Service with state management through closure
+export const createAIService = (
+  providerType: AIProviderType = DEFAULT_AI_PROVIDER, 
+  config: Partial<AIServiceConfig> = {}
+) => {
+  const fullConfig = { ...buildDefaultConfig(), ...config };
+  let aiProvider = createAIProvider(providerType, fullConfig);
+  const contentService = new ContentService();
+  const socialService = new SocialService();
+  let metrics: GenerationMetrics[] = [];
 
-  async parseContentFromUrl(url: string): Promise<ContentParsingResult> {
-    return this.contentService.extractContent(url);
-  }
+  const recordMetrics = (newMetrics: GenerationMetrics): void => {
+    metrics.push(newMetrics);
+    if (metrics.length > 100) {
+      metrics = metrics.slice(-50); // Keep last 50
+    }
+  };
 
-  async generateSocialPosts(
+  const parseContentFromUrl = async (url: string): Promise<ContentParsingResult> => {
+    return contentService.extractContent(url);
+  };
+
+  const generateSocialPosts = async (
     content: string,
     platforms: SupportedPlatforms[],
     options: AIGenerationOptions = {}
-  ): Promise<GeneratedPosts> {
+  ): Promise<GeneratedPosts> => {
     const startTime = Date.now();
 
     try {
-      const result = await this.socialService.generatePosts(
+      const result = await socialService.generatePosts(
         content,
         platforms,
-        this.aiProvider,
+        aiProvider,
         options
       );
 
-      this.recordMetrics({
+      recordMetrics({
         requestTime: startTime,
         responseTime: Date.now(),
         tokensUsed: result.metadata.tokensUsed,
@@ -55,7 +73,7 @@ export class AIService {
 
       return result;
     } catch (error) {
-      this.recordMetrics({
+      recordMetrics({
         requestTime: startTime,
         responseTime: Date.now(),
         tokensUsed: 0,
@@ -67,21 +85,63 @@ export class AIService {
 
       throw error;
     }
+  };
+
+  const switchProvider = (newProviderType: AIProviderType, newConfig?: Partial<AIServiceConfig>): void => {
+    const fullNewConfig = { ...buildDefaultConfig(), ...newConfig };
+    aiProvider = createAIProvider(newProviderType, fullNewConfig);
+  };
+
+  const getMetrics = (): GenerationMetrics[] => {
+    return [...metrics];
+  };
+
+  const getCurrentProvider = (): BaseAIProvider => aiProvider;
+
+  const healthCheck = async () => {
+    // Implement health check logic
+    return {
+      status: 'healthy',
+      provider: aiProvider.constructor.name,
+      timestamp: Date.now()
+    };
+  };
+
+  return {
+    parseContentFromUrl,
+    generateSocialPosts,
+    switchProvider,
+    getMetrics,
+    getCurrentProvider,
+    healthCheck
+  };
+};
+
+// Legacy class wrapper for backward compatibility
+export class AIService {
+  private service: ReturnType<typeof createAIService>;
+
+  constructor(providerType: AIProviderType = DEFAULT_AI_PROVIDER, config: Partial<AIServiceConfig> = {}) {
+    this.service = createAIService(providerType, config);
+  }
+
+  async parseContentFromUrl(url: string): Promise<ContentParsingResult> {
+    return this.service.parseContentFromUrl(url);
+  }
+
+  async generateSocialPosts(
+    content: string,
+    platforms: SupportedPlatforms[],
+    options: AIGenerationOptions = {}
+  ): Promise<GeneratedPosts> {
+    return this.service.generateSocialPosts(content, platforms, options);
   }
 
   switchProvider(providerType: AIProviderType, config?: Partial<AIServiceConfig>): void {
-    const fullConfig = { ...DEFAULT_CONFIG, ...config };
-    this.aiProvider = AIProviderFactory.create(providerType, fullConfig);
+    this.service.switchProvider(providerType, config);
   }
 
   getMetrics(): GenerationMetrics[] {
-    return [...this.metrics];
-  }
-
-  private recordMetrics(metrics: GenerationMetrics): void {
-    this.metrics.push(metrics);
-    if (this.metrics.length > 100) {
-      this.metrics = this.metrics.slice(-50); // Keep last 50
-    }
+    return this.service.getMetrics();
   }
 }

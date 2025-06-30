@@ -12,14 +12,7 @@ import { Loader2, Link, Type, Sparkles } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 
-const platforms = [
-    { id: "twitter", name: "Twitter", icon: "🐦", limit: 280 },
-    { id: "linkedin", name: "LinkedIn", icon: "💼", limit: 3000 },
-    { id: "facebook", name: "Facebook", icon: "📘", limit: 2000 },
-    { id: "instagram", name: "Instagram", icon: "📸", limit: 2200 },
-    { id: "tiktok", name: "TikTok", icon: "🎵", limit: 150 },
-    { id: "youtube", name: "YouTube", icon: "📺", limit: 5000 },
-]
+import { PLATFORMS_ARRAY } from "@/constants/platforms"
 
 interface GenerationFormProps {
     onGenerate: (posts: any[]) => void
@@ -47,7 +40,7 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
         await new Promise((resolve) => setTimeout(resolve, 2000))
 
         const mockPosts = selectedPlatforms.map((platformId) => {
-            const platform = platforms.find((p) => p.id === platformId)
+            const platform = PLATFORMS_ARRAY.find((p) => p.id === platformId)
             return {
                 id: Math.random().toString(36).substr(2, 9),
                 platform: platform?.name,
@@ -176,8 +169,7 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
 
                 <div className="space-y-3">
                     <Label>Select Platforms</Label>
-                    <div className="grid grid-cols-2 gap-3">
-                        {platforms.map((platform) => (
+                    <div className="grid grid-cols-2 gap-3">                                    {PLATFORMS_ARRAY.map((platform) => (
                             <div
                                 key={platform.id}
                                 className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
@@ -203,7 +195,7 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
                     {selectedPlatforms.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                             {selectedPlatforms.map((platformId) => {
-                                const platform = platforms.find((p) => p.id === platformId)
+                                const platform = PLATFORMS_ARRAY.find((p) => p.id === platformId)
                                 return (
                                     <Badge key={platformId} variant="secondary" className="text-xs">
                                         {platform?.icon} {platform?.name}

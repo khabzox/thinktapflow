@@ -1,15 +1,32 @@
-export type AIProviderType = 'gemini' | 'groq' | 'openai'
+import { AI_PROVIDERS, DEFAULT_AI_PROVIDER, GROQ_MODELS, AI_MODELS, AI_TONES, CONTENT_TYPES } from '@/constants/ai';
+
+export type AIProviderType = 'groq' | 'openai' | 'anthropic';
+
+// Groq is the default and primary provider type
+export type DefaultAIProvider = typeof DEFAULT_AI_PROVIDER;
 
 export interface AIServiceConfig {
+  provider: AIProviderType;
   apiKey: string;
+  baseURL?: string;
   model?: string;
   temperature?: number;
   maxTokens?: number;
   topP?: number;
-  timeout: number;
-  maxContentLength: number;
-  maxInputTokens: number;
-  maxOutputTokens: number;
+  timeout?: number;
+  maxContentLength?: number;
+  maxInputTokens?: number;
+  maxOutputTokens?: number;
+}
+
+// Groq-specific configuration (Primary Provider)
+export interface GroqConfig extends AIServiceConfig {
+  provider: 'groq';
+  models: {
+    chat: typeof GROQ_MODELS.FAST;
+    chatAdvanced: typeof GROQ_MODELS.BALANCED;
+    chatUltra: typeof GROQ_MODELS.ADVANCED;
+  };
 }
 
 export interface AIGenerationOptions {
@@ -22,6 +39,10 @@ export interface AIGenerationOptions {
   contentLength?: number;    // 0 to 100
   targetAudience?: string;
   customInstructions?: string;
+  tone?: keyof typeof AI_TONES;
+  contentType?: keyof typeof CONTENT_TYPES;
+  platform?: string;
+  model?: keyof typeof AI_MODELS;
 }
 
 export interface ModelInfo {

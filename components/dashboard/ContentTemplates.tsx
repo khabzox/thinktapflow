@@ -8,64 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Copy, FileText, Star, StarOff, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 
-const templates = [
-    {
-        id: "template_1",
-        title: "Product Launch",
-        description: "Announce your new product or feature across platforms",
-        platforms: ["Twitter", "LinkedIn", "Facebook"],
-        category: "marketing",
-        isFavorite: true,
-    },
-    {
-        id: "template_2",
-        title: "Weekly Newsletter",
-        description: "Curate content for your weekly newsletter",
-        platforms: ["Email"],
-        category: "newsletter",
-        isFavorite: false,
-    },
-    {
-        id: "template_3",
-        title: "Promotional Campaign",
-        description: "Create a multi-platform promotional campaign",
-        platforms: ["Instagram", "Facebook", "Twitter"],
-        category: "marketing",
-        isFavorite: true,
-    },
-    {
-        id: "template_4",
-        title: "Blog Post",
-        description: "Generate a blog post with SEO optimization",
-        platforms: ["Blog"],
-        category: "content",
-        isFavorite: false,
-    },
-    {
-        id: "template_5",
-        title: "Customer Testimonial",
-        description: "Highlight customer testimonials for social media",
-        platforms: ["Instagram", "LinkedIn", "Facebook"],
-        category: "social",
-        isFavorite: false,
-    },
-    {
-        id: "template_6",
-        title: "Event Promotion",
-        description: "Promote your upcoming event across platforms",
-        platforms: ["Twitter", "LinkedIn", "Facebook", "Email"],
-        category: "marketing",
-        isFavorite: false,
-    },
-]
+import { CONTENT_TEMPLATES, getTemplatesByCategory, TEMPLATE_CATEGORIES } from "@/constants/templates"
 
 export function ContentTemplates() {
     const [favorites, setFavorites] = useState<Set<string>>(
-        new Set(templates.filter((t) => t.isFavorite).map((t) => t.id)),
+        new Set(CONTENT_TEMPLATES.filter((t) => t.isFavorite).map((t) => t.id)),
     )
     const [activeTab, setActiveTab] = useState("all")
 
-    const filteredTemplates = templates.filter((template) => {
+    const filteredTemplates = CONTENT_TEMPLATES.filter((template) => {
         if (activeTab === "favorites") return favorites.has(template.id)
         if (activeTab === "all") return true
         return template.category === activeTab
