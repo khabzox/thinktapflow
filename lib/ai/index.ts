@@ -1,6 +1,6 @@
 // Main AI provider service (Functional approach with Groq as default)
 export { aiProvider } from './provider';
-export type { AIMessage, AIGenerationOptions, GeneratedContent } from './provider';
+export type { AIMessage, GeneratedContent } from './provider';
 
 // Groq service (primary AI provider)
 export { groqService } from './groq';
@@ -16,11 +16,22 @@ export { createAIProvider, getDefaultAIProvider } from './factory/provider-facto
 export { aiConfig } from '@/config/ai';
 export * from '@/constants/ai';
 
-// Legacy exports for backward compatibility
-export * from '@/types/ai';
+// Explicit re-exports from types to avoid conflicts
+export type { 
+  AIProviderType, 
+  DefaultAIProvider,
+  SupportedPlatforms,
+  AIServiceConfig,
+  AIGenerationOptions,
+  ContentParsingResult,
+  GeneratedPosts,
+  GenerationMetrics,
+  ModelInfo
+} from '@/types/ai';
 
 // Import for utility functions
-import { aiProvider, AIGenerationOptions } from './provider';
+import { aiProvider } from './provider';
+import { AIGenerationOptions } from '@/types/ai';
 
 // Utility functions (Groq-first)
 export const getAIProvider = () => aiProvider;
