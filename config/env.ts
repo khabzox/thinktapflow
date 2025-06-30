@@ -1,32 +1,41 @@
 import { z } from 'zod';
 
-// Environment variables schema
-const envSchema = z.object({
-  // Database
+// Client-side environment variables schema (available in browser)
+const clientEnvSchema = z.object({
+  // Database (public)
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+
+  // Payment (public)
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1).optional(),
+
+  // App (public)
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+
+  // Analytics (public)
+  // NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: z.string().optional(),
+});
+
+// Server-side environment variables schema (server only)
+const serverEnvSchema = z.object({
+  // Database (server)
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
 
   // Authentication
   // NEXTAUTH_SECRET: z.string().min(1).optional(),
   // NEXTAUTH_URL: z.string().url().optional(),
 
-  // Payment
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1).optional(),
+  // Payment (server)
   STRIPE_SECRET_KEY: z.string().min(1).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
 
-  // AI Services - GROQ is primary and required
+  // AI Services - GROQ is primary and required (server only)
   GROQ_API_KEY: z.string().min(1),
   // OPENAI_API_KEY: z.string().min(1).optional(),
   // ANTHROPIC_API_KEY: z.string().min(1).optional(),
 
-  // App
-  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-
-  // Analytics
-  // NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: z.string().optional(),
+  // Analytics (server)
   ZIPY_ANALYTICS_ID: z.string().optional(),
   UMAMI_ANALYTICS_ID: z.string().optional(),
 
@@ -43,11 +52,33 @@ const envSchema = z.object({
   // LINKEDIN_CLIENT_SECRET: z.string().optional(),
 });
 
+// Combined schema for server-side validation
+const envSchema = clientEnvSchema.merge(serverEnvSchema);
+
 // Enhanced environment validation with better error handling
 let env: z.infer<typeof envSchema>;
 
+// Determine if we're on the client side
+const isClient = typeof window !== 'undefined';
+
 try {
-  env = envSchema.parse(process.env);
+  if (isClient) {
+    // Client-side: only validate public environment variables
+    const clientEnv = clientEnvSchema.parse(process.env);
+    env = {
+      ...clientEnv,
+      // Provide safe defaults for server-only variables on client
+      GROQ_API_KEY: '',
+      SUPABASE_SERVICE_ROLE_KEY: undefined,
+      STRIPE_SECRET_KEY: undefined,
+      STRIPE_WEBHOOK_SECRET: undefined,
+      ZIPY_ANALYTICS_ID: undefined,
+      UMAMI_ANALYTICS_ID: undefined,
+    } as z.infer<typeof envSchema>;
+  } else {
+    // Server-side: validate all environment variables
+    env = envSchema.parse(process.env);
+  }
 } catch (error) {
   if (error instanceof z.ZodError) {
     console.error('❌ Environment validation failed:');
@@ -60,23 +91,43 @@ try {
     console.error('\n🔧 To fix this issue:');
     console.error('1. Copy example.env.local to .env.local');
     console.error('2. Fill in the required values:');
-    console.error('   - NEXT_PUBLIC_SUPABASE_URL: Get from Supabase dashboard');
-    console.error('   - NEXT_PUBLIC_SUPABASE_ANON_KEY: Get from Supabase dashboard');
-    console.error('   - GROQ_API_KEY: Get from https://console.groq.com/keys');
+    
+    if (!isClient) {
+      console.error('   - NEXT_PUBLIC_SUPABASE_URL: Get from Supabase dashboard');
+      console.error('   - NEXT_PUBLIC_SUPABASE_ANON_KEY: Get from Supabase dashboard');
+      console.error('   - GROQ_API_KEY: Get from https://console.groq.com/keys');
+    }
+    
     console.error('3. Restart your development server');
 
     // In development, provide fallback values to prevent complete failure
     if (process.env.NODE_ENV === 'development') {
       console.warn('\n⚠️  Using fallback values for development...');
-      env = {
-        ...process.env,
-        NEXT_PUBLIC_SUPABASE_URL:
-          process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-        NEXT_PUBLIC_SUPABASE_ANON_KEY:
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key',
-        GROQ_API_KEY: process.env.GROQ_API_KEY || 'placeholder-groq-key',
-        NODE_ENV: 'development' as const,
-      } as z.infer<typeof envSchema>;
+      
+      if (isClient) {
+        env = {
+          NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key',
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+          NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+          NODE_ENV: 'development' as const,
+          // Server-only defaults
+          GROQ_API_KEY: '',
+          SUPABASE_SERVICE_ROLE_KEY: undefined,
+          STRIPE_SECRET_KEY: undefined,
+          STRIPE_WEBHOOK_SECRET: undefined,
+          ZIPY_ANALYTICS_ID: undefined,
+          UMAMI_ANALYTICS_ID: undefined,
+        } as z.infer<typeof envSchema>;
+      } else {
+        env = {
+          ...process.env,
+          NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key',
+          GROQ_API_KEY: process.env.GROQ_API_KEY || 'placeholder-groq-key',
+          NODE_ENV: 'development' as const,
+        } as z.infer<typeof envSchema>;
+      }
     } else {
       throw error;
     }
@@ -106,10 +157,10 @@ export const config = {
     webhookSecret: env.STRIPE_WEBHOOK_SECRET,
   },
 
-  // AI Services
+  // AI Services (server-side only)
   ai: {
     groq: {
-      apiKey: env.GROQ_API_KEY,
+      apiKey: env.GROQ_API_KEY || '', // Safe fallback for client-side
     },
     // openai: {
     //   apiKey: env.OPENAI_API_KEY,
@@ -125,6 +176,7 @@ export const config = {
     env: env.NODE_ENV,
     isDevelopment: env.NODE_ENV === 'development',
     isProduction: env.NODE_ENV === 'production',
+    isClient: typeof window !== 'undefined',
   },
 
   // Analytics
@@ -158,3 +210,22 @@ export const config = {
 } as const;
 
 export type Config = typeof config;
+export const getServerEnv = (key: keyof typeof env) => {
+  if (typeof window !== 'undefined') {
+    console.warn(`⚠️  Attempted to access server-only environment variable '${key}' on client side`);
+    return undefined;
+  }
+  return env[key];
+};
+
+export const getClientEnv = (key: keyof typeof env) => {
+  if (!key.startsWith('NEXT_PUBLIC_') && typeof window !== 'undefined') {
+    console.warn(`⚠️  Environment variable '${key}' should be prefixed with NEXT_PUBLIC_ for client access`);
+  }
+  return env[key];
+};
+
+// Safe getters for commonly used environment variables
+export const getGroqApiKey = () => getServerEnv('GROQ_API_KEY');
+export const getSupabaseUrl = () => env.NEXT_PUBLIC_SUPABASE_URL;
+export const getSupabaseAnonKey = () => env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
