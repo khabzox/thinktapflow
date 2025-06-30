@@ -9,6 +9,9 @@ export type { GroqChatMessage, GroqCompletionOptions, GroqResponse } from './gro
 // Functional AI service factory
 export { createAIService } from './ai-service';
 
+// Legacy class wrapper for backward compatibility
+export { AIService } from './ai-service';
+
 // Factory functions for creating providers
 export { createAIProvider, getDefaultAIProvider } from './factory/provider-factory';
 
