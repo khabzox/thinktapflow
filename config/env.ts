@@ -3,8 +3,8 @@ import { z } from 'zod';
 // Environment variables schema
 const envSchema = z.object({
   // Database
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
 
   // Authentication
@@ -17,7 +17,7 @@ const envSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
 
   // AI Services - GROQ is primary and required
-  GROQ_API_KEY: z.string().min(1),
+  GROQ_API_KEY: z.string().min(1).optional(),
   // OPENAI_API_KEY: z.string().min(1).optional(),
   // ANTHROPIC_API_KEY: z.string().min(1).optional(),
 
@@ -43,11 +43,25 @@ const envSchema = z.object({
   // LINKEDIN_CLIENT_SECRET: z.string().optional(),
 });
 
+// Production-only required fields schema
+const productionRequiredSchema = z.object({
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  GROQ_API_KEY: z.string().min(1),
+});
+
 // Enhanced environment validation with better error handling
 let env: z.infer<typeof envSchema>;
 
 try {
+  // First, validate the base schema (all optional in dev)
   env = envSchema.parse(process.env);
+  
+  // In production, validate required fields
+  if (process.env.NODE_ENV === 'production') {
+    const requiredFields = productionRequiredSchema.parse(process.env);
+    console.log('✅ All required production environment variables are set');
+  }
 } catch (error) {
   if (error instanceof z.ZodError) {
     console.error('❌ Environment validation failed:');
@@ -66,16 +80,11 @@ try {
     console.error('3. Restart your development server');
 
     // In development, provide fallback values to prevent complete failure
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV !== 'production') {
       console.warn('\n⚠️  Using fallback values for development...');
       env = {
         ...process.env,
-        NEXT_PUBLIC_SUPABASE_URL:
-          process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-        NEXT_PUBLIC_SUPABASE_ANON_KEY:
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key',
-        GROQ_API_KEY: process.env.GROQ_API_KEY || 'placeholder-groq-key',
-        NODE_ENV: 'development' as const,
+        NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
       } as z.infer<typeof envSchema>;
     } else {
       throw error;
@@ -85,11 +94,22 @@ try {
   }
 }
 
+// Helper function to get config value with fallback
+function getConfigValue<T>(value: T | undefined, fallback: T, required = false): T {
+  if (value) return value;
+  
+  if (required && env.NODE_ENV === 'production') {
+    throw new Error(`Required environment variable is missing in production`);
+  }
+  
+  return fallback;
+}
+
 export const config = {
   // Database
   database: {
-    url: env.NEXT_PUBLIC_SUPABASE_URL,
-    anonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    url: getConfigValue(env.NEXT_PUBLIC_SUPABASE_URL, 'https://placeholder.supabase.co'),
+    anonKey: getConfigValue(env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 'placeholder-anon-key'),
     serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
   },
 
@@ -109,7 +129,7 @@ export const config = {
   // AI Services
   ai: {
     groq: {
-      apiKey: env.GROQ_API_KEY,
+      apiKey: getConfigValue(env.GROQ_API_KEY, 'placeholder-groq-key'),
     },
     // openai: {
     //   apiKey: env.OPENAI_API_KEY,
