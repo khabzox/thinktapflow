@@ -4,7 +4,7 @@ import {
   PlatformPost,
   AIGenerationOptions,
 } from '@/types/ai';
-import { PLATFORM_CONSTRAINTS } from '@/constants/ai';
+import { PLATFORM_CONSTRAINTS } from '@/constants/ai/index';
 
 export abstract class BasePostGenerator {
   protected platform: SupportedPlatforms;
