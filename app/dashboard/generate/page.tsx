@@ -31,6 +31,7 @@ import { toast } from 'sonner';
 import { useGenerate } from '@/hooks/use-generate';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { GeneratedContent } from '@/lib/ai/provider';
 
 const contentTypes = [
   {
@@ -82,19 +83,6 @@ const platforms = [
   { id: 'youtube', name: 'YouTube', limit: 5000, color: '#FF0000' },
 ];
 
-// Add interface for the content structure
-interface ContentItem {
-  content: string;
-  hashtags: string[];
-  mentions: string[];
-  metadata: {
-    characterCount: number;
-    platform: string;
-    timestamp: number;
-    formattedDate: string;
-  };
-}
-
 export default function GeneratePage() {
   const { generateContent, isGenerating, error: generateError } = useGenerate();
   const [selectedType, setSelectedType] = useState('text');
@@ -107,7 +95,7 @@ export default function GeneratePage() {
   const [includeEmojis, setIncludeEmojis] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
   const [contentVariations, setContentVariations] = useState<string[]>([]);
-  const [platformContent, setPlatformContent] = useState<Record<string, ContentItem[]>>({});
+  const [platformContent, setPlatformContent] = useState<Record<string, GeneratedContent[]>>({});
   const [currentVariationIndexes, setCurrentVariationIndexes] = useState<Record<string, number>>(
     {}
   );
@@ -131,15 +119,15 @@ export default function GeneratePage() {
     });
 
     if (result) {
-      const platformResults: Record<string, ContentItem[]> = {};
+      const platformResults: Record<string, GeneratedContent[]> = {};
 
       // Process content for each platform
       for (const platformId of selectedPlatforms) {
         const platformContent = result.posts[platformId];
         if (Array.isArray(platformContent)) {
-          platformResults[platformId] = platformContent as ContentItem[];
+          platformResults[platformId] = platformContent as GeneratedContent[];
         } else if (platformContent) {
-          platformResults[platformId] = [platformContent as ContentItem];
+          platformResults[platformId] = [platformContent as GeneratedContent];
         }
       }
 
@@ -698,27 +686,18 @@ export default function GeneratePage() {
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
                           <span>
                             Characters:{' '}
-                            {currentVariation?.metadata?.characterCount ||
-                              currentVariation?.characterCount ||
-                              currentVariation?.content?.length ||
-                              0}
+                            {currentVariation?.metadata?.characterCount || 0}
                           </span>
                           <Badge
                             variant={
-                              (currentVariation?.metadata?.characterCount ||
-                                currentVariation?.characterCount ||
-                                currentVariation?.content?.length ||
-                                0) <= platform.limit
+                              (currentVariation?.metadata?.characterCount || 0) <= platform.limit
                                 ? 'secondary'
                                 : 'destructive'
                             }
                             className="text-xs"
                           >
                             Limit:{' '}
-                            {currentVariation?.metadata?.characterCount ||
-                              currentVariation?.characterCount ||
-                              currentVariation?.content?.length ||
-                              0}
+                            {currentVariation?.metadata?.characterCount || 0}
                             /{platform.limit}
                           </Badge>
                         </div>
@@ -737,8 +716,8 @@ export default function GeneratePage() {
                               const textToCopy = [
                                 currentVariation.content,
                                 '',
-                                ...currentVariation.hashtags.map((tag) => `#${tag}`),
-                                ...currentVariation.mentions,
+                                ...(currentVariation.hashtags ?? []).map((tag) => `#${tag}`),
+                                ...(currentVariation.mentions ?? []),
                               ].join('\n');
                               navigator.clipboard.writeText(textToCopy);
                               toast.success(`Copied ${platform.name} content with hashtags!`);

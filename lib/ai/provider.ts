@@ -8,21 +8,11 @@ import {
   AI_LIMITS,
   AI_ERRORS 
 } from '@/constants/ai';
+import { AIGenerationOptions } from '@/types/ai';
 
 export interface AIMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
-}
-
-export interface AIGenerationOptions {
-  platform?: string;
-  tone?: keyof typeof AI_TONES;
-  includeHashtags?: boolean;
-  includeEmojis?: boolean;
-  contentType?: keyof typeof CONTENT_TYPES;
-  temperature?: number;
-  maxTokens?: number;
-  model?: keyof typeof AI_MODELS;
 }
 
 export interface GeneratedContent {

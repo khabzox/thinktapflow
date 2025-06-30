@@ -221,9 +221,9 @@ export const MODEL_CONFIGS = {
   }
 } as const;
 
-export type AIProviderType = typeof AI_PROVIDERS[keyof typeof AI_PROVIDERS];
+// Type exports (derived from constants)
 export type AIModelType = typeof AI_MODELS[keyof typeof AI_MODELS];
 export type AIToneType = typeof AI_TONES[keyof typeof AI_TONES];
 export type ContentType = typeof CONTENT_TYPES[keyof typeof CONTENT_TYPES];
-export type PlatformConstraints = typeof PLATFORM_CONSTRAINTS[keyof typeof PLATFORM_CONSTRAINTS];
+export type PlatformConstraintsType = typeof PLATFORM_CONSTRAINTS[keyof typeof PLATFORM_CONSTRAINTS];
 export type ModelConfig = typeof MODEL_CONFIGS[keyof typeof MODEL_CONFIGS];
