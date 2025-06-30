@@ -1,12 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { databaseConfig } from '@/config/database';
 import { Database } from '@/types/supabase';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
 // Create a single supabase client for interacting with your database
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient<Database>(
+  databaseConfig.url,
+  databaseConfig.anonKey,
+  databaseConfig.options
+)
 
 // Create a server-side client
 export const createServerClient = (cookieStore: any) => {

@@ -1,9 +1,7 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-
-// Public routes that don't require authentication
-const publicRoutes = ['/', '/privacy-policy', '/terms-of-service', '/auth/login', '/auth/signup', '/auth/verify-email', '/auth/callback']
+import { PUBLIC_ROUTES } from '@/constants/routes'
 
 export async function middleware(request: NextRequest) {
   const res = NextResponse.next()
@@ -25,7 +23,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protect all non-public routes
-  if (!publicRoutes.includes(pathname)) {
+  if (!PUBLIC_ROUTES.includes(pathname as any)) {
     if (!session) {
       // Store the original URL to redirect back after login
       const redirectUrl = new URL('/auth/login', request.url)
