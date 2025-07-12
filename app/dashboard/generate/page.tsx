@@ -305,13 +305,13 @@ export default function GeneratePage() {
                           </Button>
                         )}
                       </div>
-                      <Textarea
+                        <Textarea
                         id="prompt"
                         placeholder="e.g., Create a social media post about our new AI-powered content generation tool that helps marketers save time..."
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
-                        className="min-h-[120px] resize-none"
-                      />
+                        className="min-h-[120px] resize-y"
+                        />
                       <div className="flex items-center justify-between text-sm text-muted-foreground">
                         <span>Characters: {prompt.length}</span>
                         <Badge variant={prompt.length > 5000 ? 'destructive' : 'secondary'}>
