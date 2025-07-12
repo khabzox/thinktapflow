@@ -1,4 +1,4 @@
-import { BaseAIProvider } from './core/base-ai-provider';
+import { AIProvider } from './core/base-ai-provider';
 import { createAIProvider, AIProviderType } from './factory/provider-factory';
 import { ContentService } from '../content/content-service';
 import { SocialService } from '../social/social-service';
@@ -96,7 +96,7 @@ export const createAIService = (
     return [...metrics];
   };
 
-  const getCurrentProvider = (): BaseAIProvider => aiProvider;
+  const getCurrentProvider = (): AIProvider => aiProvider;
 
   const healthCheck = async () => {
     // Implement health check logic
@@ -117,31 +117,31 @@ export const createAIService = (
   };
 };
 
-// Legacy class wrapper for backward compatibility
-export class AIService {
-  private service: ReturnType<typeof createAIService>;
+// Export individual service creators for specific use cases
+export const createContentParser = (config: Partial<AIServiceConfig> = {}) => {
+  const service = createAIService(DEFAULT_AI_PROVIDER, config);
+  return {
+    parseContentFromUrl: service.parseContentFromUrl,
+    getMetrics: service.getMetrics,
+  };
+};
 
-  constructor(providerType: AIProviderType = DEFAULT_AI_PROVIDER, config: Partial<AIServiceConfig> = {}) {
-    this.service = createAIService(providerType, config);
-  }
+export const createSocialGenerator = (
+  providerType: AIProviderType = DEFAULT_AI_PROVIDER,
+  config: Partial<AIServiceConfig> = {}
+) => {
+  const service = createAIService(providerType, config);
+  return {
+    generateSocialPosts: service.generateSocialPosts,
+    switchProvider: service.switchProvider,
+    getMetrics: service.getMetrics,
+  };
+};
 
-  async parseContentFromUrl(url: string): Promise<ContentParsingResult> {
-    return this.service.parseContentFromUrl(url);
-  }
+// Helper function to create a pre-configured AI service
+export const createDefaultAIService = (config: Partial<AIServiceConfig> = {}) => {
+  return createAIService(DEFAULT_AI_PROVIDER, config);
+};
 
-  async generateSocialPosts(
-    content: string,
-    platforms: SupportedPlatforms[],
-    options: AIGenerationOptions = {}
-  ): Promise<GeneratedPosts> {
-    return this.service.generateSocialPosts(content, platforms, options);
-  }
-
-  switchProvider(providerType: AIProviderType, config?: Partial<AIServiceConfig>): void {
-    this.service.switchProvider(providerType, config);
-  }
-
-  getMetrics(): GenerationMetrics[] {
-    return this.service.getMetrics();
-  }
-}
+// Type export for the service interface
+export type AIServiceInterface = ReturnType<typeof createAIService>;

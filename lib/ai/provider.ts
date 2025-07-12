@@ -245,58 +245,61 @@ const createAIProviderService = () => {
 // Create and export the functional AI provider service
 export const aiProvider = createAIProviderService();
 
-// Legacy class wrapper for backward compatibility
-export class AIProviderService {
-  private service: ReturnType<typeof createAIProviderService>;
+// Export the factory function for creating custom instances
+export { createAIProviderService };
 
-  constructor() {
-    this.service = createAIProviderService();
-  }
+// Export specialized service creators
+export const createContentGenerator = () => {
+  const service = createAIProviderService();
+  return {
+    generateContent: service.generateContent,
+    generateForPlatform: service.generateForPlatform,
+    generateVariations: service.generateVariations,
+    healthCheck: service.healthCheck,
+  };
+};
 
-  async generateContent(
-    input: string,
-    platforms: string[],
-    options: AIGenerationOptions = {}
-  ): Promise<GeneratedContent[]> {
-    return this.service.generateContent(input, platforms, options);
-  }
+export const createContentImprover = () => {
+  const service = createAIProviderService();
+  return {
+    improveContent: service.improveContent,
+    generateVariations: service.generateVariations,
+    healthCheck: service.healthCheck,
+  };
+};
 
-  async generateForPlatform(
-    input: string,
-    platform: string,
-    options: AIGenerationOptions = {}
-  ): Promise<GeneratedContent> {
-    return this.service.generateForPlatform(input, platform, options);
-  }
+export const createTemplateGenerator = () => {
+  const service = createAIProviderService();
+  return {
+    generateFromTemplate: service.generateFromTemplate,
+    generateContent: service.generateContent,
+    healthCheck: service.healthCheck,
+  };
+};
 
-  async generateVariations(
-    originalContent: string,
-    platform: string,
-    count: number = 3,
-    options: AIGenerationOptions = {}
-  ): Promise<GeneratedContent[]> {
-    return this.service.generateVariations(originalContent, platform, count, options);
-  }
+// Export utility functions for direct use
+export const generateContentForPlatforms = (
+  input: string,
+  platforms: string[],
+  options: AIGenerationOptions = {}
+): Promise<GeneratedContent[]> => {
+  return aiProvider.generateContent(input, platforms, options);
+};
 
-  async improveContent(
-    content: string,
-    platform: string,
-    improvements: string[],
-    options: AIGenerationOptions = {}
-  ): Promise<GeneratedContent> {
-    return this.service.improveContent(content, platform, improvements, options);
-  }
+export const generateSinglePlatformContent = (
+  input: string,
+  platform: string,
+  options: AIGenerationOptions = {}
+): Promise<GeneratedContent> => {
+  return aiProvider.generateForPlatform(input, platform, options);
+};
 
-  async generateFromTemplate(
-    templateId: string,
-    variables: Record<string, string>,
-    platforms: string[],
-    options: AIGenerationOptions = {}
-  ): Promise<GeneratedContent[]> {
-    return this.service.generateFromTemplate(templateId, variables, platforms, options);
-  }
+export const checkAIProviderHealth = (): Promise<{ status: string; provider: string; available: boolean }> => {
+  return aiProvider.healthCheck();
+};
 
-  async healthCheck(): Promise<{ status: string; provider: string; available: boolean }> {
-    return this.service.healthCheck();
-  }
-}
+// Type exports for the service interface
+export type AIProviderServiceInterface = ReturnType<typeof createAIProviderService>;
+export type ContentGeneratorInterface = ReturnType<typeof createContentGenerator>;
+export type ContentImproverInterface = ReturnType<typeof createContentImprover>;
+export type TemplateGeneratorInterface = ReturnType<typeof createTemplateGenerator>;

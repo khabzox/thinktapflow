@@ -1,21 +1,17 @@
 import Groq from 'groq-sdk';
-import { BaseAIProvider } from '../core/base-ai-provider';
+import { AIProvider, createBaseAIProvider } from '../core/base-ai-provider';
 import { AIGenerationOptions, ModelInfo, AIServiceError, AIServiceConfig } from '@/types/ai';
 import { DEFAULT_CONFIG } from '@/constants/ai';
 
-export class GroqProvider extends BaseAIProvider {
-  private client: Groq;
-  private defaultModel = DEFAULT_CONFIG.model as string;
+const defaultModel = DEFAULT_CONFIG.model as string;
 
-  constructor(config: AIServiceConfig) {
-    super(config);
-    this.client = new Groq({ apiKey: config.apiKey });
-  }
-
-  async generateCompletion(prompt: string, options: AIGenerationOptions = {}): Promise<string> {
-    const completion = await this.client.chat.completions.create({
+const createGroqCompletion = (config: AIServiceConfig) => 
+  async (prompt: string, options: AIGenerationOptions = {}): Promise<string> => {
+    const client = new Groq({ apiKey: config.apiKey });
+    
+    const completion = await client.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: this.config.model || this.defaultModel,
+      model: config.model || defaultModel,
       temperature: options.temperature ?? DEFAULT_CONFIG.temperature,
       max_tokens: options.maxOutputTokens ?? DEFAULT_CONFIG.maxOutputTokens,
       top_p: options.topP ?? DEFAULT_CONFIG.topP,
@@ -25,23 +21,59 @@ export class GroqProvider extends BaseAIProvider {
     if (!content) throw new AIServiceError('Empty response from AI', 'EMPTY_AI_RESPONSE');
 
     return content;
-  }
+  };
 
-  async validateCredentials(): Promise<boolean> {
+const createGroqCredentialsValidator = (config: AIServiceConfig) => 
+  async (): Promise<boolean> => {
     try {
-      await this.client.models.list();
+      const client = new Groq({ apiKey: config.apiKey });
+      await client.models.list();
       return true;
     } catch {
       return false;
     }
-  }
+  };
 
-  getModelInfo(): ModelInfo {
-    return {
-      name: this.config.model || this.defaultModel,
-      provider: 'groq',
-      maxTokens: DEFAULT_CONFIG.maxTokens as number,
-      contextWindow: DEFAULT_CONFIG.maxTokens as number,
-    };
-  }
-}
+const createGroqModelInfo = (config: AIServiceConfig) => 
+  (): ModelInfo => ({
+    name: config.model || defaultModel,
+    provider: 'groq',
+    maxTokens: DEFAULT_CONFIG.maxTokens as number,
+    contextWindow: DEFAULT_CONFIG.maxTokens as number,
+  });
+
+export const createGroqProvider = createBaseAIProvider(
+  createGroqCompletion,
+  createGroqCredentialsValidator,
+  createGroqModelInfo
+);
+
+// Helper functions for direct usage without factory
+export const createGroqCompletionService = (config: AIServiceConfig) => {
+  const provider = createGroqProvider(config);
+  return {
+    generateCompletion: provider.generateCompletion,
+    getModelInfo: provider.getModelInfo,
+  };
+};
+
+export const createGroqValidator = (config: AIServiceConfig) => {
+  const provider = createGroqProvider(config);
+  return {
+    validateCredentials: provider.validateCredentials,
+    getModelInfo: provider.getModelInfo,
+  };
+};
+
+// Default Groq provider with environment config
+export const createDefaultGroqProvider = () => {
+  const config: AIServiceConfig = {
+    provider: 'groq',
+    apiKey: process.env.GROQ_API_KEY || '',
+    model: defaultModel,
+    temperature: DEFAULT_CONFIG.temperature,
+    maxTokens: DEFAULT_CONFIG.maxTokens as number,
+    topP: DEFAULT_CONFIG.topP,
+  };
+  return createGroqProvider(config);
+};

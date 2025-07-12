@@ -1,19 +1,59 @@
 // Main AI provider service (Functional approach with Groq as default)
-export { aiProvider } from './provider';
-export type { AIMessage, GeneratedContent } from './provider';
+export { 
+  aiProvider,
+  createAIProviderService,
+  createContentGenerator,
+  createContentImprover,
+  createTemplateGenerator,
+  generateContentForPlatforms,
+  generateSinglePlatformContent,
+  checkAIProviderHealth
+} from './provider';
+export type { 
+  AIMessage, 
+  GeneratedContent,
+  AIProviderServiceInterface,
+  ContentGeneratorInterface,
+  ContentImproverInterface,
+  TemplateGeneratorInterface
+} from './provider';
 
-// Groq service (primary AI provider)
-export { groqService } from './groq';
-export type { GroqChatMessage, GroqCompletionOptions, GroqResponse } from './groq';
+// Groq service (primary AI provider) - both functional and service object
+export { 
+  groqService,
+  createGroqService,
+  createChatCompletion,
+  generateCompletion,
+  generateContentForPlatform,
+  streamChatCompletion,
+  healthCheck,
+  getModels
+} from './groq';
+export type { 
+  GroqChatMessage, 
+  GroqCompletionOptions, 
+  GroqResponse,
+  GroqServiceConfig 
+} from './groq';
 
-// Functional AI service factory
-export { createAIService } from './ai-service';
+// Functional AI service factory and utilities
+export { 
+  createAIService,
+  createContentParser,
+  createSocialGenerator,
+  createDefaultAIService
+} from './ai-service';
+export type { AIServiceInterface } from './ai-service';
 
-// Legacy class wrapper for backward compatibility
-export { AIService } from './ai-service';
-
-// Factory functions for creating providers
-export { createAIProvider, getDefaultAIProvider } from './factory/provider-factory';
+// Factory functions for creating providers (functional approach)
+export { 
+  createAIProvider, 
+  getDefaultAIProvider,
+  getAvailableProviders,
+  createValidatedAIProvider,
+  createProviders,
+  providerRegistry
+} from './factory/provider-factory';
 
 // Re-export AI configuration and constants
 export { aiConfig } from '@/config/ai';
