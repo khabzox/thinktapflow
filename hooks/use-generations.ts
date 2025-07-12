@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
 import { toast } from 'sonner';
+import { generateContent as generateContentAction } from '@/actions';
 
 export interface Generation {
     id: string;
@@ -287,24 +288,18 @@ export function useGenerations() {
             const generation = generations.find(g => g.id === id);
             if (!generation) throw new Error('Generation not found');
 
-            // Call the generate API endpoint with the original generation data
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    content: generation.title,
-                    platforms: generation.platforms,
-                }),
-            });
+            // Create FormData for server action
+            const formData = new FormData();
+            formData.append('content', generation.input_content);
+            formData.append('platforms', JSON.stringify(generation.platforms));
+            formData.append('options', JSON.stringify({}));
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to regenerate content');
+            // Call the server action
+            const result = await generateContentAction(formData);
+
+            if (!result.success || !result.data) {
+                throw new Error(result.error?.message || 'Failed to regenerate content');
             }
-
-            const result = await response.json();
             
             // Update the generation with new content
             const { error: updateError } = await supabase
@@ -321,7 +316,7 @@ export function useGenerations() {
             setGenerations(prev => 
                 prev.map(gen => 
                     gen.id === id 
-                        ? { ...gen, posts: result.data.posts } 
+                        ? { ...gen, posts: result.data!.posts as any } 
                         : gen
                 )
             );

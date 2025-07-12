@@ -5,7 +5,7 @@ import { InstagramGenerator } from './generators/instagram-generator';
 import { FacebookGenerator } from './generators/facebook-generator';
 import { YouTubeGenerator } from './generators/youtube-generator';
 import { TikTokGenerator } from './generators/tiktok-generator';
-import { BaseAIProvider } from '../ai/core/base-ai-provider';
+import { AIProvider } from '../ai/core/base-ai-provider';
 import { SupportedPlatforms, GeneratedPosts, AIGenerationOptions } from '@/types/ai';
 
 export class SocialService {
@@ -56,7 +56,7 @@ export class SocialService {
   async generatePosts(
     content: string,
     platforms: SupportedPlatforms[],
-    aiProvider: BaseAIProvider,
+    aiProvider: AIProvider,
     options: AIGenerationOptions = {}
   ): Promise<GeneratedPosts> {
     const results: GeneratedPosts = {

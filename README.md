@@ -48,32 +48,6 @@ Backend:
 - Paddle (Payments)
 - Sentry (Error Monitoring)
 
-## 📁 PROJECT STRUCTURE
-
-      thinktapflow/
-      ├── app/                          # Next.js 14 App Router
-      │   ├── (auth)/                   # Auth pages
-      │   ├── dashboard/                # Authenticated dashboard routes
-      │   ├── pricing/                  # Pricing page
-      │   └── api/                      # API route handlers
-      ├── components/                   # Reusable UI components
-      │   ├── ui/                       # shadcn/ui base
-      │   ├── auth/                     # Auth-specific UI
-      │   ├── dashboard/                # Dashboard-specific UI
-      │   ├── landing/                  # Landing page UI
-      │   └── common/                   # General shared components
-      ├── lib/                          # Logic (AI, API, social, validations, etc.)
-      │   ├── ai/                       # AI Providers and Services
-      │   ├── api/                      # API client, errors, validation logic
-      │   ├── content/                  # Content extraction services
-      │   ├── social/                   # Social post generators
-      │   ├── validations/              # Input validations
-      ├── hooks/                        # Custom React hooks
-      ├── constants/                    # Static constants
-      ├── config/                       # Config templates
-      ├── public/                       # Static assets (e.g. logo)
-      ├── types/                        # Global TypeScript types
-
 
 ## 🏗️ GETTING STARTED
 

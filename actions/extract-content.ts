@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { GenerationError } from '@/lib/api/errors';
+'use server';
 
-export const runtime = 'edge';
+import { GenerationError } from '@/lib/api/errors';
 
 async function extractContent(url: string) {
     try {
@@ -77,42 +76,59 @@ async function extractContent(url: string) {
     }
 }
 
-export async function POST(req: NextRequest) {
+export async function extractContentFromUrl(formData: FormData) {
     try {
-        const body = await req.json();
+        const url = formData.get('url') as string;
         
-        if (!body.url) {
-            throw new GenerationError('URL is required', 'INVALID_REQUEST', 400);
+        if (!url) {
+            return {
+                success: false,
+                error: {
+                    message: 'URL is required',
+                    code: 'INVALID_REQUEST'
+                }
+            };
         }
 
         // Validate URL format
         try {
-            new URL(body.url);
+            new URL(url);
         } catch {
-            throw new GenerationError('Invalid URL format', 'INVALID_URL', 400);
+            return {
+                success: false,
+                error: {
+                    message: 'Invalid URL format',
+                    code: 'INVALID_URL'
+                }
+            };
         }
 
         // Add basic security check for URL
-        const url = body.url.toLowerCase();
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            throw new GenerationError('Invalid URL protocol', 'INVALID_URL', 400);
+        const urlLower = url.toLowerCase();
+        if (!urlLower.startsWith('http://') && !urlLower.startsWith('https://')) {
+            return {
+                success: false,
+                error: {
+                    message: 'Invalid URL protocol',
+                    code: 'INVALID_URL'
+                }
+            };
         }
 
-        const result = await extractContent(body.url);
+        const result = await extractContent(url);
 
-        return NextResponse.json({
+        return {
             success: true,
             data: result
-        });
+        };
     } catch (error) {
-        console.error('API Error:', error);
+        console.error('Action Error:', error);
         
         // Enhanced error handling
         const errorMessage = error instanceof Error ? error.message : 'Failed to extract content';
         const errorCode = error instanceof GenerationError ? error.code : 'UNKNOWN_ERROR';
-        const statusCode = error instanceof GenerationError ? error.statusCode : 500;
 
-        return NextResponse.json({
+        return {
             success: false,
             error: {
                 message: errorMessage,
@@ -121,8 +137,6 @@ export async function POST(req: NextRequest) {
                     timestamp: new Date().toISOString()
                 }
             }
-        }, {
-            status: statusCode
-        });
+        };
     }
-} 
+}
