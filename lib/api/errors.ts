@@ -14,7 +14,10 @@ export type ErrorCode =
   | 'INVALID_REQUEST'
   | 'MONTHLY_LIMIT_REACHED'
   | 'INVALID_TIER'
-  | 'UNKNOWN_ERROR';
+  | 'UNKNOWN_ERROR'
+  | 'FETCH_ERROR'
+  | 'INVALID_CONTENT_TYPE'
+  | 'TIMEOUT_ERROR';
 
 export class GenerationError extends Error {
   constructor(
@@ -40,25 +43,31 @@ export class WebhookError extends Error {
 
 export function handleApiError(error: unknown) {
   if (error instanceof GenerationError) {
-    return Response.json({
-      success: false,
-      error: {
-        message: error.message,
-        code: error.code
+    return Response.json(
+      {
+        success: false,
+        error: {
+          message: error.message,
+          code: error.code,
+        },
+      },
+      {
+        status: error.statusCode,
       }
-    }, {
-      status: error.statusCode
-    });
+    );
   }
 
   console.error('Unhandled API error:', error);
-  return Response.json({
-    success: false,
-    error: {
-      message: 'An unexpected error occurred',
-      code: 'UNKNOWN_ERROR'
+  return Response.json(
+    {
+      success: false,
+      error: {
+        message: 'An unexpected error occurred',
+        code: 'UNKNOWN_ERROR',
+      },
+    },
+    {
+      status: 500,
     }
-  }, {
-    status: 500
-  });
-} 
+  );
+}
