@@ -290,7 +290,7 @@ export function useGenerations() {
 
             // Create FormData for server action
             const formData = new FormData();
-            formData.append('content', generation.title);
+            formData.append('content', generation.input_content);
             formData.append('platforms', JSON.stringify(generation.platforms));
             formData.append('options', JSON.stringify({}));
 

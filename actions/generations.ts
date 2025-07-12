@@ -157,8 +157,8 @@ export async function getUserGenerations() {
 
 export async function getUserGenerationHistory(page = 1, limit = 10) {
     try {
-        const cookieStore = cookies();
-        const supabase = createServerClient(await cookieStore);
+        const cookieStore = await cookies();
+        const supabase = createServerClient(cookieStore);
 
         // Verify authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser();

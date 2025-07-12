@@ -81,7 +81,7 @@ export async function updateSubscription(formData: FormData) {
             success: true,
             data: {
                 user: updatedUser,
-                message: `Successfully upgraded to ${tier} tier. Usage counters have been reset.`
+                message: `Successfully updated subscription to ${tier} tier. Usage counters have been reset.`
             },
         };
     } catch (error) {
@@ -98,8 +98,8 @@ export async function updateSubscription(formData: FormData) {
 
 export async function getSubscriptionDetails() {
     try {
-        const cookieStore = cookies();
-        const supabase = createServerClient(await cookieStore);
+        const cookieStore = await cookies();
+        const supabase = createServerClient(cookieStore);
 
         // Verify authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser();

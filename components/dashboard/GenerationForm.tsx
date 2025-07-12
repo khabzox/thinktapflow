@@ -92,7 +92,7 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
                 
                 const result = await extractContentFromUrl(formData);
 
-                if (!result.success) {
+                if (!result.success || !result.data) {
                     throw new Error(result.error?.message || 'Failed to extract content');
                 }
 
