@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import { createServerClient } from '@/lib/supabase';
 import { cookies } from 'next/headers';
-import { handleApiError } from '@/lib/api/errors';
 
 const TIER_LIMITS = {
     free: {
@@ -18,7 +18,7 @@ const TIER_LIMITS = {
     }
 };
 
-export async function GET(req: NextRequest) {
+export async function getUserGenerations() {
     try {
         // Initialize services - consistent with generate endpoint
         const cookieStore = cookies();
@@ -28,10 +28,10 @@ export async function GET(req: NextRequest) {
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {
-            return NextResponse.json(
-                { success: false, error: { message: 'Unauthorized', code: 'UNAUTHORIZED' } },
-                { status: 401 }
-            );
+            return {
+                success: false,
+                error: { message: 'Unauthorized', code: 'UNAUTHORIZED' }
+            };
         }
 
         const { data: profile, error: profileError } = await supabase
@@ -49,10 +49,10 @@ export async function GET(req: NextRequest) {
             .single();
 
         if (profileError) {
-            return NextResponse.json(
-                { success: false, error: { message: 'Profile not found', code: 'USER_NOT_FOUND' } },
-                { status: 404 }
-            );
+            return {
+                success: false,
+                error: { message: 'Profile not found', code: 'USER_NOT_FOUND' }
+            };
         }
 
         // Get tier limits for calculations
@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
             ? 0
             : (profile.monthly_words_used / (tierLimits?.monthly_words || 1)) * 100;
 
-        return NextResponse.json({
+        return {
             success: true,
             data: {
                 // Daily usage
@@ -142,8 +142,70 @@ export async function GET(req: NextRequest) {
                 total_generations_30_days: analytics?.length || 0,
                 total_words_30_days: analytics?.reduce((sum, item) => sum + (item.words_generated || 0), 0) || 0,
             },
-        });
+        };
     } catch (error) {
-        return handleApiError(error);
+        console.error('[Action] Error:', error);
+        return {
+            success: false,
+            error: {
+                message: 'An unexpected error occurred',
+                code: 'UNKNOWN_ERROR'
+            }
+        };
+    }
+}
+
+export async function getUserGenerationHistory(page = 1, limit = 10) {
+    try {
+        const cookieStore = cookies();
+        const supabase = createServerClient(await cookieStore);
+
+        // Verify authentication
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return {
+                success: false,
+                error: { message: 'Unauthorized', code: 'UNAUTHORIZED' }
+            };
+        }
+
+        const offset = (page - 1) * limit;
+
+        const { data: generations, error: generationsError, count } = await supabase
+            .from('generations')
+            .select('*', { count: 'exact' })
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (generationsError) {
+            return {
+                success: false,
+                error: { message: 'Failed to fetch generations', code: 'FETCH_FAILED' }
+            };
+        }
+
+        return {
+            success: true,
+            data: {
+                generations: generations || [],
+                pagination: {
+                    total: count || 0,
+                    page,
+                    limit,
+                    totalPages: Math.ceil((count || 0) / limit)
+                }
+            }
+        };
+    } catch (error) {
+        console.error('[Action] Error:', error);
+        return {
+            success: false,
+            error: {
+                message: 'An unexpected error occurred',
+                code: 'UNKNOWN_ERROR'
+            }
+        };
     }
 }

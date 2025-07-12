@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { toast } from 'sonner';
-import { useGenerate } from '@/hooks/use-generate';
+import { extractContentFromUrl, generateContent } from '@/actions';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GeneratedContent } from '@/lib/ai/provider';
@@ -84,7 +84,7 @@ const platforms = [
 ];
 
 export default function GeneratePage() {
-  const { generateContent, isGenerating, error: generateError } = useGenerate();
+  const [isPending, startTransition] = useTransition();
   const [selectedType, setSelectedType] = useState('text');
   const [prompt, setPrompt] = useState('');
   const [tone, setTone] = useState('Professional');
@@ -108,68 +108,65 @@ export default function GeneratePage() {
       return;
     }
 
-    const result = await generateContent({
-      content: prompt,
-      platforms: selectedPlatforms,
-      options: {
+    startTransition(async () => {
+      // Create FormData for Server Action
+      const formData = new FormData();
+      formData.append('content', prompt);
+      formData.append('platforms', JSON.stringify(selectedPlatforms));
+      formData.append('options', JSON.stringify({
         temperature: creativity[0],
         includeEmojis,
         customInstructions: `Generate content in a ${tone.toLowerCase()} tone, with${includeHashtags ? '' : 'out'} hashtags. Target length: ${length[0]} characters.`,
-      },
-    });
+      }));
 
-    if (result) {
-      const platformResults: Record<string, GeneratedContent[]> = {};
+      const result = await generateContent(formData);
 
-      // Process content for each platform
-      for (const platformId of selectedPlatforms) {
-        const platformContent = result.posts[platformId];
-        if (Array.isArray(platformContent)) {
-          platformResults[platformId] = platformContent as GeneratedContent[];
-        } else if (platformContent) {
-          platformResults[platformId] = [platformContent as GeneratedContent];
+      if (result.success && result.data) {
+        const platformResults: Record<string, GeneratedContent[]> = {};
+
+        // Process content for each platform
+        for (const platformId of selectedPlatforms) {
+          const platformContent = result.data.posts[platformId];
+          if (Array.isArray(platformContent)) {
+            platformResults[platformId] = platformContent as GeneratedContent[];
+          } else if (platformContent) {
+            platformResults[platformId] = [platformContent as GeneratedContent];
+          }
+        }
+
+        // Set the content for all platforms
+        setPlatformContent(platformResults);
+
+        // Set the main content display to the first platform's first variation
+        const firstPlatform = selectedPlatforms[0];
+        if (platformResults[firstPlatform]?.length > 0) {
+          setContentVariations(platformResults[firstPlatform].map((item) => item.content));
+          setGeneratedContent(platformResults[firstPlatform][0].content);
+          toast.success('Content generated successfully!');
+        } else {
+          toast.error('No valid content generated');
+        }
+      } else {
+        // Handle error from Server Action
+        if (result.error?.code === 'DAILY_LIMIT_REACHED' || result.error?.code === 'MONTHLY_LIMIT_REACHED') {
+          toast.error(
+            <div className="space-y-2">
+              <p>{result.error.message}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-2"
+                onClick={() => (window.location.href = '/dashboard/settings/billing')}
+              >
+                Upgrade Plan
+              </Button>
+            </div>
+          );
+        } else {
+          toast.error(result.error?.message || 'Failed to generate content');
         }
       }
-
-      // Set the content for all platforms
-      setPlatformContent(platformResults);
-
-      // Set the main content display to the first platform's first variation
-      const firstPlatform = selectedPlatforms[0];
-      if (platformResults[firstPlatform]?.length > 0) {
-        setContentVariations(platformResults[firstPlatform].map((item) => item.content));
-        setGeneratedContent(platformResults[firstPlatform][0].content);
-        toast.success('Content generated successfully!');
-      } else {
-        toast.error('No valid content generated');
-      }
-    } else if (generateError) {
-      if (generateError.code === 'LIMIT_REACHED') {
-        toast.error(
-          <div className="space-y-2">
-            <p>{generateError.message}</p>
-            {generateError.details && (
-              <div className="text-sm">
-                <p>
-                  Current usage: {generateError.details.current}/{generateError.details.limit}
-                </p>
-                <p>Plan: {generateError.details.subscription_tier}</p>
-              </div>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full mt-2"
-              onClick={() => (window.location.href = '/dashboard/settings/billing')}
-            >
-              Upgrade Plan
-            </Button>
-          </div>
-        );
-      } else {
-        toast.error(generateError.message);
-      }
-    }
+    });
   };
 
   const handleCopy = () => {
@@ -192,27 +189,24 @@ export default function GeneratePage() {
   };
 
   const handleUrlExtraction = async (url: string) => {
-    try {
-      const response = await fetch('/api/extract-content', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
+    startTransition(async () => {
+      try {
+        const formData = new FormData();
+        formData.append('url', url);
+        
+        const result = await extractContentFromUrl(formData);
 
-      const data = await response.json();
+        if (!result.success) {
+          throw new Error(result.error?.message || 'Failed to extract content');
+        }
 
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to extract content');
+        setPrompt(result.data.content);
+        toast.success('Successfully extracted content from URL');
+        setInputType('text'); // Switch to text input to show extracted content
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Failed to extract content');
       }
-
-      setPrompt(data.data.content);
-      toast.success('Successfully extracted content from URL');
-      setInputType('text'); // Switch to text input to show extracted content
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to extract content');
-    }
+    });
   };
 
   return (
@@ -369,10 +363,10 @@ export default function GeneratePage() {
                           />
                           <Button
                             onClick={() => handleUrlExtraction(url)}
-                            disabled={!url || isGenerating}
+                            disabled={!url || isPending}
                             variant="secondary"
                           >
-                            {isGenerating ? (
+                            {isPending ? (
                               <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Extracting...
@@ -438,11 +432,11 @@ export default function GeneratePage() {
             {/* Generate Button */}
             <Button
               onClick={handleGenerate}
-              disabled={isGenerating || !prompt.trim()}
+              disabled={isPending || !prompt.trim()}
               className="w-full"
               size="lg"
             >
-              {isGenerating ? (
+              {isPending ? (
                 <>
                   <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                   Generating...

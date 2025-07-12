@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Link, Type, Sparkles } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
+import { extractContentFromUrl, generateContent } from "@/actions"
 
 import { PLATFORMS_ARRAY } from "@/constants/platforms"
 
@@ -22,7 +23,7 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
     const [content, setContent] = useState("")
     const [url, setUrl] = useState("")
     const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
-    const [isGenerating, setIsGenerating] = useState(false)
+    const [isPending, startTransition] = useTransition()
     const [inputType, setInputType] = useState<"text" | "url">("text")
 
     const handlePlatformToggle = (platformId: string) => {
@@ -34,58 +35,74 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
     const handleGenerate = async () => {
         if ((!content && !url) || selectedPlatforms.length === 0) return
 
-        setIsGenerating(true)
+        startTransition(async () => {
+            try {
+                // Create FormData for Server Action
+                const formData = new FormData();
+                const inputContent = content || url;
+                formData.append('content', inputContent);
+                formData.append('platforms', JSON.stringify(selectedPlatforms));
+                formData.append('options', JSON.stringify({
+                    includeEmojis: false,
+                    customInstructions: 'Generate engaging content for social media platforms'
+                }));
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+                const result = await generateContent(formData);
 
-        const mockPosts = selectedPlatforms.map((platformId) => {
-            const platform = PLATFORMS_ARRAY.find((p) => p.id === platformId)
-            return {
-                id: Math.random().toString(36).substr(2, 9),
-                platform: platform?.name,
-                platformId,
-                icon: platform?.icon,
-                content: `Generated content for ${platform?.name}: ${content || url}`,
-                characterCount: Math.floor(Math.random() * (platform?.limit || 280)),
-                limit: platform?.limit,
-                hashtags: ["#ThinkTapFlow", "#SocialMedia", "#AI"],
-                createdAt: new Date().toISOString(),
+                if (result.success && result.data) {
+                    const posts = selectedPlatforms.map((platformId) => {
+                        const platform = PLATFORMS_ARRAY.find((p) => p.id === platformId);
+                        const platformContent = result.data.posts[platformId];
+                        const content = Array.isArray(platformContent) 
+                            ? platformContent[0]?.content 
+                            : platformContent?.content || `Generated content for ${platform?.name}`;
+
+                        return {
+                            id: Math.random().toString(36).substr(2, 9),
+                            platform: platform?.name,
+                            platformId,
+                            icon: platform?.icon,
+                            content,
+                            characterCount: content.length,
+                            limit: platform?.limit,
+                            hashtags: ["#ThinkTapFlow", "#SocialMedia", "#AI"],
+                            createdAt: new Date().toISOString(),
+                        }
+                    });
+
+                    onGenerate(posts);
+                    toast.success('Content generated successfully!');
+                    setContent("");
+                    setUrl("");
+                } else {
+                    toast.error(result.error?.message || 'Failed to generate content');
+                }
+            } catch (error) {
+                toast.error(error instanceof Error ? error.message : 'Failed to generate content');
             }
-        })
-
-        onGenerate(mockPosts)
-        setIsGenerating(false)
-        setContent("")
-        setUrl("")
+        });
     }
 
     const handleUrlExtraction = async (url: string) => {
-        try {
-            setIsGenerating(true);
-            
-            const response = await fetch('/api/extract-content', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url }),
-            });
+        startTransition(async () => {
+            try {
+                // Use Server Action instead of API call
+                const formData = new FormData();
+                formData.append('url', url);
+                
+                const result = await extractContentFromUrl(formData);
 
-            const data = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error?.message || 'Failed to extract content');
+                }
 
-            if (!response.ok) {
-                throw new Error(data.error?.message || 'Failed to extract content');
+                setContent(result.data.content);
+                toast.success('Successfully extracted content from URL');
+                setInputType('text'); // Switch to text input to show extracted content
+            } catch (error) {
+                toast.error(error instanceof Error ? error.message : 'Failed to extract content');
             }
-
-            setContent(data.data.content);
-            toast.success('Successfully extracted content from URL');
-            setInputType('text'); // Switch to text input to show extracted content
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Failed to extract content');
-        } finally {
-            setIsGenerating(false);
-        }
+        });
     };
 
     const characterCount = content.length
@@ -147,10 +164,10 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
                                 />
                                 <Button 
                                     onClick={() => handleUrlExtraction(url)}
-                                    disabled={!url || isGenerating}
+                                    disabled={!url || isPending}
                                     variant="secondary"
                                 >
-                                    {isGenerating ? (
+                                    {isPending ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                             Extracting...
@@ -206,8 +223,8 @@ export function GenerationForm({ onGenerate }: GenerationFormProps) {
                     )}
                 </div>
 
-                <Button onClick={handleGenerate} disabled={!isValid || isGenerating} className="w-full" size="lg">
-                    {isGenerating ? (
+                <Button onClick={handleGenerate} disabled={!isValid || isPending} className="w-full" size="lg">
+                    {isPending ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Generating...

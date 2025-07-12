@@ -4,6 +4,7 @@ import { Database } from '@/types/supabase';
 import { GenerationRequest } from '@/types/api';
 import { aiProvider, AIGenerationOptions } from '@/lib/ai';
 import { AI_ERRORS } from '@/constants/ai';
+import { generateContent as generateContentAction } from '@/actions';
 
 interface GenerationError {
   message: string;
@@ -25,37 +26,31 @@ export function useGenerate() {
       setIsGenerating(true);
       setError(null);
 
-      // Get current user
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError) throw authError;
+      // Create FormData for server action
+      const formData = new FormData();
+      formData.append('content', request.content);
+      formData.append('platforms', JSON.stringify(request.platforms));
+      formData.append('options', JSON.stringify(request.options || {}));
 
-      // Call the generate API endpoint
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
-      });
+      // Call the server action
+      const result = await generateContentAction(formData);
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      if (!result.success) {
         // Handle specific error cases
-        if (response.status === 429) {
+        if (result.error?.code === 'DAILY_LIMIT_REACHED' || result.error?.code === 'MONTHLY_LIMIT_REACHED') {
           throw {
-            message: data.error?.message || 'Usage limit reached',
+            message: result.error.message || 'Usage limit reached',
             code: 'LIMIT_REACHED',
-            details: data.error?.details
+            details: result.error
           };
         }
         throw {
-          message: data.error?.message || AI_ERRORS.GENERATION_FAILED,
-          code: data.error?.code || 'GENERATION_FAILED'
+          message: result.error?.message || AI_ERRORS.GENERATION_FAILED,
+          code: result.error?.code || 'GENERATION_FAILED'
         };
       }
 
-      return data.data;
+      return result.data;
     } catch (err) {
       console.error('Generation error:', err);
       setError(err as GenerationError);

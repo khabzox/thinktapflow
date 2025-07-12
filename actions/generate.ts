@@ -1,14 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import { createServerClient } from '@/lib/supabase';
 import { cookies } from 'next/headers';
 import { aiProvider } from '@/lib/ai';
-import { DEFAULT_AI_PROVIDER, AI_DEFAULTS, AI_LIMITS } from '@/constants/ai';
 import { generatePostsSchema } from '@/lib/api/validation';
-import { handleApiError } from '@/lib/api/errors';
 import { GenerationError } from '@/lib/api/errors';
-import { env } from '@/lib/env';
-
-export const runtime = 'edge';
 
 // Type definitions
 type SubscriptionTier = 'free' | 'pro' | 'plus';
@@ -141,7 +137,7 @@ async function backfillMonthlyWordsUsage(
     }
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function generateContent(formData: FormData) {
     try {
         // Initialize services
         const cookieStore = cookies();
@@ -158,6 +154,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         if (authError || !user) {
             throw new GenerationError('Unauthorized', 'UNAUTHORIZED', 401);
+        }
+
+        // Extract data from FormData
+        const content = formData.get('content') as string;
+        const platformsStr = formData.get('platforms') as string;
+        const optionsStr = formData.get('options') as string;
+
+        const platforms = platformsStr ? JSON.parse(platformsStr) : [];
+        const options = optionsStr ? JSON.parse(optionsStr) : {};
+
+        // Validate data
+        const validatedData = generatePostsSchema.safeParse({
+            content,
+            platforms,
+            options
+        });
+
+        if (!validatedData.success) {
+            throw new GenerationError('Invalid request data', 'INVALID_REQUEST', 400);
         }
 
         // Get user profile
@@ -280,14 +295,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             );
         }
 
-        // Parse request body
-        const body = await req.json();
-        const validatedData = generatePostsSchema.safeParse(body);
-
-        if (!validatedData.success) {
-            throw new GenerationError('Invalid request data', 'INVALID_REQUEST', 400);
-        }
-
         // Use the Groq AI provider directly
         const generatedArray = await aiProvider.generateContent(
             validatedData.data.content,
@@ -408,7 +415,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             remainingMonthly
         });
 
-        return NextResponse.json({
+        return {
             success: true,
             data: {
                 generation_id: generation.id,
@@ -423,21 +430,27 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                     monthly_words_limit: tierLimits.monthly_words
                 }
             }
-        });
+        };
     } catch (error) {
-        console.error('[API] Error:', error);
-        const errorResponse = handleApiError(error);
-
-        // Convert Response to NextResponse if needed
-        if (errorResponse instanceof Response && !(errorResponse instanceof NextResponse)) {
-            const body = await errorResponse.text();
-            return new NextResponse(body, {
-                status: errorResponse.status,
-                statusText: errorResponse.statusText,
-                headers: errorResponse.headers
-            });
+        console.error('[Action] Error:', error);
+        
+        // For server actions, we return the error instead of throwing
+        if (error instanceof GenerationError) {
+            return {
+                success: false,
+                error: {
+                    message: error.message,
+                    code: error.code
+                }
+            };
         }
 
-        return errorResponse as NextResponse;
+        return {
+            success: false,
+            error: {
+                message: 'An unexpected error occurred',
+                code: 'UNKNOWN_ERROR'
+            }
+        };
     }
 }
