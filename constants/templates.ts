@@ -50,10 +50,10 @@ export const CONTENT_TEMPLATES = [
 ];
 
 export const TEMPLATE_CATEGORIES = {
-  MARKETING: 'marketing',
-  NEWSLETTER: 'newsletter',
-  CONTENT: 'content',
-  SOCIAL: 'social'
+  MARKETING: "marketing",
+  NEWSLETTER: "newsletter",
+  CONTENT: "content",
+  SOCIAL: "social",
 } as const;
 
 export const getTemplatesByCategory = (category: string) => {

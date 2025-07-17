@@ -1,32 +1,32 @@
 export type ErrorCode =
-  | 'UNAUTHORIZED'
-  | 'LIMIT_REACHED'
-  | 'GENERATION_FAILED'
-  | 'UPDATE_FAILED'
-  | 'INVALID_REQUEST'
-  | 'WEBHOOK_INVALID'
-  | 'SUBSCRIPTION_ERROR'
-  | 'USER_NOT_FOUND'
-  | 'SAVE_FAILED'
-  | 'EXTRACTION_FAILED'
-  | 'INVALID_URL'
-  | 'DAILY_LIMIT_REACHED'
-  | 'INVALID_REQUEST'
-  | 'MONTHLY_LIMIT_REACHED'
-  | 'INVALID_TIER'
-  | 'UNKNOWN_ERROR'
-  | 'FETCH_ERROR'
-  | 'INVALID_CONTENT_TYPE'
-  | 'TIMEOUT_ERROR';
+  | "UNAUTHORIZED"
+  | "LIMIT_REACHED"
+  | "GENERATION_FAILED"
+  | "UPDATE_FAILED"
+  | "INVALID_REQUEST"
+  | "WEBHOOK_INVALID"
+  | "SUBSCRIPTION_ERROR"
+  | "USER_NOT_FOUND"
+  | "SAVE_FAILED"
+  | "EXTRACTION_FAILED"
+  | "INVALID_URL"
+  | "DAILY_LIMIT_REACHED"
+  | "INVALID_REQUEST"
+  | "MONTHLY_LIMIT_REACHED"
+  | "INVALID_TIER"
+  | "UNKNOWN_ERROR"
+  | "FETCH_ERROR"
+  | "INVALID_CONTENT_TYPE"
+  | "TIMEOUT_ERROR";
 
 export class GenerationError extends Error {
   constructor(
     message: string,
     public code: ErrorCode,
-    public statusCode: number = 500
+    public statusCode: number = 500,
   ) {
     super(message);
-    this.name = 'GenerationError';
+    this.name = "GenerationError";
   }
 }
 
@@ -34,10 +34,10 @@ export class WebhookError extends Error {
   constructor(
     message: string,
     public code: ErrorCode,
-    public statusCode: number = 400
+    public statusCode: number = 400,
   ) {
     super(message);
-    this.name = 'WebhookError';
+    this.name = "WebhookError";
   }
 }
 
@@ -53,21 +53,21 @@ export function handleApiError(error: unknown) {
       },
       {
         status: error.statusCode,
-      }
+      },
     );
   }
 
-  console.error('Unhandled API error:', error);
+  console.error("Unhandled API error:", error);
   return Response.json(
     {
       success: false,
       error: {
-        message: 'An unexpected error occurred',
-        code: 'UNKNOWN_ERROR',
+        message: "An unexpected error occurred",
+        code: "UNKNOWN_ERROR",
       },
     },
     {
       status: 500,
-    }
+    },
   );
 }

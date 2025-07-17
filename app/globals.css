@@ -8,141 +8,139 @@
   }
 }
 
-
-
 @layer base {
   :root {
     /* Modern Color Palette - Light Mode */
     --background: 0 0% 100%;
-    --foreground: 224 71% 4%;       /* Rich dark navy */
-    
+    --foreground: 224 71% 4%; /* Rich dark navy */
+
     /* Brand Colors - Beautiful gradients */
-    --primary: 262 83% 58%;         /* Beautiful purple #8B5CF6 */
+    --primary: 262 83% 58%; /* Beautiful purple #8B5CF6 */
     --primary-foreground: 0 0% 98%;
-    --primary-light: 270 91% 65%;   /* Lighter purple variant */
-    --primary-dark: 256 87% 45%;    /* Darker purple variant */
-    
+    --primary-light: 270 91% 65%; /* Lighter purple variant */
+    --primary-dark: 256 87% 45%; /* Darker purple variant */
+
     /* Secondary - Complementary colors */
-    --secondary: 217 91% 60%;       /* Beautiful blue #3B82F6 */
+    --secondary: 217 91% 60%; /* Beautiful blue #3B82F6 */
     --secondary-foreground: 0 0% 98%;
     --secondary-light: 213 97% 87%; /* Light blue background */
-    
+
     /* Accent - Energetic colors */
-    --accent: 142 86% 28%;          /* Modern green #059669 */
+    --accent: 142 86% 28%; /* Modern green #059669 */
     --accent-foreground: 0 0% 98%;
-    --accent-light: 142 76% 36%;    /* Lighter green */
-    
+    --accent-light: 142 76% 36%; /* Lighter green */
+
     /* Neutral Scale */
-    --neutral-50: 220 14% 96%;     /* Very light gray */
-    --neutral-100: 220 13% 91%;    /* Light gray */
-    --neutral-200: 220 13% 87%;    /* */
-    --neutral-300: 220 9% 46%;     /* Medium gray */
-    --neutral-400: 220 9% 46%;     /* */
-    --neutral-500: 220 9% 46%;     /* */
-    --neutral-600: 220 13% 18%;    /* Dark gray */
-    --neutral-700: 224 71% 4%;     /* Very dark */
-    --neutral-800: 224 84% 5%;     /* Almost black */
-    --neutral-900: 224 71% 4%;     /* Deep dark */
-    
+    --neutral-50: 220 14% 96%; /* Very light gray */
+    --neutral-100: 220 13% 91%; /* Light gray */
+    --neutral-200: 220 13% 87%; /* */
+    --neutral-300: 220 9% 46%; /* Medium gray */
+    --neutral-400: 220 9% 46%; /* */
+    --neutral-500: 220 9% 46%; /* */
+    --neutral-600: 220 13% 18%; /* Dark gray */
+    --neutral-700: 224 71% 4%; /* Very dark */
+    --neutral-800: 224 84% 5%; /* Almost black */
+    --neutral-900: 224 71% 4%; /* Deep dark */
+
     /* Card and Surface Colors */
     --card: 0 0% 100%;
     --card-foreground: 224 71% 4%;
     --card-border: 220 13% 91%;
-    
+
     /* Popover */
     --popover: 0 0% 100%;
     --popover-foreground: 224 71% 4%;
-    
+
     /* Sidebar - Modern dark theme */
-    --sidebar-background: 224 84% 5%;      /* Deep navy */
-    --sidebar-foreground: 220 14% 96%;     /* Light text */
-    --sidebar-primary: 262 83% 58%;        /* Purple accent */
+    --sidebar-background: 224 84% 5%; /* Deep navy */
+    --sidebar-foreground: 220 14% 96%; /* Light text */
+    --sidebar-primary: 262 83% 58%; /* Purple accent */
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 224 71% 4%;          /* Darker accent */
+    --sidebar-accent: 224 71% 4%; /* Darker accent */
     --sidebar-accent-foreground: 220 14% 96%;
-    --sidebar-border: 220 13% 18%;         /* Subtle border */
-    --sidebar-ring: 262 83% 58%;           /* Purple ring */
-    
+    --sidebar-border: 220 13% 18%; /* Subtle border */
+    --sidebar-ring: 262 83% 58%; /* Purple ring */
+
     /* Input and Border */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 262 83% 58%;            /* Purple focus ring */
-    
+    --ring: 262 83% 58%; /* Purple focus ring */
+
     /* Status Colors */
-    --success: 142 71% 45%;         /* Green */
+    --success: 142 71% 45%; /* Green */
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;          /* Orange */
+    --warning: 38 92% 50%; /* Orange */
     --warning-foreground: 0 0% 0%;
-    --destructive: 0 84% 60%;       /* Red */
+    --destructive: 0 84% 60%; /* Red */
     --destructive-foreground: 0 0% 98%;
-    --info: 217 91% 60%;           /* Blue */
+    --info: 217 91% 60%; /* Blue */
     --info-foreground: 0 0% 100%;
-    
+
     /* Muted */
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
-    
+
     /* Radius */
-    --radius: 0.75rem;              /* Slightly more rounded */
-    
+    --radius: 0.75rem; /* Slightly more rounded */
+
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
-    --gradient-secondary: linear-gradient(135deg, #3B82F6 0%, #059669 100%);
-    --gradient-hero: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #059669 100%);
-    
+    --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #059669 100%);
+    --gradient-hero: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #059669 100%);
+
     /* Chart Colors */
-    --chart-1: 262 83% 58%;         /* Purple */
-    --chart-2: 217 91% 60%;         /* Blue */
-    --chart-3: 142 86% 28%;         /* Green */
-    --chart-4: 38 92% 50%;          /* Orange */
-    --chart-5: 0 84% 60%;           /* Red */
+    --chart-1: 262 83% 58%; /* Purple */
+    --chart-2: 217 91% 60%; /* Blue */
+    --chart-3: 142 86% 28%; /* Green */
+    --chart-4: 38 92% 50%; /* Orange */
+    --chart-5: 0 84% 60%; /* Red */
   }
-  
+
   .dark {
     /* Modern Color Palette - Dark Mode */
-    --background: 224 84% 5%;           /* Deep navy background */
-    --foreground: 220 14% 96%;         /* Light text */
-    
+    --background: 224 84% 5%; /* Deep navy background */
+    --foreground: 220 14% 96%; /* Light text */
+
     /* Brand Colors - Adjusted for dark mode */
-    --primary: 262 83% 58%;             /* Purple - same as light */
-    --primary-foreground: 224 84% 5%;   /* Dark text on purple */
+    --primary: 262 83% 58%; /* Purple - same as light */
+    --primary-foreground: 224 84% 5%; /* Dark text on purple */
     --primary-light: 270 91% 65%;
     --primary-dark: 256 87% 45%;
-    
+
     /* Secondary */
-    --secondary: 217 91% 60%;           /* Blue - same as light */
+    --secondary: 217 91% 60%; /* Blue - same as light */
     --secondary-foreground: 224 84% 5%;
-    --secondary-light: 217 32% 17%;     /* Dark blue background */
-    
+    --secondary-light: 217 32% 17%; /* Dark blue background */
+
     /* Accent */
-    --accent: 142 86% 28%;              /* Green - same as light */
+    --accent: 142 86% 28%; /* Green - same as light */
     --accent-foreground: 220 14% 96%;
-    --accent-light: 142 39% 15%;        /* Dark green background */
-    
+    --accent-light: 142 39% 15%; /* Dark green background */
+
     /* Cards and Surfaces */
-    --card: 220 13% 18%;                /* Dark card background */
+    --card: 220 13% 18%; /* Dark card background */
     --card-foreground: 220 14% 96%;
-    --card-border: 220 13% 28%;         /* Lighter border for contrast */
-    
+    --card-border: 220 13% 28%; /* Lighter border for contrast */
+
     /* Popover */
     --popover: 220 13% 18%;
     --popover-foreground: 220 14% 96%;
-    
+
     /* Sidebar - Even darker */
-    --sidebar-background: 224 71% 4%;       /* Almost black */
+    --sidebar-background: 224 71% 4%; /* Almost black */
     --sidebar-foreground: 220 14% 96%;
-    --sidebar-primary: 262 83% 58%;         /* Purple accent */
+    --sidebar-primary: 262 83% 58%; /* Purple accent */
     --sidebar-primary-foreground: 224 84% 5%;
-    --sidebar-accent: 220 13% 28%;          /* Lighter accent for contrast */
+    --sidebar-accent: 220 13% 28%; /* Lighter accent for contrast */
     --sidebar-accent-foreground: 220 14% 96%;
     --sidebar-border: 220 13% 28%;
     --sidebar-ring: 262 83% 58%;
-    
+
     /* Input and Border */
-    --border: 220 13% 28%;              /* Lighter border for dark mode */
-    --input: 220 13% 18%;               /* Dark input background */
-    --ring: 262 83% 58%;                /* Purple focus ring */
-    
+    --border: 220 13% 28%; /* Lighter border for dark mode */
+    --input: 220 13% 18%; /* Dark input background */
+    --ring: 262 83% 58%; /* Purple focus ring */
+
     /* Status Colors - Adjusted for dark mode */
     --success: 142 71% 45%;
     --success-foreground: 224 84% 5%;
@@ -152,11 +150,11 @@
     --destructive-foreground: 220 14% 96%;
     --info: 217 91% 60%;
     --info-foreground: 224 84% 5%;
-    
+
     /* Muted */
     --muted: 220 13% 18%;
     --muted-foreground: 220 9% 46%;
-    
+
     /* Chart Colors - Same as light mode */
     --chart-1: 262 83% 58%;
     --chart-2: 217 91% 60%;
@@ -257,7 +255,7 @@
 }
 
 .btn-glow::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -345,11 +343,9 @@
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
-
-
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center tracking-tight;
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium tracking-tight;
   }
 
   .btn-primary {
@@ -357,7 +353,7 @@
   }
 
   .btn-text {
-    @apply text-black bg-transparent;
+    @apply bg-transparent text-black;
   }
 
   .logo-ticker-image {
@@ -365,11 +361,11 @@
   }
 
   .tag {
-    @apply text-sm inline-flex border border-[#222]/10 px-3 py-1 rounded-lg tracking-tight;
+    @apply inline-flex rounded-lg border border-[#222]/10 px-3 py-1 text-sm tracking-tight;
   }
 
   .section-title {
-    @apply text-center text-3xl md:text-[54px] md:leading-[60px] font-bold tracking-tighter bg-gradient-to-b from-black to-[#001E80] text-transparent bg-clip-text;
+    @apply bg-gradient-to-b from-black to-[#001E80] bg-clip-text text-center text-3xl font-bold tracking-tighter text-transparent md:text-[54px] md:leading-[60px];
   }
 
   .section-des {
@@ -377,13 +373,13 @@
   }
 
   .section-heading {
-    @apply max-w-[540px] mx-auto;
+    @apply mx-auto max-w-[540px];
   }
 
   .card {
-    @apply p-10 rounded-3xl border border-[#F1F1F1] shadow-[0_7px_14px_#EAEAEA] max-w-xs w-full;
+    @apply w-full max-w-xs rounded-3xl border border-[#F1F1F1] p-10 shadow-[0_7px_14px_#EAEAEA];
   }
-  
+
   .glass-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(16px);
@@ -395,8 +391,9 @@
 
   .gradient-border {
     position: relative;
-    background: linear-gradient(white, white) padding-box, 
-                linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary))) border-box;
+    background:
+      linear-gradient(white, white) padding-box,
+      linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary))) border-box;
     border: 2px solid transparent;
     border-radius: 12px;
   }
@@ -411,7 +408,8 @@
   }
 
   @keyframes gradient-shift {
-    0%, 100% {
+    0%,
+    100% {
       background-position: 0% 50%;
     }
     50% {
@@ -448,7 +446,7 @@
 
   /* Enhanced card styles - no animations, subtle shadows */
   .card-enhanced {
-    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)/0.3) 100%);
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted) / 0.3) 100%);
     border: 1px solid hsl(var(--border));
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     border-radius: 12px;
@@ -456,7 +454,7 @@
 
   .card-enhanced:hover {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    border-color: hsl(var(--primary)/0.2);
+    border-color: hsl(var(--primary) / 0.2);
   }
 
   /* Search input improvements - fix blue color issue */
@@ -473,7 +471,7 @@
   .search-input:focus {
     outline: none;
     border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 2px hsl(var(--primary)/0.1);
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1);
   }
 
   /* Enhanced button colors and styles */
@@ -492,32 +490,32 @@
   }
 
   .btn-secondary-enhanced {
-    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--secondary)/0.8) 100%);
+    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--secondary) / 0.8) 100%);
     color: hsl(var(--secondary-foreground));
-    border: 1px solid hsl(var(--secondary)/0.3);
+    border: 1px solid hsl(var(--secondary) / 0.3);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
 
   .btn-secondary-enhanced:hover {
-    background: linear-gradient(135deg, hsl(var(--secondary)/0.9) 0%, hsl(var(--secondary)) 100%);
+    background: linear-gradient(135deg, hsl(var(--secondary) / 0.9) 0%, hsl(var(--secondary)) 100%);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   }
 
   .btn-accent-enhanced {
-    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent)/0.8) 100%);
+    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent) / 0.8) 100%);
     color: hsl(var(--accent-foreground));
     border: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .btn-accent-enhanced:hover {
-    background: linear-gradient(135deg, hsl(var(--accent)/0.9) 0%, hsl(var(--accent)) 100%);
+    background: linear-gradient(135deg, hsl(var(--accent) / 0.9) 0%, hsl(var(--accent)) 100%);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
   }
 
   /* Input field enhancements */
   input[type="text"],
-  input[type="email"], 
+  input[type="email"],
   input[type="password"],
   textarea {
     background: hsl(var(--background)) !important;
@@ -530,7 +528,7 @@
   input[type="password"]:focus,
   textarea:focus {
     border-color: hsl(var(--primary)) !important;
-    box-shadow: 0 0 0 2px hsl(var(--primary)/0.1) !important;
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1) !important;
     outline: none !important;
   }
 
@@ -541,6 +539,9 @@
   }
 
   .subtle-animate {
-    transition: opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition:
+      opacity 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
   }
 }

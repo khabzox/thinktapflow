@@ -1,8 +1,8 @@
-import { aiConfig } from '@/config/ai';
-import { config } from '@/config/env';
+import { aiConfig } from "@/config/ai";
+import { config } from "@/config/env";
 
 export interface GroqChatMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -45,7 +45,7 @@ export interface GroqServiceConfig {
 // Create default configuration
 const createDefaultConfig = (): GroqServiceConfig => {
   if (!config.ai.groq.apiKey) {
-    throw new Error('Groq API key is required');
+    throw new Error("Groq API key is required");
   }
 
   return {
@@ -59,11 +59,11 @@ const createDefaultConfig = (): GroqServiceConfig => {
 const buildSystemPrompt = (platform: string, options: any): string => {
   let systemPrompt: string = aiConfig.prompts.system.default;
 
-  if (options.tone === 'professional') {
+  if (options.tone === "professional") {
     systemPrompt = aiConfig.prompts.system.professional;
-  } else if (options.tone === 'casual') {
+  } else if (options.tone === "casual") {
     systemPrompt = aiConfig.prompts.system.casual;
-  } else if (options.tone === 'marketing') {
+  } else if (options.tone === "marketing") {
     systemPrompt = aiConfig.prompts.system.marketing;
   }
 
@@ -79,11 +79,11 @@ const buildUserPrompt = (content: string, platform: string, options: any): strin
   }
 
   if (options.includeHashtags) {
-    prompt += '\nInclude relevant hashtags.';
+    prompt += "\nInclude relevant hashtags.";
   }
 
   if (options.includeEmojis) {
-    prompt += '\nInclude appropriate emojis.';
+    prompt += "\nInclude appropriate emojis.";
   }
 
   if (options.tone) {
@@ -98,7 +98,7 @@ export const createChatCompletion =
   (config: GroqServiceConfig) =>
   async (
     messages: GroqChatMessage[],
-    options: GroqCompletionOptions = {}
+    options: GroqCompletionOptions = {},
   ): Promise<GroqResponse> => {
     const requestBody = {
       model: options.model || config.defaultModel,
@@ -113,10 +113,10 @@ export const createChatCompletion =
     };
 
     const response = await fetch(`${config.baseURL}/chat/completions`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(requestBody),
     });
@@ -124,7 +124,7 @@ export const createChatCompletion =
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(
-        `Groq API error: ${response.status} - ${error.message || response.statusText}`
+        `Groq API error: ${response.status} - ${error.message || response.statusText}`,
       );
     }
 
@@ -137,14 +137,14 @@ export const generateCompletion =
   async (prompt: string, options: GroqCompletionOptions = {}): Promise<string> => {
     const messages: GroqChatMessage[] = [
       {
-        role: 'user',
+        role: "user",
         content: prompt,
       },
     ];
 
     const chatCompletion = createChatCompletion(config);
     const response = await chatCompletion(messages, options);
-    return response.choices[0]?.message?.content || '';
+    return response.choices[0]?.message?.content || "";
   };
 
 // Generate content for platform function
@@ -158,7 +158,7 @@ export const generateContentForPlatform =
       includeHashtags?: boolean;
       includeEmojis?: boolean;
       contentType?: string;
-    } = {}
+    } = {},
   ): Promise<string> => {
     const platformConfig =
       aiConfig.generation.platformSpecific[
@@ -169,8 +169,8 @@ export const generateContentForPlatform =
     const userPrompt = buildUserPrompt(content, platform, options);
 
     const messages: GroqChatMessage[] = [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ];
 
     const completionOptions: GroqCompletionOptions = {
@@ -180,7 +180,7 @@ export const generateContentForPlatform =
 
     const chatCompletion = createChatCompletion(config);
     const response = await chatCompletion(messages, completionOptions);
-    return response.choices[0]?.message?.content || '';
+    return response.choices[0]?.message?.content || "";
   };
 
 // Stream chat completion function
@@ -189,7 +189,7 @@ export const streamChatCompletion =
   async (
     messages: GroqChatMessage[],
     options: GroqCompletionOptions = {},
-    onChunk: (chunk: string) => void
+    onChunk: (chunk: string) => void,
   ): Promise<void> => {
     const requestBody = {
       model: options.model || config.defaultModel,
@@ -200,10 +200,10 @@ export const streamChatCompletion =
     };
 
     const response = await fetch(`${config.baseURL}/chat/completions`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(requestBody),
     });
@@ -213,7 +213,7 @@ export const streamChatCompletion =
     }
 
     const reader = response.body?.getReader();
-    if (!reader) throw new Error('No response body');
+    if (!reader) throw new Error("No response body");
 
     const decoder = new TextDecoder();
 
@@ -223,12 +223,12 @@ export const streamChatCompletion =
         if (done) break;
 
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
+        const lines = chunk.split("\n");
 
         for (const line of lines) {
-          if (line.startsWith('data: ')) {
+          if (line.startsWith("data: ")) {
             const data = line.slice(6);
-            if (data === '[DONE]') return;
+            if (data === "[DONE]") return;
 
             try {
               const parsed = JSON.parse(data);
@@ -252,10 +252,10 @@ export const streamChatCompletion =
 export const healthCheck = (config: GroqServiceConfig) => async (): Promise<boolean> => {
   try {
     const generateCompletionFn = generateCompletion(config);
-    const response = await generateCompletionFn('Hello', { maxTokens: 10 });
+    const response = await generateCompletionFn("Hello", { maxTokens: 10 });
     return response.length > 0;
   } catch (error) {
-    console.error('Groq health check failed:', error);
+    console.error("Groq health check failed:", error);
     return false;
   }
 };
@@ -276,7 +276,7 @@ export const getModels = (config: GroqServiceConfig) => async (): Promise<string
     const data = await response.json();
     return data.data?.map((model: any) => model.id) || [];
   } catch (error) {
-    console.error('Failed to fetch Groq models:', error);
+    console.error("Failed to fetch Groq models:", error);
     return Object.values(aiConfig.providers.groq.models);
   }
 };

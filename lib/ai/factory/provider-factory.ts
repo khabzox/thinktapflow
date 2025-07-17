@@ -1,14 +1,14 @@
-import { createGroqProvider } from '../providers/groq-provider';
-import { AIProvider } from '../core/base-ai-provider';
-import { AIServiceConfig } from '@/types/ai';
-import { AI_PROVIDERS, DEFAULT_AI_PROVIDER } from '@/constants/ai';
+import { createGroqProvider } from "../providers/groq-provider";
+import { AIProvider } from "../core/base-ai-provider";
+import { AIServiceConfig } from "@/types/ai";
+import { AI_PROVIDERS, DEFAULT_AI_PROVIDER } from "@/constants/ai";
 
-export type AIProviderType = 'groq';
+export type AIProviderType = "groq";
 
 // Functional factory for creating AI providers (GROQ as default)
 export const createAIProvider = (
-  type: AIProviderType = DEFAULT_AI_PROVIDER, 
-  config: AIServiceConfig
+  type: AIProviderType = DEFAULT_AI_PROVIDER,
+  config: AIServiceConfig,
 ): AIProvider => {
   switch (type) {
     case AI_PROVIDERS.GROQ:
@@ -38,22 +38,22 @@ export const getAvailableProviders = (): AIProviderType[] => {
 // Create provider with validation
 export const createValidatedAIProvider = async (
   type: AIProviderType,
-  config: AIServiceConfig
+  config: AIServiceConfig,
 ): Promise<AIProvider> => {
   const provider = createAIProvider(type, config);
-  
+
   // Validate credentials before returning
   const isValid = await provider.validateCredentials();
   if (!isValid) {
     throw new Error(`Invalid credentials for ${type} provider`);
   }
-  
+
   return provider;
 };
 
 // Batch create multiple providers
 export const createProviders = (
-  configs: Array<{ type: AIProviderType; config: AIServiceConfig }>
+  configs: Array<{ type: AIProviderType; config: AIServiceConfig }>,
 ): AIProvider[] => {
   return configs.map(({ type, config }) => createAIProvider(type, config));
 };

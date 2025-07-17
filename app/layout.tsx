@@ -3,15 +3,14 @@ import "./globals.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
-import { SupabaseProvider } from '@/components/providers/SupabaseProvider'
+import { SupabaseProvider } from "@/components/providers/SupabaseProvider";
 
-import { ZipyAnalytics } from '@/components/analytics/ZipyAnalytics'
-import { Analytics } from "@vercel/analytics/next"
+import { ZipyAnalytics } from "@/components/analytics/ZipyAnalytics";
+import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
-import { env } from '@/lib/env';
+import { env } from "@/lib/env";
 
 import { pageMetadata } from "@/constants/metadata";
-
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,8 +24,6 @@ const geistMono = localFont({
 });
 
 export const metadata = pageMetadata.dashboard;
-
-
 
 export default function RootLayout({
   children,
@@ -54,9 +51,7 @@ export default function RootLayout({
           defer
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#EAEEFE]`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-[#EAEEFE] antialiased`}>
         <SupabaseProvider>
           {children}
           {/* Vercel Analytics */}

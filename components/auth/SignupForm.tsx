@@ -118,12 +118,7 @@ export function SignupForm() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="••••••••"
-                    type="password"
-                    disabled={isLoading}
-                    {...field}
-                  />
+                  <Input placeholder="••••••••" type="password" disabled={isLoading} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -145,10 +140,7 @@ export function SignupForm() {
                 <div className="space-y-1 leading-none">
                   <FormLabel>
                     I accept the{" "}
-                    <a
-                      href="/terms"
-                      className="text-primary underline hover:text-primary/90"
-                    >
+                    <a href="/terms" className="text-primary underline hover:text-primary/90">
                       terms and conditions
                     </a>
                   </FormLabel>
@@ -159,9 +151,7 @@ export function SignupForm() {
           />
 
           <Button variant="default" type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
             Create Account
           </Button>
         </form>
@@ -172,9 +162,7 @@ export function SignupForm() {
           <Separator className="w-full" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-secondary-foreground/90">
-            Or continue with
-          </span>
+          <span className="bg-background px-2 text-secondary-foreground/90">Or continue with</span>
         </div>
       </div>
 

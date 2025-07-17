@@ -12,10 +12,10 @@ import {
   Check,
   Plus,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const Icons = {
-  logo: (props: React.ComponentProps<'svg'>) => (
+  logo: (props: React.ComponentProps<"svg">) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
@@ -42,7 +42,7 @@ export const Icons = {
   settings: Settings,
   mail: Mail,
   gitHub: Github,
-  google: (props: React.ComponentProps<'svg'>) => (
+  google: (props: React.ComponentProps<"svg">) => (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <path
         fill="currentColor"
@@ -50,4 +50,4 @@ export const Icons = {
       />
     </svg>
   ),
-}; 
+};

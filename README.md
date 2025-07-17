@@ -36,22 +36,24 @@ Sentry integration provides:
 ## 🛠️ TECH STACK
 
 Frontend:
+
 - Next.js 14 (App Router)
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
 
 Backend:
+
 - Next.js API Routes
 - Supabase (Database & Authentication)
 - Groq AI (Fast AI Inference)
 - Paddle (Payments)
 - Sentry (Error Monitoring)
 
-
 ## 🏗️ GETTING STARTED
 
 Prerequisites:
+
 - Node.js 18+
 - npm or yarn
 - Supabase account
@@ -61,40 +63,40 @@ Prerequisites:
 
 Installation Steps:
 
-1. Clone the repository
+1.  Clone the repository
 
          git clone https://github.com/yourusername/thinktapflow.git
          cd thinktapflow
 
-2. Install dependencies
-         
+2.  Install dependencies
+
          npm install
 
-3. Set up environment variables
-   Copy the template from config/env.template.txt and create:
-   - .env.local (for development)
-   - .env.production (for production)
+3.  Set up environment variables
+    Copy the template from config/env.template.txt and create:
+    - .env.local (for development)
+    - .env.production (for production)
 
-4. Configure your environment variables (see section below)
+4.  Configure your environment variables (see section below)
 
-5. Set up Supabase
-   - Create a new Supabase project
-   - Run database migrations
-   - Configure authentication providers
+5.  Set up Supabase
+    - Create a new Supabase project
+    - Run database migrations
+    - Configure authentication providers
 
-6. Run the development server
-  
-       npm run dev
+6.  Run the development server
 
-7. Open your browser
-   Navigate to http://localhost:3000
+    npm run dev
+
+7.  Open your browser
+    Navigate to http://localhost:3000
 
 ## 🌐 ENVIRONMENT VARIABLES
 
 Required environment variables:
 
 # App Configuration
-     
+
       NEXT_PUBLIC_APP_URL="http://localhost:3000"
       NEXT_PUBLIC_APP_NAME="ThinkTapFlow"
 
@@ -169,12 +171,14 @@ Groq AI integration provides:
 ## 🚀 DEPLOYMENT
 
 Vercel (Recommended):
+
 1. Push code to GitHub
 2. Connect repository to Vercel
 3. Configure environment variables in Vercel dashboard
 4. Deploy automatically on push to main branch
 
 Other supported platforms:
+
 - Netlify
 - Railway
 - DigitalOcean App Platform
@@ -182,20 +186,20 @@ Other supported platforms:
 
 ## 📝 ENVIRONMENT VARIABLES REFERENCE
 
-Variable                          | Description                    | Required
------------------------------------|--------------------------------|---------
-NEXT_PUBLIC_APP_URL               | Your application URL           | Yes
-NEXT_PUBLIC_APP_NAME              | Application name               | Yes
-NEXT_PUBLIC_SUPABASE_URL          | Supabase project URL          | Yes
-NEXT_PUBLIC_SUPABASE_ANON_KEY     | Supabase anonymous key        | Yes
-SUPABASE_SERVICE_ROLE_KEY         | Supabase service role key     | Yes
-GROQ_API_KEY                      | Groq AI API key               | Yes
-NEXT_PUBLIC_PADDLE_CLIENT_TOKEN   | Paddle client token           | Yes
-PADDLE_SECRET_KEY                 | Paddle secret key             | Yes
-PADDLE_WEBHOOK_SECRET             | Paddle webhook secret         | Yes
-SENTRY_DSN                        | Sentry DSN for error tracking | Yes
-SENTRY_ORG                        | Sentry organization           | Yes
-SENTRY_PROJECT                    | Sentry project name           | Yes
+| Variable                        | Description                   | Required |
+| ------------------------------- | ----------------------------- | -------- |
+| NEXT_PUBLIC_APP_URL             | Your application URL          | Yes      |
+| NEXT_PUBLIC_APP_NAME            | Application name              | Yes      |
+| NEXT_PUBLIC_SUPABASE_URL        | Supabase project URL          | Yes      |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY   | Supabase anonymous key        | Yes      |
+| SUPABASE_SERVICE_ROLE_KEY       | Supabase service role key     | Yes      |
+| GROQ_API_KEY                    | Groq AI API key               | Yes      |
+| NEXT_PUBLIC_PADDLE_CLIENT_TOKEN | Paddle client token           | Yes      |
+| PADDLE_SECRET_KEY               | Paddle secret key             | Yes      |
+| PADDLE_WEBHOOK_SECRET           | Paddle webhook secret         | Yes      |
+| SENTRY_DSN                      | Sentry DSN for error tracking | Yes      |
+| SENTRY_ORG                      | Sentry organization           | Yes      |
+| SENTRY_PROJECT                  | Sentry project name           | Yes      |
 
 ## 🤝 CONTRIBUTING
 
@@ -226,7 +230,5 @@ If you encounter issues:
 - Groq - Fast AI inference platform
 - Paddle - Payment infrastructure
 - Sentry - Error monitoring and performance tracking
-
-
 
 Built with ❤️ by the ThinkTapFlow team

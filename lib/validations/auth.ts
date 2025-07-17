@@ -6,12 +6,12 @@ export {
   changePasswordSchema,
   emailSchema,
   passwordSchema,
-  usernameSchema
-} from './index';
+  usernameSchema,
+} from "./index";
 
 export type {
   LoginFormData,
   SignupFormData,
   ResetPasswordFormData,
-  ChangePasswordFormData
-} from './index'; 
+  ChangePasswordFormData,
+} from "./index";

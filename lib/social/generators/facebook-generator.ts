@@ -1,5 +1,5 @@
-import { BasePostGenerator } from './base-post-generator';
-import { AIGenerationOptions, PlatformPost, AIServiceError, SupportedPlatforms } from '@/types/ai';
+import { BasePostGenerator } from "./base-post-generator";
+import { AIGenerationOptions, PlatformPost, AIServiceError, SupportedPlatforms } from "@/types/ai";
 
 export class FacebookGenerator extends BasePostGenerator {
   constructor(platform: SupportedPlatforms) {
@@ -16,8 +16,8 @@ Requirements:
 - Include relevant hashtags (max 5)
 - Break text into readable paragraphs
 - Focus on engagement and shareability
-${options.includeEmojis ? '- Include relevant emojis' : ''}
-${options.targetAudience ? `- Target audience: ${options.targetAudience}` : ''}
+${options.includeEmojis ? "- Include relevant emojis" : ""}
+${options.targetAudience ? `- Target audience: ${options.targetAudience}` : ""}
 
 Return ONLY a JSON array of objects with this exact format:
 [
@@ -34,23 +34,19 @@ Return ONLY a JSON array of objects with this exact format:
     try {
       const posts = JSON.parse(response) as any[];
       return posts
-        .map((post) => ({
-          content: post.content || '',
+        .map(post => ({
+          content: post.content || "",
           hashtags: (post.hashtags || []).slice(0, 5),
           mentions: post.mentions || [],
           characterCount: post.content?.length || 0,
         }))
-        .filter((post) => this.validatePost(post));
+        .filter(post => this.validatePost(post));
     } catch {
-      throw new AIServiceError('Failed to parse Facebook response', 'PARSE_ERROR');
+      throw new AIServiceError("Failed to parse Facebook response", "PARSE_ERROR");
     }
   }
 
   validatePost(post: PlatformPost): boolean {
-    return (
-      post.content.length > 0 &&
-      post.content.length <= 63206 &&
-      post.hashtags.length <= 5
-    );
+    return post.content.length > 0 && post.content.length <= 63206 && post.hashtags.length <= 5;
   }
-} 
+}

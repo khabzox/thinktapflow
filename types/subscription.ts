@@ -1,6 +1,6 @@
-export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'plus';
+export type SubscriptionTier = "free" | "starter" | "pro" | "plus";
 
-export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due';
+export type SubscriptionStatus = "active" | "cancelled" | "past_due";
 
 export interface Subscription {
   id: string;
@@ -19,4 +19,4 @@ export interface MonthlyUsage {
   generation_count: number;
   created_at: string;
   updated_at: string;
-} 
+}

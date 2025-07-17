@@ -1,7 +1,7 @@
-import { useRouter, usePathname } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useCallback, useEffect, useState } from 'react';
-import { type User, AuthError } from '@supabase/supabase-js';
+import { useRouter, usePathname } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useCallback, useEffect, useState } from "react";
+import { type User, AuthError } from "@supabase/supabase-js";
 
 export interface AuthState {
   user: User | null;
@@ -9,8 +9,8 @@ export interface AuthState {
   error: AuthError | null;
 }
 
-const protectedPaths = ['/dashboard', '/settings'];
-const authPaths = ['/auth/login', '/auth/signup', '/auth/verify-email'];
+const protectedPaths = ["/dashboard", "/settings"];
+const authPaths = ["/auth/login", "/auth/signup", "/auth/verify-email"];
 
 export function useAuth() {
   const [state, setState] = useState<AuthState>({
@@ -36,9 +36,9 @@ export function useAuth() {
       const isAuthPath = authPaths.some(path => pathname?.startsWith(path));
 
       if (isProtectedPath && !session) {
-        router.push('/auth/login');
+        router.push("/auth/login");
       } else if (isAuthPath && session) {
-        router.push('/dashboard');
+        router.push("/dashboard");
       }
     });
 
@@ -52,7 +52,7 @@ export function useAuth() {
         isLoading: false,
       }));
 
-      if (event === 'SIGNED_IN') {
+      if (event === "SIGNED_IN") {
         router.refresh();
       }
     });
@@ -71,7 +71,7 @@ export function useAuth() {
           password,
         });
         if (error) throw error;
-        router.push(redirectTo || '/dashboard');
+        router.push(redirectTo || "/dashboard");
       } catch (error) {
         setState(prev => ({
           ...prev,
@@ -80,7 +80,7 @@ export function useAuth() {
         }));
       }
     },
-    [supabase, router]
+    [supabase, router],
   );
 
   const signUp = useCallback(
@@ -95,7 +95,7 @@ export function useAuth() {
           },
         });
         if (error) throw error;
-        
+
         router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
       } catch (error) {
         setState(prev => ({
@@ -105,7 +105,7 @@ export function useAuth() {
         }));
       }
     },
-    [supabase, router]
+    [supabase, router],
   );
 
   const signOut = useCallback(async () => {
@@ -113,7 +113,7 @@ export function useAuth() {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      router.push('/');
+      router.push("/");
     } catch (error) {
       setState(prev => ({
         ...prev,
@@ -124,13 +124,13 @@ export function useAuth() {
   }, [supabase, router]);
 
   const signInWithProvider = useCallback(
-    async (provider: 'google' | 'github', redirectTo?: string | null) => {
+    async (provider: "google" | "github", redirectTo?: string | null) => {
       try {
         setState(prev => ({ ...prev, isLoading: true, error: null }));
         const { error } = await supabase.auth.signInWithOAuth({
           provider,
           options: {
-            redirectTo: redirectTo 
+            redirectTo: redirectTo
               ? `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
               : `${window.location.origin}/auth/callback`,
           },
@@ -144,7 +144,7 @@ export function useAuth() {
         }));
       }
     },
-    [supabase]
+    [supabase],
   );
 
   return {
@@ -154,4 +154,4 @@ export function useAuth() {
     signOut,
     signInWithProvider,
   };
-} 
+}

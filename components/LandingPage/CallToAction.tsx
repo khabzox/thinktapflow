@@ -1,16 +1,16 @@
-'use client';
-import ArrowRight from '/public/assets/arrow-right.svg';
-import starImage from '/public/assets/star.png';
-import springImage from '/public/assets/spring.png';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import { PrimaryBtn, SecondaryBtn } from '../common/btn';
+"use client";
+import ArrowRight from "/public/assets/arrow-right.svg";
+import starImage from "/public/assets/star.png";
+import springImage from "/public/assets/spring.png";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { PrimaryBtn, SecondaryBtn } from "../common/btn";
 
 export const CallToAction = () => {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start end', 'end start'],
+    offset: ["start end", "end start"],
   });
 
   const translateY = useTransform(scrollYProgress, [0, 1], [150, -150]);
@@ -18,7 +18,7 @@ export const CallToAction = () => {
   return (
     <section
       ref={sectionRef}
-      className="bg-gradient-to-b from-white to-[#D2DCFF] py-24 overflow-x-clip"
+      className="overflow-x-clip bg-gradient-to-b from-white to-[#D2DCFF] py-24"
     >
       <div className="container">
         <div className="section-heading relative">
@@ -48,13 +48,17 @@ export const CallToAction = () => {
           />
         </div>
 
-        <div className="flex gap-2 mt-10 items-center justify-center">
+        <div className="mt-10 flex items-center justify-center gap-2">
           <PrimaryBtn href={"/dashboard"} textContent={"Start Creating Free"} />
-          <SecondaryBtn href={"/dashboard"} textContent={"View Demo"} icon={<ArrowRight className="h-5 w-5" />} />
+          <SecondaryBtn
+            href={"/dashboard"}
+            textContent={"View Demo"}
+            icon={<ArrowRight className="h-5 w-5" />}
+          />
         </div>
 
         {/* Additional value props */}
-        <div className="flex flex-wrap justify-center gap-6 mt-8 text-sm text-gray-600">
+        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <span className="text-green-500">✓</span>
             <span>5,000 free words monthly</span>

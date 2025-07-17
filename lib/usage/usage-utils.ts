@@ -1,4 +1,4 @@
-import { TIER_LIMITS, getTierLimits } from '@/constants/subscriptions';
+import { TIER_LIMITS, getTierLimits } from "@/constants/subscriptions";
 
 export interface UsageStats {
   current: number;
@@ -31,21 +31,21 @@ export const getUsageStats = (current: number, limit: number): UsageStats => {
     current,
     limit,
     percentage: calculateUsagePercentage(current, limit),
-    remaining: getRemainingUsage(current, limit)
+    remaining: getRemainingUsage(current, limit),
   };
 };
 
 export const getUserUsageInfo = (
   dailyGenerations: number,
   monthlyWords: number,
-  tier: string
+  tier: string,
 ): UserUsage => {
   const tierLimits = getTierLimits(tier);
-  
+
   return {
     dailyGenerations: getUsageStats(dailyGenerations, tierLimits.daily_generations),
     monthlyWords: getUsageStats(monthlyWords, tierLimits.monthly_words),
-    tier
+    tier,
   };
 };
 
@@ -53,10 +53,10 @@ export const isUsageLimitReached = (usage: UsageStats): boolean => {
   return usage.current >= usage.limit;
 };
 
-export const getUsageWarningLevel = (percentage: number): 'safe' | 'warning' | 'danger' => {
-  if (percentage >= 90) return 'danger';
-  if (percentage >= 75) return 'warning';
-  return 'safe';
+export const getUsageWarningLevel = (percentage: number): "safe" | "warning" | "danger" => {
+  if (percentage >= 90) return "danger";
+  if (percentage >= 75) return "warning";
+  return "safe";
 };
 
 export const formatUsageText = (usage: UsageStats): string => {
@@ -64,11 +64,11 @@ export const formatUsageText = (usage: UsageStats): string => {
 };
 
 export const getUpgradeRecommendation = (tier: string): string | null => {
-  if (tier === 'free') {
-    return 'Upgrade to Pro for 10x more generations and advanced features!';
+  if (tier === "free") {
+    return "Upgrade to Pro for 10x more generations and advanced features!";
   }
-  if (tier === 'pro') {
-    return 'Upgrade to Enterprise for unlimited generations and premium support!';
+  if (tier === "pro") {
+    return "Upgrade to Enterprise for unlimited generations and premium support!";
   }
   return null;
 };

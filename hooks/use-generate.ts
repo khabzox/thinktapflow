@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from '@/types/supabase';
-import { GenerationRequest } from '@/types/api';
-import { aiProvider, AIGenerationOptions } from '@/lib/ai';
-import { AI_ERRORS } from '@/constants/ai';
-import { generateContent as generateContentAction } from '@/actions';
+import { useState } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/types/supabase";
+import { GenerationRequest } from "@/types/api";
+import { aiProvider, AIGenerationOptions } from "@/lib/ai";
+import { AI_ERRORS } from "@/constants/ai";
+import { generateContent as generateContentAction } from "@/actions";
 
 interface GenerationError {
   message: string;
@@ -28,31 +28,34 @@ export function useGenerate() {
 
       // Create FormData for server action
       const formData = new FormData();
-      formData.append('content', request.content);
-      formData.append('platforms', JSON.stringify(request.platforms));
-      formData.append('options', JSON.stringify(request.options || {}));
+      formData.append("content", request.content);
+      formData.append("platforms", JSON.stringify(request.platforms));
+      formData.append("options", JSON.stringify(request.options || {}));
 
       // Call the server action
       const result = await generateContentAction(formData);
 
       if (!result.success) {
         // Handle specific error cases
-        if (result.error?.code === 'DAILY_LIMIT_REACHED' || result.error?.code === 'MONTHLY_LIMIT_REACHED') {
+        if (
+          result.error?.code === "DAILY_LIMIT_REACHED" ||
+          result.error?.code === "MONTHLY_LIMIT_REACHED"
+        ) {
           throw {
-            message: result.error.message || 'Usage limit reached',
-            code: 'LIMIT_REACHED',
-            details: result.error
+            message: result.error.message || "Usage limit reached",
+            code: "LIMIT_REACHED",
+            details: result.error,
           };
         }
         throw {
           message: result.error?.message || AI_ERRORS.GENERATION_FAILED,
-          code: result.error?.code || 'GENERATION_FAILED'
+          code: result.error?.code || "GENERATION_FAILED",
         };
       }
 
       return result.data;
     } catch (err) {
-      console.error('Generation error:', err);
+      console.error("Generation error:", err);
       setError(err as GenerationError);
       return null;
     } finally {
@@ -64,7 +67,7 @@ export function useGenerate() {
   const generateWithAI = async (
     input: string,
     platforms: string[],
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ) => {
     try {
       setIsGenerating(true);
@@ -74,33 +77,33 @@ export function useGenerate() {
       const content = await aiProvider.generateContent(input, platforms, options);
 
       // Save to database if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
-        const { error: saveError } = await supabase
-          .from('generations')
-          .insert({
-            user_id: user.id,
-            input_content: input,
-            generated_content: content,
-            platforms: platforms,
-            metadata: {
-              options,
-              timestamp: Date.now(),
-              provider: 'groq' // LOCKED TO GROQ
-            }
-          });
+        const { error: saveError } = await supabase.from("generations").insert({
+          user_id: user.id,
+          input_content: input,
+          generated_content: content,
+          platforms: platforms,
+          metadata: {
+            options,
+            timestamp: Date.now(),
+            provider: "groq", // LOCKED TO GROQ
+          },
+        });
 
         if (saveError) {
-          console.warn('Failed to save generation to database:', saveError);
+          console.warn("Failed to save generation to database:", saveError);
         }
       }
 
       return content;
     } catch (err) {
-      console.error('AI Generation error:', err);
+      console.error("AI Generation error:", err);
       setError({
         message: err instanceof Error ? err.message : AI_ERRORS.GENERATION_FAILED,
-        code: 'AI_GENERATION_FAILED'
+        code: "AI_GENERATION_FAILED",
       });
       return null;
     } finally {

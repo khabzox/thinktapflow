@@ -1,122 +1,133 @@
-import { z } from 'zod';
-import { VALIDATION_RULES } from '@/constants';
+import { z } from "zod";
+import { VALIDATION_RULES } from "@/constants";
 
 // Base validation schemas
 export const emailSchema = z
   .string()
-  .email('Please enter a valid email address')
-  .max(VALIDATION_RULES.EMAIL.MAX_LENGTH, `Email must be less than ${VALIDATION_RULES.EMAIL.MAX_LENGTH} characters`);
+  .email("Please enter a valid email address")
+  .max(
+    VALIDATION_RULES.EMAIL.MAX_LENGTH,
+    `Email must be less than ${VALIDATION_RULES.EMAIL.MAX_LENGTH} characters`,
+  );
 
 export const passwordSchema = z
   .string()
-  .min(VALIDATION_RULES.PASSWORD.MIN_LENGTH, `Password must be at least ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} characters`)
-  .refine(
-    (password) => {
-      if (!VALIDATION_RULES.PASSWORD.REQUIRE_UPPERCASE) return true;
-      return /[A-Z]/.test(password);
-    },
-    'Password must contain at least one uppercase letter'
+  .min(
+    VALIDATION_RULES.PASSWORD.MIN_LENGTH,
+    `Password must be at least ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} characters`,
   )
-  .refine(
-    (password) => {
-      if (!VALIDATION_RULES.PASSWORD.REQUIRE_LOWERCASE) return true;
-      return /[a-z]/.test(password);
-    },
-    'Password must contain at least one lowercase letter'
-  )
-  .refine(
-    (password) => {
-      if (!VALIDATION_RULES.PASSWORD.REQUIRE_NUMBERS) return true;
-      return /\d/.test(password);
-    },
-    'Password must contain at least one number'
-  )
-  .refine(
-    (password) => {
-      if (!VALIDATION_RULES.PASSWORD.REQUIRE_SYMBOLS) return true;
-      return /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    },
-    'Password must contain at least one special character'
-  );
+  .refine(password => {
+    if (!VALIDATION_RULES.PASSWORD.REQUIRE_UPPERCASE) return true;
+    return /[A-Z]/.test(password);
+  }, "Password must contain at least one uppercase letter")
+  .refine(password => {
+    if (!VALIDATION_RULES.PASSWORD.REQUIRE_LOWERCASE) return true;
+    return /[a-z]/.test(password);
+  }, "Password must contain at least one lowercase letter")
+  .refine(password => {
+    if (!VALIDATION_RULES.PASSWORD.REQUIRE_NUMBERS) return true;
+    return /\d/.test(password);
+  }, "Password must contain at least one number")
+  .refine(password => {
+    if (!VALIDATION_RULES.PASSWORD.REQUIRE_SYMBOLS) return true;
+    return /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  }, "Password must contain at least one special character");
 
 export const usernameSchema = z
   .string()
-  .min(VALIDATION_RULES.USERNAME.MIN_LENGTH, `Username must be at least ${VALIDATION_RULES.USERNAME.MIN_LENGTH} characters`)
-  .max(VALIDATION_RULES.USERNAME.MAX_LENGTH, `Username must be less than ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters`)
-  .regex(VALIDATION_RULES.USERNAME.ALLOWED_CHARS, 'Username can only contain letters, numbers, and underscores');
+  .min(
+    VALIDATION_RULES.USERNAME.MIN_LENGTH,
+    `Username must be at least ${VALIDATION_RULES.USERNAME.MIN_LENGTH} characters`,
+  )
+  .max(
+    VALIDATION_RULES.USERNAME.MAX_LENGTH,
+    `Username must be less than ${VALIDATION_RULES.USERNAME.MAX_LENGTH} characters`,
+  )
+  .regex(
+    VALIDATION_RULES.USERNAME.ALLOWED_CHARS,
+    "Username can only contain letters, numbers, and underscores",
+  );
 
 export const contentSchema = z
   .string()
-  .min(VALIDATION_RULES.CONTENT.MIN_LENGTH, `Content must be at least ${VALIDATION_RULES.CONTENT.MIN_LENGTH} characters`)
-  .max(VALIDATION_RULES.CONTENT.MAX_LENGTH, `Content must be less than ${VALIDATION_RULES.CONTENT.MAX_LENGTH} characters`);
+  .min(
+    VALIDATION_RULES.CONTENT.MIN_LENGTH,
+    `Content must be at least ${VALIDATION_RULES.CONTENT.MIN_LENGTH} characters`,
+  )
+  .max(
+    VALIDATION_RULES.CONTENT.MAX_LENGTH,
+    `Content must be less than ${VALIDATION_RULES.CONTENT.MAX_LENGTH} characters`,
+  );
 
 // Auth validation schemas
 export const loginSchema = z.object({
   email: emailSchema,
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, "Password is required"),
 });
 
-export const signupSchema = z.object({
-  email: emailSchema,
-  password: passwordSchema,
-  confirmPassword: z.string(),
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  acceptTerms: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),
-}).refine(
-  (data) => data.password === data.confirmPassword,
-  {
+export const signupSchema = z
+  .object({
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: z.string(),
+    fullName: z.string().min(2, "Full name must be at least 2 characters"),
+    acceptTerms: z
+      .boolean()
+      .refine(val => val === true, "You must accept the terms and conditions"),
+  })
+  .refine(data => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  }
-);
+  });
 
 export const resetPasswordSchema = z.object({
   email: emailSchema,
 });
 
-export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: passwordSchema,
-  confirmPassword: z.string(),
-}).refine(
-  (data) => data.newPassword === data.confirmPassword,
-  {
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  }
-);
+  });
 
 // Content generation validation schemas
 export const generateContentSchema = z.object({
   input: contentSchema,
-  platforms: z.array(z.string()).min(1, 'At least one platform must be selected'),
-  options: z.object({
-    tone: z.enum(['professional', 'casual', 'marketing', 'friendly']).optional(),
-    includeHashtags: z.boolean().optional(),
-    includeEmojis: z.boolean().optional(),
-    contentType: z.enum(['post', 'thread', 'story', 'video', 'article']).optional(),
-    model: z.enum(['fast', 'balanced', 'advanced']).optional(),
-    variations: z.number().min(1).max(5).optional(),
-  }).optional(),
+  platforms: z.array(z.string()).min(1, "At least one platform must be selected"),
+  options: z
+    .object({
+      tone: z.enum(["professional", "casual", "marketing", "friendly"]).optional(),
+      includeHashtags: z.boolean().optional(),
+      includeEmojis: z.boolean().optional(),
+      contentType: z.enum(["post", "thread", "story", "video", "article"]).optional(),
+      model: z.enum(["fast", "balanced", "advanced"]).optional(),
+      variations: z.number().min(1).max(5).optional(),
+    })
+    .optional(),
 });
 
 export const urlExtractionSchema = z.object({
-  url: z.string().url('Please enter a valid URL'),
-  platforms: z.array(z.string()).min(1, 'At least one platform must be selected'),
+  url: z.string().url("Please enter a valid URL"),
+  platforms: z.array(z.string()).min(1, "At least one platform must be selected"),
 });
 
 // Profile and settings validation schemas
 export const profileUpdateSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
   username: usernameSchema.optional(),
-  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
-  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  location: z.string().max(100, 'Location must be less than 100 characters').optional(),
+  bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
+  website: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  location: z.string().max(100, "Location must be less than 100 characters").optional(),
 });
 
 export const socialAccountSchema = z.object({
-  platform: z.string().min(1, 'Platform is required'),
-  username: z.string().min(1, 'Username is required'),
+  platform: z.string().min(1, "Platform is required"),
+  username: z.string().min(1, "Username is required"),
   accessToken: z.string().optional(),
   refreshToken: z.string().optional(),
   isActive: z.boolean().default(true),
@@ -124,19 +135,29 @@ export const socialAccountSchema = z.object({
 
 // Template validation schemas
 export const templateSchema = z.object({
-  name: z.string().min(1, 'Template name is required').max(100, 'Name must be less than 100 characters'),
-  description: z.string().min(1, 'Description is required').max(500, 'Description must be less than 500 characters'),
-  category: z.string().min(1, 'Category is required'),
-  platforms: z.array(z.string()).min(1, 'At least one platform must be selected'),
+  name: z
+    .string()
+    .min(1, "Template name is required")
+    .max(100, "Name must be less than 100 characters"),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(500, "Description must be less than 500 characters"),
+  category: z.string().min(1, "Category is required"),
+  platforms: z.array(z.string()).min(1, "At least one platform must be selected"),
   prompt: contentSchema,
-  variables: z.array(z.object({
-    name: z.string().min(1, 'Variable name is required'),
-    type: z.enum(['text', 'number', 'select', 'boolean']),
-    description: z.string().min(1, 'Description is required'),
-    required: z.boolean(),
-    options: z.array(z.string()).optional(),
-    defaultValue: z.any().optional(),
-  })).optional(),
+  variables: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Variable name is required"),
+        type: z.enum(["text", "number", "select", "boolean"]),
+        description: z.string().min(1, "Description is required"),
+        required: z.boolean(),
+        options: z.array(z.string()).optional(),
+        defaultValue: z.any().optional(),
+      }),
+    )
+    .optional(),
 });
 
 // API validation schemas
@@ -144,7 +165,7 @@ export const paginationSchema = z.object({
   page: z.number().min(1).default(1),
   limit: z.number().min(1).max(100).default(20),
   sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
 export const generationFilterSchema = z.object({
@@ -157,19 +178,19 @@ export const generationFilterSchema = z.object({
 // File upload validation schemas
 export const fileUploadSchema = z.object({
   file: z.any(),
-  type: z.enum(['image', 'document', 'video', 'audio']),
+  type: z.enum(["image", "document", "video", "audio"]),
   maxSize: z.number().default(10 * 1024 * 1024), // 10MB default
 });
 
 // Subscription validation schemas
 export const subscriptionUpdateSchema = z.object({
-  tier: z.enum(['free', 'pro', 'enterprise']),
+  tier: z.enum(["free", "pro", "enterprise"]),
   paymentMethodId: z.string().optional(),
 });
 
 export const usageTrackingSchema = z.object({
-  action: z.string().min(1, 'Action is required'),
-  resource: z.string().min(1, 'Resource is required'),
+  action: z.string().min(1, "Action is required"),
+  resource: z.string().min(1, "Resource is required"),
   metadata: z.record(z.any()).optional(),
 });
 

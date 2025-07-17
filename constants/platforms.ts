@@ -7,8 +7,8 @@ export const SOCIAL_PLATFORMS = {
     color: "#1DA1F2",
     rateLimit: {
       perHour: 300,
-      perDay: 2400
-    }
+      perDay: 2400,
+    },
   },
   LINKEDIN: {
     id: "linkedin",
@@ -18,8 +18,8 @@ export const SOCIAL_PLATFORMS = {
     color: "#0077B5",
     rateLimit: {
       perHour: 100,
-      perDay: 500
-    }
+      perDay: 500,
+    },
   },
   FACEBOOK: {
     id: "facebook",
@@ -29,8 +29,8 @@ export const SOCIAL_PLATFORMS = {
     color: "#4267B2",
     rateLimit: {
       perHour: 200,
-      perDay: 1000
-    }
+      perDay: 1000,
+    },
   },
   INSTAGRAM: {
     id: "instagram",
@@ -40,8 +40,8 @@ export const SOCIAL_PLATFORMS = {
     color: "#E1306C",
     rateLimit: {
       perHour: 25,
-      perDay: 200
-    }
+      perDay: 200,
+    },
   },
   TIKTOK: {
     id: "tiktok",
@@ -51,8 +51,8 @@ export const SOCIAL_PLATFORMS = {
     color: "#000000",
     rateLimit: {
       perHour: 300,
-      perDay: 1000
-    }
+      perDay: 1000,
+    },
   },
   YOUTUBE: {
     id: "youtube",
@@ -62,9 +62,9 @@ export const SOCIAL_PLATFORMS = {
     color: "#FF0000",
     rateLimit: {
       perHour: 50,
-      perDay: 200
-    }
-  }
+      perDay: 200,
+    },
+  },
 } as const;
 
 export const PLATFORMS_ARRAY = Object.values(SOCIAL_PLATFORMS);

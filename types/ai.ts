@@ -1,6 +1,13 @@
-import { AI_PROVIDERS, DEFAULT_AI_PROVIDER, GROQ_MODELS, AI_MODELS, AI_TONES, CONTENT_TYPES } from '@/constants/ai';
+import {
+  AI_PROVIDERS,
+  DEFAULT_AI_PROVIDER,
+  GROQ_MODELS,
+  AI_MODELS,
+  AI_TONES,
+  CONTENT_TYPES,
+} from "@/constants/ai";
 
-export type AIProviderType = 'groq' | 'openai' | 'anthropic';
+export type AIProviderType = "groq" | "openai" | "anthropic";
 
 // Groq is the default and primary provider type
 export type DefaultAIProvider = typeof DEFAULT_AI_PROVIDER;
@@ -21,7 +28,7 @@ export interface AIServiceConfig {
 
 // Groq-specific configuration (Primary Provider)
 export interface GroqConfig extends AIServiceConfig {
-  provider: 'groq';
+  provider: "groq";
   models: {
     chat: typeof GROQ_MODELS.FAST;
     chatAdvanced: typeof GROQ_MODELS.BALANCED;
@@ -35,8 +42,8 @@ export interface AIGenerationOptions {
   topP?: number;
   includeEmojis?: boolean;
   includeHashtags?: boolean;
-  creativityLevel?: number;  // 0 to 100
-  contentLength?: number;    // 0 to 100
+  creativityLevel?: number; // 0 to 100
+  contentLength?: number; // 0 to 100
   targetAudience?: string;
   customInstructions?: string;
   tone?: keyof typeof AI_TONES;
@@ -105,7 +112,13 @@ export interface GenerationMetrics {
   error?: string;
 }
 
-export type SupportedPlatforms = 'twitter' | 'linkedin' | 'instagram' | 'facebook' | 'youtube' | 'tiktok';
+export type SupportedPlatforms =
+  | "twitter"
+  | "linkedin"
+  | "instagram"
+  | "facebook"
+  | "youtube"
+  | "tiktok";
 
 export interface PlatformConstraints {
   maxLength: number;
@@ -121,7 +134,7 @@ export class AIServiceError extends Error {
 
   constructor(message: string, code: string, statusCode: number = 500) {
     super(message);
-    this.name = 'AIServiceError';
+    this.name = "AIServiceError";
     this.code = code;
     this.statusCode = statusCode;
   }
@@ -131,9 +144,9 @@ export class ContentParsingError extends Error {
   constructor(
     message: string,
     public url: string,
-    public statusCode?: number
+    public statusCode?: number,
   ) {
     super(message);
-    this.name = 'ContentParsingError';
+    this.name = "ContentParsingError";
   }
 }

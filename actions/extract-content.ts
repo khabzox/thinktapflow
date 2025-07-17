@@ -1,6 +1,6 @@
-'use server';
+"use server";
 
-import { GenerationError } from '@/lib/api/errors';
+import { GenerationError } from "@/lib/api/errors";
 
 // Types for better type safety
 interface ExtractedContent {
@@ -31,24 +31,24 @@ interface ExtractionResult {
 // Constants
 const MAX_CONTENT_LENGTH = 5000;
 const FETCH_TIMEOUT = 10000; // 10 seconds
-const ALLOWED_PROTOCOLS = ['http:', 'https:'];
+const ALLOWED_PROTOCOLS = ["http:", "https:"];
 
 // HTML entity mapping for better decoding
 const HTML_ENTITIES = {
-  '&nbsp;': ' ',
-  '&amp;': '&',
-  '&lt;': '<',
-  '&gt;': '>',
-  '&quot;': '"',
-  '&#039;': "'",
-  '&apos;': "'",
-  '&hellip;': '...',
-  '&mdash;': '—',
-  '&ndash;': '–',
-  '&rsquo;': "'",
-  '&lsquo;': "'",
-  '&rdquo;': '"',
-  '&ldquo;': '"',
+  "&nbsp;": " ",
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&#039;": "'",
+  "&apos;": "'",
+  "&hellip;": "...",
+  "&mdash;": "—",
+  "&ndash;": "–",
+  "&rsquo;": "'",
+  "&lsquo;": "'",
+  "&rdquo;": '"',
+  "&ldquo;": '"',
 } as const;
 
 // Patterns to remove common non-content elements
@@ -64,32 +64,32 @@ const NOISE_PATTERNS = [
  * Validates URL format and security
  */
 function validateUrl(url: string): { isValid: boolean; error?: string } {
-  if (!url || typeof url !== 'string') {
-    return { isValid: false, error: 'URL is required' };
+  if (!url || typeof url !== "string") {
+    return { isValid: false, error: "URL is required" };
   }
 
   try {
     const urlObj = new URL(url.trim());
 
     if (!ALLOWED_PROTOCOLS.includes(urlObj.protocol)) {
-      return { isValid: false, error: 'Invalid URL protocol' };
+      return { isValid: false, error: "Invalid URL protocol" };
     }
 
     // Block localhost and private IP ranges for security
     const hostname = urlObj.hostname.toLowerCase();
     if (
-      hostname === 'localhost' ||
-      hostname.startsWith('127.') ||
-      hostname.startsWith('192.168.') ||
-      hostname.startsWith('10.') ||
+      hostname === "localhost" ||
+      hostname.startsWith("127.") ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.") ||
       hostname.match(/^172\.(1[6-9]|2\d|3[01])\./)
     ) {
-      return { isValid: false, error: 'URL not allowed' };
+      return { isValid: false, error: "URL not allowed" };
     }
 
     return { isValid: true };
   } catch {
-    return { isValid: false, error: 'Invalid URL format' };
+    return { isValid: false, error: "Invalid URL format" };
   }
 }
 
@@ -97,7 +97,7 @@ function validateUrl(url: string): { isValid: boolean; error?: string } {
  * Decodes HTML entities using predefined mapping
  */
 function decodeHtmlEntities(text: string): string {
-  return text.replace(/&[a-zA-Z0-9#]+;/g, (entity) => {
+  return text.replace(/&[a-zA-Z0-9#]+;/g, entity => {
     return HTML_ENTITIES[entity as keyof typeof HTML_ENTITIES] || entity;
   });
 }
@@ -108,7 +108,7 @@ function decodeHtmlEntities(text: string): string {
 function extractMetadata(html: string) {
   const extractMeta = (pattern: RegExp) => {
     const match = html.match(pattern);
-    return match ? match[1].trim() : '';
+    return match ? match[1].trim() : "";
   };
 
   return {
@@ -128,12 +128,12 @@ function extractMetadata(html: string) {
 function processContent(content: string): string {
   // Remove noise patterns
   let cleanContent = content;
-  NOISE_PATTERNS.forEach((pattern) => {
-    cleanContent = cleanContent.replace(pattern, ' ');
+  NOISE_PATTERNS.forEach(pattern => {
+    cleanContent = cleanContent.replace(pattern, " ");
   });
 
   return cleanContent
-    .replace(/\s+/g, ' ') // Normalize whitespace
+    .replace(/\s+/g, " ") // Normalize whitespace
     .trim();
 }
 
@@ -144,15 +144,15 @@ function extractContentFromHtml(html: string): string {
   return (
     html
       // Remove script tags and their content
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
       // Remove style tags and their content
-      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
       // Remove HTML comments
-      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<!--[\s\S]*?-->/g, "")
       // Remove all HTML tags
-      .replace(/<[^>]+>/g, ' ')
+      .replace(/<[^>]+>/g, " ")
       // Normalize whitespace
-      .replace(/\s+/g, ' ')
+      .replace(/\s+/g, " ")
       .trim()
   );
 }
@@ -168,11 +168,11 @@ async function extractContent(url: string): Promise<ExtractedContent> {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; ContentExtractor/1.0)',
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Accept-Encoding': 'gzip, deflate',
-        'Cache-Control': 'no-cache',
+        "User-Agent": "Mozilla/5.0 (compatible; ContentExtractor/1.0)",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Cache-Control": "no-cache",
       },
     });
 
@@ -181,14 +181,14 @@ async function extractContent(url: string): Promise<ExtractedContent> {
     if (!response.ok) {
       throw new GenerationError(
         `HTTP ${response.status}: ${response.statusText}`,
-        'FETCH_ERROR',
-        response.status
+        "FETCH_ERROR",
+        response.status,
       );
     }
 
-    const contentType = response.headers.get('content-type');
-    if (!contentType?.includes('text/html')) {
-      throw new GenerationError('URL does not point to HTML content', 'INVALID_CONTENT_TYPE', 400);
+    const contentType = response.headers.get("content-type");
+    if (!contentType?.includes("text/html")) {
+      throw new GenerationError("URL does not point to HTML content", "INVALID_CONTENT_TYPE", 400);
     }
 
     const html = await response.text();
@@ -204,11 +204,11 @@ async function extractContent(url: string): Promise<ExtractedContent> {
     // Truncate if too long
     const originalLength = content.length;
     if (content.length > MAX_CONTENT_LENGTH) {
-      content = content.substring(0, MAX_CONTENT_LENGTH) + '...';
+      content = content.substring(0, MAX_CONTENT_LENGTH) + "...";
     }
 
     // Calculate word count
-    const wordCount = content.split(/\s+/).filter((word) => word.length > 0).length;
+    const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
 
     return {
       content,
@@ -230,25 +230,25 @@ async function extractContent(url: string): Promise<ExtractedContent> {
     }
 
     if (error instanceof Error) {
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
         throw new GenerationError(
-          'Request timeout - URL took too long to respond',
-          'TIMEOUT_ERROR',
-          408
+          "Request timeout - URL took too long to respond",
+          "TIMEOUT_ERROR",
+          408,
         );
       }
 
       throw new GenerationError(
         `Failed to extract content: ${error.message}`,
-        'EXTRACTION_FAILED',
-        500
+        "EXTRACTION_FAILED",
+        500,
       );
     }
 
     throw new GenerationError(
-      'Unknown error occurred during content extraction',
-      'UNKNOWN_ERROR',
-      500
+      "Unknown error occurred during content extraction",
+      "UNKNOWN_ERROR",
+      500,
     );
   }
 }
@@ -258,7 +258,7 @@ async function extractContent(url: string): Promise<ExtractedContent> {
  */
 export async function extractContentFromUrl(formData: FormData): Promise<ExtractionResult> {
   try {
-    const url = formData.get('url') as string;
+    const url = formData.get("url") as string;
 
     // Validate URL
     const validation = validateUrl(url);
@@ -267,7 +267,7 @@ export async function extractContentFromUrl(formData: FormData): Promise<Extract
         success: false,
         error: {
           message: validation.error!,
-          code: validation.error === 'URL is required' ? 'INVALID_REQUEST' : 'INVALID_URL',
+          code: validation.error === "URL is required" ? "INVALID_REQUEST" : "INVALID_URL",
         },
       };
     }
@@ -280,10 +280,10 @@ export async function extractContentFromUrl(formData: FormData): Promise<Extract
       data: result,
     };
   } catch (error) {
-    console.error('Content extraction error:', error);
+    console.error("Content extraction error:", error);
 
-    const errorMessage = error instanceof Error ? error.message : 'Failed to extract content';
-    const errorCode = error instanceof GenerationError ? error.code : 'UNKNOWN_ERROR';
+    const errorMessage = error instanceof Error ? error.message : "Failed to extract content";
+    const errorCode = error instanceof GenerationError ? error.code : "UNKNOWN_ERROR";
 
     return {
       success: false,

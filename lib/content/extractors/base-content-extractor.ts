@@ -1,4 +1,4 @@
-import { ContentParsingResult } from '@/types/ai';
+import { ContentParsingResult } from "@/types/ai";
 
 export abstract class BaseContentExtractor {
   abstract canHandle(url: string): boolean;

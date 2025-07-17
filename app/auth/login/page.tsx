@@ -1,17 +1,16 @@
-"use client"
-import { Suspense } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { LoginForm } from "@/components/auth/LoginForm"
-import { useSearchParams } from "next/navigation"
+"use client";
+import { Suspense } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { useSearchParams } from "next/navigation";
 
-import coverImage from '/public/assets/dark-auth-page.jpg';
-
+import coverImage from "/public/assets/dark-auth-page.jpg";
 
 // Separate component that uses useSearchParams
 function LoginContent() {
-  const searchParams = useSearchParams()
-  const redirectTo = searchParams.get("redirect")
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
 
   return (
     <div className="w-full bg-background lg:grid lg:min-h-screen lg:grid-cols-2">
@@ -23,7 +22,9 @@ function LoginContent() {
               <Image src="/logo/logosaas-dark.png" alt="logo" width={100} height={100} />
             </div>
             <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-            <p className="text-secondary-foreground/90">Enter your credentials to access your account</p>
+            <p className="text-secondary-foreground/90">
+              Enter your credentials to access your account
+            </p>
           </div>
 
           <LoginForm redirectTo={redirectTo} />
@@ -43,17 +44,11 @@ function LoginContent() {
       </div>
 
       {/* Image Section */}
-      <div className="hidden bg-muted lg:block relative">
-        <Image
-          src={coverImage}
-          alt="Login cover image"
-          fill
-          className="object-cover"
-          priority
-        />
+      <div className="relative hidden bg-muted lg:block">
+        <Image src={coverImage} alt="Login cover image" fill className="object-cover" priority />
       </div>
     </div>
-  )
+  );
 }
 
 // Loading fallback component
@@ -71,7 +66,7 @@ function LoginLoading() {
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block relative">
+      <div className="relative hidden bg-muted lg:block">
         <Image
           src="/placeholder.svg?height=1080&width=1920"
           alt="Login cover image"
@@ -82,7 +77,7 @@ function LoginLoading() {
         <div className="absolute inset-0 bg-black/20" />
       </div>
     </div>
-  )
+  );
 }
 
 // Main page component with Suspense boundary
@@ -91,5 +86,5 @@ export default function LoginPage() {
     <Suspense fallback={<LoginLoading />}>
       <LoginContent />
     </Suspense>
-  )
+  );
 }

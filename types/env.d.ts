@@ -29,4 +29,4 @@ declare namespace NodeJS {
     NEXT_PUBLIC_ENABLE_BLOG_GENERATION: string;
     NEXT_PUBLIC_ENABLE_SOCIAL_GENERATION: string;
   }
-} 
+}

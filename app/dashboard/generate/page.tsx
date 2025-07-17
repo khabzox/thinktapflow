@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
+import { useState, useTransition } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import {
   Sparkles,
   Wand2,
@@ -25,99 +25,102 @@ import {
   Link,
   Type,
   Loader2,
-} from 'lucide-react';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { toast } from 'sonner';
-import { extractContentFromUrl, generateContent } from '@/actions';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { GeneratedContent } from '@/lib/ai/provider';
+} from "lucide-react";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { toast } from "sonner";
+import { extractContentFromUrl, generateContent } from "@/actions";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GeneratedContent } from "@/lib/ai/provider";
 
 const contentTypes = [
   {
-    id: 'text',
-    name: 'Text & URL',
+    id: "text",
+    name: "Text & URL",
     icon: FileText,
-    description: 'Generate from text or website URL',
+    description: "Generate from text or website URL",
   },
   {
-    id: 'image',
-    name: 'Image Content',
+    id: "image",
+    name: "Image Content",
     icon: ImageIcon,
-    description: 'Visual content with AI-generated images',
+    description: "Visual content with AI-generated images",
     comingSoon: true,
   },
   {
-    id: 'video',
-    name: 'Video Script',
+    id: "video",
+    name: "Video Script",
     icon: Video,
-    description: 'Video scripts and storyboards',
+    description: "Video scripts and storyboards",
     comingSoon: true,
   },
   {
-    id: 'audio',
-    name: 'Audio Content',
+    id: "audio",
+    name: "Audio Content",
     icon: Mic,
-    description: 'Podcast scripts and voice content',
+    description: "Podcast scripts and voice content",
     comingSoon: true,
   },
 ];
 
 const toneOptions = [
-  'Professional',
-  'Casual',
-  'Friendly',
-  'Authoritative',
-  'Humorous',
-  'Inspirational',
-  'Educational',
-  'Conversational',
+  "Professional",
+  "Casual",
+  "Friendly",
+  "Authoritative",
+  "Humorous",
+  "Inspirational",
+  "Educational",
+  "Conversational",
 ];
 
 const platforms = [
-  { id: 'twitter', name: 'Twitter', limit: 280, color: '#1DA1F2' },
-  { id: 'linkedin', name: 'LinkedIn', limit: 3000, color: '#0077B5' },
-  { id: 'facebook', name: 'Facebook', limit: 2000, color: '#4267B2' },
-  { id: 'instagram', name: 'Instagram', limit: 2200, color: '#E1306C' },
-  { id: 'tiktok', name: 'TikTok', limit: 150, color: '#000000' },
-  { id: 'youtube', name: 'YouTube', limit: 5000, color: '#FF0000' },
+  { id: "twitter", name: "Twitter", limit: 280, color: "#1DA1F2" },
+  { id: "linkedin", name: "LinkedIn", limit: 3000, color: "#0077B5" },
+  { id: "facebook", name: "Facebook", limit: 2000, color: "#4267B2" },
+  { id: "instagram", name: "Instagram", limit: 2200, color: "#E1306C" },
+  { id: "tiktok", name: "TikTok", limit: 150, color: "#000000" },
+  { id: "youtube", name: "YouTube", limit: 5000, color: "#FF0000" },
 ];
 
 export default function GeneratePage() {
   const [isPending, startTransition] = useTransition();
-  const [selectedType, setSelectedType] = useState('text');
-  const [prompt, setPrompt] = useState('');
-  const [tone, setTone] = useState('Professional');
+  const [selectedType, setSelectedType] = useState("text");
+  const [prompt, setPrompt] = useState("");
+  const [tone, setTone] = useState("Professional");
   const [creativity, setCreativity] = useState([0.7]);
   const [length, setLength] = useState([500]);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['twitter']);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["twitter"]);
   const [includeHashtags, setIncludeHashtags] = useState(true);
   const [includeEmojis, setIncludeEmojis] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState('');
+  const [generatedContent, setGeneratedContent] = useState("");
   const [contentVariations, setContentVariations] = useState<string[]>([]);
   const [platformContent, setPlatformContent] = useState<Record<string, GeneratedContent[]>>({});
   const [currentVariationIndexes, setCurrentVariationIndexes] = useState<Record<string, number>>(
-    {}
+    {},
   );
-  const [inputType, setInputType] = useState<'text' | 'url'>('text');
-  const [url, setUrl] = useState('');
+  const [inputType, setInputType] = useState<"text" | "url">("text");
+  const [url, setUrl] = useState("");
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      toast.error('Please enter a prompt');
+      toast.error("Please enter a prompt");
       return;
     }
 
     startTransition(async () => {
       // Create FormData for Server Action
       const formData = new FormData();
-      formData.append('content', prompt);
-      formData.append('platforms', JSON.stringify(selectedPlatforms));
-      formData.append('options', JSON.stringify({
-        temperature: creativity[0],
-        includeEmojis,
-        customInstructions: `Generate content in a ${tone.toLowerCase()} tone, with${includeHashtags ? '' : 'out'} hashtags. Target length: ${length[0]} characters.`,
-      }));
+      formData.append("content", prompt);
+      formData.append("platforms", JSON.stringify(selectedPlatforms));
+      formData.append(
+        "options",
+        JSON.stringify({
+          temperature: creativity[0],
+          includeEmojis,
+          customInstructions: `Generate content in a ${tone.toLowerCase()} tone, with${includeHashtags ? "" : "out"} hashtags. Target length: ${length[0]} characters.`,
+        }),
+      );
 
       const result = await generateContent(formData);
 
@@ -140,30 +143,33 @@ export default function GeneratePage() {
         // Set the main content display to the first platform's first variation
         const firstPlatform = selectedPlatforms[0];
         if (platformResults[firstPlatform]?.length > 0) {
-          setContentVariations(platformResults[firstPlatform].map((item) => item.content));
+          setContentVariations(platformResults[firstPlatform].map(item => item.content));
           setGeneratedContent(platformResults[firstPlatform][0].content);
-          toast.success('Content generated successfully!');
+          toast.success("Content generated successfully!");
         } else {
-          toast.error('No valid content generated');
+          toast.error("No valid content generated");
         }
       } else {
         // Handle error from Server Action
-        if (result.error?.code === 'DAILY_LIMIT_REACHED' || result.error?.code === 'MONTHLY_LIMIT_REACHED') {
+        if (
+          result.error?.code === "DAILY_LIMIT_REACHED" ||
+          result.error?.code === "MONTHLY_LIMIT_REACHED"
+        ) {
           toast.error(
             <div className="space-y-2">
               <p>{result.error.message}</p>
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full mt-2"
-                onClick={() => (window.location.href = '/dashboard/settings/billing')}
+                className="mt-2 w-full"
+                onClick={() => (window.location.href = "/dashboard/settings/billing")}
               >
                 Upgrade Plan
               </Button>
-            </div>
+            </div>,
           );
         } else {
-          toast.error(result.error?.message || 'Failed to generate content');
+          toast.error(result.error?.message || "Failed to generate content");
         }
       }
     });
@@ -171,7 +177,7 @@ export default function GeneratePage() {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedContent);
-    toast.success('Content copied to clipboard!');
+    toast.success("Content copied to clipboard!");
   };
 
   const handleRegenerate = () => {
@@ -179,8 +185,8 @@ export default function GeneratePage() {
   };
 
   const togglePlatform = (platformId: string) => {
-    setSelectedPlatforms((prev) =>
-      prev.includes(platformId) ? prev.filter((id) => id !== platformId) : [...prev, platformId]
+    setSelectedPlatforms(prev =>
+      prev.includes(platformId) ? prev.filter(id => id !== platformId) : [...prev, platformId],
     );
   };
 
@@ -192,19 +198,19 @@ export default function GeneratePage() {
     startTransition(async () => {
       try {
         const formData = new FormData();
-        formData.append('url', url);
-        
+        formData.append("url", url);
+
         const result = await extractContentFromUrl(formData);
 
         if (!result.success || !result.data) {
-          throw new Error(result.error?.message || 'Failed to extract content');
+          throw new Error(result.error?.message || "Failed to extract content");
         }
 
         setPrompt(result.data.content);
-        toast.success('Successfully extracted content from URL');
-        setInputType('text'); // Switch to text input to show extracted content
+        toast.success("Successfully extracted content from URL");
+        setInputType("text"); // Switch to text input to show extracted content
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to extract content');
+        toast.error(error instanceof Error ? error.message : "Failed to extract content");
       }
     });
   };
@@ -222,7 +228,7 @@ export default function GeneratePage() {
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Generation Form */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Content Type Selection */}
             <Card>
               <CardHeader>
@@ -234,15 +240,15 @@ export default function GeneratePage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {contentTypes.map((type) => (
+                  {contentTypes.map(type => (
                     <div
                       key={type.id}
                       className={`relative rounded-lg border p-4 transition-all hover:shadow-md ${
                         selectedType === type.id
-                          ? 'border-primary bg-primary/5'
+                          ? "border-primary bg-primary/5"
                           : type.comingSoon
-                            ? 'opacity-50'
-                            : 'hover:border-primary/50'
+                            ? "opacity-50"
+                            : "hover:border-primary/50"
                       }`}
                       onClick={() => !type.comingSoon && setSelectedType(type.id)}
                     >
@@ -254,7 +260,7 @@ export default function GeneratePage() {
                         </div>
                       </div>
                       {type.comingSoon && (
-                        <Badge className="absolute top-2 right-2" variant="secondary">
+                        <Badge className="absolute right-2 top-2" variant="secondary">
                           Coming Soon
                         </Badge>
                       )}
@@ -276,7 +282,7 @@ export default function GeneratePage() {
               <CardContent className="space-y-4">
                 <Tabs
                   value={inputType}
-                  onValueChange={(value) => setInputType(value as 'text' | 'url')}
+                  onValueChange={value => setInputType(value as "text" | "url")}
                 >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="text" className="flex items-center gap-2">
@@ -293,29 +299,29 @@ export default function GeneratePage() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="prompt">Your Content</Label>
-                        {inputType === 'text' && (
+                        {inputType === "text" && (
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-auto p-0 text-muted-foreground hover:text-primary"
-                            onClick={() => setInputType('url')}
+                            onClick={() => setInputType("url")}
                           >
-                            <Link className="h-4 w-4 mr-1" />
+                            <Link className="mr-1 h-4 w-4" />
                             Switch to URL input
                           </Button>
                         )}
                       </div>
-                        <Textarea
+                      <Textarea
                         id="prompt"
                         placeholder="e.g., Create a social media post about our new AI-powered content generation tool that helps marketers save time..."
                         value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
+                        onChange={e => setPrompt(e.target.value)}
                         className="min-h-[120px] resize-y"
-                        />
+                      />
                       <div className="flex items-center justify-between text-sm text-muted-foreground">
                         <span>Characters: {prompt.length}</span>
-                        <Badge variant={prompt.length > 5000 ? 'destructive' : 'secondary'}>
-                          {prompt.length > 5000 ? 'Too long' : 'Good length'}
+                        <Badge variant={prompt.length > 5000 ? "destructive" : "secondary"}>
+                          {prompt.length > 5000 ? "Too long" : "Good length"}
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
@@ -328,10 +334,10 @@ export default function GeneratePage() {
                   <TabsContent value="url" className="space-y-4">
                     <div className="space-y-4">
                       {/* Info Card */}
-                      <Card className="bg-muted/50 border-dashed">
+                      <Card className="border-dashed bg-muted/50">
                         <CardContent className="pt-4">
                           <div className="flex items-start gap-4">
-                            <div className="p-2 bg-primary/10 rounded-lg">
+                            <div className="rounded-lg bg-primary/10 p-2">
                               <Link className="h-5 w-5 text-primary" />
                             </div>
                             <div className="space-y-1">
@@ -340,7 +346,7 @@ export default function GeneratePage() {
                                 Enter a website URL to automatically extract its content. Works best
                                 with:
                               </p>
-                              <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                              <ul className="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
                                 <li>Blog posts and articles</li>
                                 <li>News websites</li>
                                 <li>Product descriptions</li>
@@ -359,7 +365,7 @@ export default function GeneratePage() {
                             type="url"
                             placeholder="https://example.com/article"
                             value={url}
-                            onChange={(e) => setUrl(e.target.value)}
+                            onChange={e => setUrl(e.target.value)}
                           />
                           <Button
                             onClick={() => handleUrlExtraction(url)}
@@ -372,11 +378,11 @@ export default function GeneratePage() {
                                 Extracting...
                               </>
                             ) : (
-                              'Extract'
+                              "Extract"
                             )}
                           </Button>
                         </div>
-                        <div className="flex items-start gap-2 mt-2 text-sm text-muted-foreground">
+                        <div className="mt-2 flex items-start gap-2 text-sm text-muted-foreground">
                           <div className="p-1">ℹ️</div>
                           <p>
                             After extraction, you can review and edit the content before generating
@@ -401,13 +407,13 @@ export default function GeneratePage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {platforms.map((platform) => (
+                  {platforms.map(platform => (
                     <div
                       key={platform.id}
                       className={`cursor-pointer rounded-lg border p-3 transition-all hover:shadow-sm ${
                         selectedPlatforms.includes(platform.id)
-                          ? 'border-primary bg-primary/5'
-                          : 'hover:border-primary/50'
+                          ? "border-primary bg-primary/5"
+                          : "hover:border-primary/50"
                       }`}
                       onClick={() => togglePlatform(platform.id)}
                     >
@@ -546,7 +552,7 @@ export default function GeneratePage() {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start"
-                    onClick={() => setPrompt('Create a product launch announcement')}
+                    onClick={() => setPrompt("Create a product launch announcement")}
                   >
                     Product Launch
                   </Button>
@@ -554,7 +560,7 @@ export default function GeneratePage() {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start"
-                    onClick={() => setPrompt('Write a behind-the-scenes company update')}
+                    onClick={() => setPrompt("Write a behind-the-scenes company update")}
                   >
                     Company Update
                   </Button>
@@ -562,7 +568,7 @@ export default function GeneratePage() {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start"
-                    onClick={() => setPrompt('Create educational content about industry trends')}
+                    onClick={() => setPrompt("Create educational content about industry trends")}
                   >
                     Educational Post
                   </Button>
@@ -570,7 +576,7 @@ export default function GeneratePage() {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start"
-                    onClick={() => setPrompt('Write a customer testimonial highlight')}
+                    onClick={() => setPrompt("Write a customer testimonial highlight")}
                   >
                     Testimonial
                   </Button>
@@ -585,8 +591,8 @@ export default function GeneratePage() {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold tracking-tight">Platform-Specific Content</h2>
             <div className="grid gap-6 md:grid-cols-2">
-              {selectedPlatforms.map((platformId) => {
-                const platform = platforms.find((p) => p.id === platformId);
+              {selectedPlatforms.map(platformId => {
+                const platform = platforms.find(p => p.id === platformId);
                 const variations = platformContent[platformId] || [];
 
                 if (!platform || variations.length === 0) return null;
@@ -607,7 +613,7 @@ export default function GeneratePage() {
                         </CardTitle>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline">
-                            {variations.length} variation{variations.length !== 1 ? 's' : ''}
+                            {variations.length} variation{variations.length !== 1 ? "s" : ""}
                           </Badge>
                           {variations.length > 1 && (
                             <Badge variant="secondary">
@@ -620,20 +626,20 @@ export default function GeneratePage() {
                     <CardContent>
                       <div className="space-y-4">
                         {variations.length > 1 && (
-                          <div className="flex gap-2 mb-4 flex-wrap">
+                          <div className="mb-4 flex flex-wrap gap-2">
                             {variations.map((_, index) => (
                               <Button
                                 key={index}
-                                variant={currentIndex === index ? 'default' : 'outline'}
+                                variant={currentIndex === index ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => {
-                                  setCurrentVariationIndexes((prev) => ({
+                                  setCurrentVariationIndexes(prev => ({
                                     ...prev,
                                     [platformId]: index,
                                   }));
                                   if (platformId === selectedPlatforms[0]) {
                                     setGeneratedContent(variations[index].content);
-                                    setContentVariations(variations.map((v) => v.content));
+                                    setContentVariations(variations.map(v => v.content));
                                   }
                                 }}
                               >
@@ -643,7 +649,7 @@ export default function GeneratePage() {
                           </div>
                         )}
 
-                        <div className="rounded-lg border p-4 bg-muted/50">
+                        <div className="rounded-lg border bg-muted/50 p-4">
                           <pre className="whitespace-pre-wrap font-sans text-sm">
                             {currentVariation.content}
                           </pre>
@@ -654,7 +660,7 @@ export default function GeneratePage() {
                           <div className="space-y-2">
                             <Label className="text-sm text-muted-foreground">Hashtags</Label>
                             <div className="flex flex-wrap gap-2">
-                              {currentVariation.hashtags.map((tag) => (
+                              {currentVariation.hashtags.map(tag => (
                                 <Badge key={tag} variant="secondary">
                                   #{tag}
                                 </Badge>
@@ -668,7 +674,7 @@ export default function GeneratePage() {
                           <div className="space-y-2">
                             <Label className="text-sm text-muted-foreground">Mentions</Label>
                             <div className="flex flex-wrap gap-2">
-                              {currentVariation.mentions.map((mention) => (
+                              {currentVariation.mentions.map(mention => (
                                 <Badge key={mention} variant="outline">
                                   {mention}
                                 </Badge>
@@ -678,26 +684,22 @@ export default function GeneratePage() {
                         )}
 
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
-                          <span>
-                            Characters:{' '}
-                            {currentVariation?.metadata?.characterCount || 0}
-                          </span>
+                          <span>Characters: {currentVariation?.metadata?.characterCount || 0}</span>
                           <Badge
                             variant={
                               (currentVariation?.metadata?.characterCount || 0) <= platform.limit
-                                ? 'secondary'
-                                : 'destructive'
+                                ? "secondary"
+                                : "destructive"
                             }
                             className="text-xs"
                           >
-                            Limit:{' '}
-                            {currentVariation?.metadata?.characterCount || 0}
-                            /{platform.limit}
+                            Limit: {currentVariation?.metadata?.characterCount || 0}/
+                            {platform.limit}
                           </Badge>
                         </div>
 
-                        <div className="text-xs text-muted-foreground text-right">
-                          Generated:{' '}
+                        <div className="text-right text-xs text-muted-foreground">
+                          Generated:{" "}
                           {currentVariation?.metadata?.formattedDate || new Date().toLocaleString()}
                         </div>
 
@@ -709,10 +711,10 @@ export default function GeneratePage() {
                             onClick={() => {
                               const textToCopy = [
                                 currentVariation.content,
-                                '',
-                                ...(currentVariation.hashtags ?? []).map((tag) => `#${tag}`),
+                                "",
+                                ...(currentVariation.hashtags ?? []).map(tag => `#${tag}`),
                                 ...(currentVariation.mentions ?? []),
-                              ].join('\n');
+                              ].join("\n");
                               navigator.clipboard.writeText(textToCopy);
                               toast.success(`Copied ${platform.name} content with hashtags!`);
                             }}
@@ -726,11 +728,11 @@ export default function GeneratePage() {
                             className="w-full"
                             onClick={() => {
                               const textToCopy = [
-                                currentVariation?.content || '',
-                                '',
-                                ...(currentVariation?.hashtags || []).map((tag) => `#${tag}`),
+                                currentVariation?.content || "",
+                                "",
+                                ...(currentVariation?.hashtags || []).map(tag => `#${tag}`),
                                 ...(currentVariation?.mentions || []),
-                              ].join('\n');
+                              ].join("\n");
                               navigator.clipboard.writeText(textToCopy);
                               toast.success(`Copied ${platform.name} content with hashtags!`);
                             }}

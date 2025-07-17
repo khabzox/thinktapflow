@@ -1,9 +1,9 @@
-"use client"
-import Link from "next/link"
-import Image from "next/image"
-import { SignupForm } from "@/components/auth/SignupForm"
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import { SignupForm } from "@/components/auth/SignupForm";
 
-import coverImage from '/public/assets/dark-auth-page.jpg';
+import coverImage from "/public/assets/dark-auth-page.jpg";
 
 export default function SignupPage() {
   return (
@@ -36,15 +36,9 @@ export default function SignupPage() {
       </div>
 
       {/* Image Section */}
-      <div className="hidden bg-muted lg:block relative">
-        <Image
-          src={coverImage}
-          alt="Signup cover image"
-          fill
-          className="object-cover"
-          priority
-        />
+      <div className="relative hidden bg-muted lg:block">
+        <Image src={coverImage} alt="Signup cover image" fill className="object-cover" priority />
       </div>
     </div>
-  )
+  );
 }

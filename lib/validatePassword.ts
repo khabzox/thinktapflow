@@ -9,15 +9,15 @@ export function validatePassword(password: string) {
 
   // REQUIRED
   if (password.length < 8) {
-    requiredErrors.push('At least 8 characters');
+    requiredErrors.push("At least 8 characters");
   }
 
   // OPTIONAL suggestions
-  optionalChecks.push({ rule: 'One uppercase letter', passed: /[A-Z]/.test(password) });
-  optionalChecks.push({ rule: 'One lowercase letter', passed: /[a-z]/.test(password) });
-  optionalChecks.push({ rule: 'One number', passed: /[0-9]/.test(password) });
+  optionalChecks.push({ rule: "One uppercase letter", passed: /[A-Z]/.test(password) });
+  optionalChecks.push({ rule: "One lowercase letter", passed: /[a-z]/.test(password) });
+  optionalChecks.push({ rule: "One number", passed: /[0-9]/.test(password) });
   optionalChecks.push({
-    rule: 'One special character',
+    rule: "One special character",
     passed: /[!@#$%^&*(),.?":{}|<>]/.test(password),
   });
 

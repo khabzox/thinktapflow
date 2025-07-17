@@ -1,41 +1,23 @@
-import { BasePostGenerator } from './generators/base-post-generator';
-import { TwitterGenerator } from './generators/twitter-generator';
-import { LinkedInGenerator } from './generators/linkedin-generator';
-import { InstagramGenerator } from './generators/instagram-generator';
-import { FacebookGenerator } from './generators/facebook-generator';
-import { YouTubeGenerator } from './generators/youtube-generator';
-import { TikTokGenerator } from './generators/tiktok-generator';
-import { AIProvider } from '../ai/core/base-ai-provider';
-import { SupportedPlatforms, GeneratedPosts, AIGenerationOptions } from '@/types/ai';
+import { BasePostGenerator } from "./generators/base-post-generator";
+import { TwitterGenerator } from "./generators/twitter-generator";
+import { LinkedInGenerator } from "./generators/linkedin-generator";
+import { InstagramGenerator } from "./generators/instagram-generator";
+import { FacebookGenerator } from "./generators/facebook-generator";
+import { YouTubeGenerator } from "./generators/youtube-generator";
+import { TikTokGenerator } from "./generators/tiktok-generator";
+import { AIProvider } from "../ai/core/base-ai-provider";
+import { SupportedPlatforms, GeneratedPosts, AIGenerationOptions } from "@/types/ai";
 
 export class SocialService {
   private generators = new Map<SupportedPlatforms, BasePostGenerator>();
 
   constructor() {
-    this.registerGenerator(
-      'twitter',
-      new TwitterGenerator('twitter')
-    );
-    this.registerGenerator(
-      'linkedin',
-      new LinkedInGenerator('linkedin')
-    );
-    this.registerGenerator(
-      'instagram',
-      new InstagramGenerator('instagram')
-    );
-    this.registerGenerator(
-      'facebook',
-      new FacebookGenerator('facebook')
-    );
-    this.registerGenerator(
-      'youtube',
-      new YouTubeGenerator('youtube')
-    );
-    this.registerGenerator(
-      'tiktok',
-      new TikTokGenerator('tiktok')
-    );
+    this.registerGenerator("twitter", new TwitterGenerator("twitter"));
+    this.registerGenerator("linkedin", new LinkedInGenerator("linkedin"));
+    this.registerGenerator("instagram", new InstagramGenerator("instagram"));
+    this.registerGenerator("facebook", new FacebookGenerator("facebook"));
+    this.registerGenerator("youtube", new YouTubeGenerator("youtube"));
+    this.registerGenerator("tiktok", new TikTokGenerator("tiktok"));
   }
 
   registerGenerator(platform: SupportedPlatforms, generator: BasePostGenerator): void {
@@ -43,13 +25,13 @@ export class SocialService {
   }
 
   private formatTimestamp(timestamp: number): string {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
     }).format(new Date(timestamp));
   }
 
@@ -57,7 +39,7 @@ export class SocialService {
     content: string,
     platforms: SupportedPlatforms[],
     aiProvider: AIProvider,
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ): Promise<GeneratedPosts> {
     const results: GeneratedPosts = {
       metadata: {
@@ -67,9 +49,9 @@ export class SocialService {
         platforms,
         model: aiProvider.getModelInfo().name,
         timestamp: Date.now(),
-        formattedDate: this.formatTimestamp(Date.now())
+        formattedDate: this.formatTimestamp(Date.now()),
       },
-      posts: {}
+      posts: {},
     };
 
     const startTime = Date.now();
@@ -97,8 +79,8 @@ export class SocialService {
               characterCount: post.characterCount,
               platform,
               timestamp,
-              formattedDate: this.formatTimestamp(timestamp)
-            }
+              formattedDate: this.formatTimestamp(timestamp),
+            },
           }));
           totalTokens += response.length / 4; // Rough estimate of tokens
         }

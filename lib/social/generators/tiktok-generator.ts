@@ -1,5 +1,5 @@
-import { BasePostGenerator } from './base-post-generator';
-import { AIGenerationOptions, PlatformPost, AIServiceError, SupportedPlatforms } from '@/types/ai';
+import { BasePostGenerator } from "./base-post-generator";
+import { AIGenerationOptions, PlatformPost, AIServiceError, SupportedPlatforms } from "@/types/ai";
 
 export class TikTokGenerator extends BasePostGenerator {
   constructor(platform: SupportedPlatforms) {
@@ -17,8 +17,8 @@ Requirements:
 - Include viral hashtags (max 10)
 - Add trending sounds/effects suggestions
 - Use short, punchy sentences
-${options.includeEmojis ? '- Include trending emojis' : ''}
-${options.targetAudience ? `- Target audience: ${options.targetAudience}` : ''}
+${options.includeEmojis ? "- Include trending emojis" : ""}
+${options.targetAudience ? `- Target audience: ${options.targetAudience}` : ""}
 
 Return ONLY a JSON array of objects with this exact format:
 [
@@ -38,12 +38,12 @@ Return ONLY a JSON array of objects with this exact format:
     try {
       const posts = JSON.parse(response) as any[];
       return posts
-        .map((post) => {
+        .map(post => {
           const formattedContent = this.formatTikTokContent(
             post.title,
             post.caption,
             post.soundSuggestions || [],
-            post.trendingTopics || []
+            post.trendingTopics || [],
           );
           return {
             content: formattedContent,
@@ -52,28 +52,26 @@ Return ONLY a JSON array of objects with this exact format:
             characterCount: formattedContent.length || 0,
             title: post.title,
             soundSuggestions: post.soundSuggestions || [],
-            trendingTopics: post.trendingTopics || []
+            trendingTopics: post.trendingTopics || [],
           };
         })
-        .filter((post) => this.validatePost(post));
+        .filter(post => this.validatePost(post));
     } catch {
-      throw new AIServiceError('Failed to parse TikTok response', 'PARSE_ERROR');
+      throw new AIServiceError("Failed to parse TikTok response", "PARSE_ERROR");
     }
   }
 
   private formatTikTokContent(
-    title: string, 
-    caption: string, 
-    sounds: string[] = [], 
-    trends: string[] = []
+    title: string,
+    caption: string,
+    sounds: string[] = [],
+    trends: string[] = [],
   ): string {
-    const soundSection = sounds.length > 0
-      ? '\n\n🎵 Suggested Sounds:\n' + sounds.map(s => `• ${s}`).join('\n')
-      : '';
-    
-    const trendSection = trends.length > 0
-      ? '\n\n🔥 Trending Topics:\n' + trends.map(t => `• ${t}`).join('\n')
-      : '';
+    const soundSection =
+      sounds.length > 0 ? "\n\n🎵 Suggested Sounds:\n" + sounds.map(s => `• ${s}`).join("\n") : "";
+
+    const trendSection =
+      trends.length > 0 ? "\n\n🔥 Trending Topics:\n" + trends.map(t => `• ${t}`).join("\n") : "";
 
     return `${title}\n\n${caption}${soundSection}${trendSection}`;
   }
@@ -86,4 +84,4 @@ Return ONLY a JSON array of objects with this exact format:
       (!post.title || post.title.length <= 100)
     );
   }
-} 
+}

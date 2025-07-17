@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Base environment variables schema (development)
 const baseEnvSchema = z.object({
@@ -17,7 +17,7 @@ const baseEnvSchema = z.object({
 
   // App
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
   // Analytics
   ZIPY_ANALYTICS_ID: z.string().optional(),
@@ -41,7 +41,7 @@ const productionEnvSchema = z.object({
 
   // App
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("production"),
 
   // Analytics
   ZIPY_ANALYTICS_ID: z.string().optional(),
@@ -52,43 +52,43 @@ const productionEnvSchema = z.object({
 let env: z.infer<typeof baseEnvSchema>;
 
 try {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (isProduction) {
     // Use production schema with required fields
     env = productionEnvSchema.parse(process.env);
-    console.log('✅ Production environment variables validated successfully');
+    console.log("✅ Production environment variables validated successfully");
   } else {
     // Use base schema with optional fields for development
     env = baseEnvSchema.parse(process.env);
-    console.log('✅ Development environment variables validated');
+    console.log("✅ Development environment variables validated");
   }
 } catch (error) {
   if (error instanceof z.ZodError) {
-    console.error('❌ Environment validation failed:');
-    console.error('Missing or invalid environment variables:');
+    console.error("❌ Environment validation failed:");
+    console.error("Missing or invalid environment variables:");
 
-    error.errors.forEach((err) => {
-      console.error(`  - ${err.path.join('.')}: ${err.message}`);
+    error.errors.forEach(err => {
+      console.error(`  - ${err.path.join(".")}: ${err.message}`);
     });
 
-    console.error('\n🔧 To fix this issue:');
-    console.error('1. Ensure your .env.local file exists with the required values');
-    console.error('2. Required environment variables for production:');
-    console.error('   - NEXT_PUBLIC_SUPABASE_URL: Get from Supabase dashboard');
-    console.error('   - NEXT_PUBLIC_SUPABASE_ANON_KEY: Get from Supabase dashboard');
-    console.error('   - GROQ_API_KEY: Get from https://console.groq.com/keys');
-    console.error('3. Restart your application');
+    console.error("\n🔧 To fix this issue:");
+    console.error("1. Ensure your .env.local file exists with the required values");
+    console.error("2. Required environment variables for production:");
+    console.error("   - NEXT_PUBLIC_SUPABASE_URL: Get from Supabase dashboard");
+    console.error("   - NEXT_PUBLIC_SUPABASE_ANON_KEY: Get from Supabase dashboard");
+    console.error("   - GROQ_API_KEY: Get from https://console.groq.com/keys");
+    console.error("3. Restart your application");
 
     // Don't use fallbacks in production - fail fast
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('Required environment variables are missing in production');
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Required environment variables are missing in production");
     } else {
       // Provide fallbacks for development
-      console.warn('\n⚠️  Using fallback values for development...');
+      console.warn("\n⚠️  Using fallback values for development...");
       env = {
         ...process.env,
-        NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
+        NODE_ENV: (process.env.NODE_ENV as "development" | "production" | "test") || "development",
       } as z.infer<typeof baseEnvSchema>;
     }
   } else {
@@ -97,28 +97,24 @@ try {
 }
 
 // Helper function to get config value with proper fallbacks
-function getConfigValue<T>(
-  value: T | undefined, 
-  fallback: T, 
-  fieldName?: string
-): T {
-  if (value !== undefined && value !== null && value !== '') {
+function getConfigValue<T>(value: T | undefined, fallback: T, fieldName?: string): T {
+  if (value !== undefined && value !== null && value !== "") {
     return value;
   }
-  
+
   // In production, don't allow fallbacks for critical fields
-  if (env.NODE_ENV === 'production' && fieldName) {
+  if (env.NODE_ENV === "production" && fieldName) {
     const criticalFields = [
-      'NEXT_PUBLIC_SUPABASE_URL',
-      'NEXT_PUBLIC_SUPABASE_ANON_KEY', 
-      'GROQ_API_KEY'
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "GROQ_API_KEY",
     ];
-    
+
     if (criticalFields.includes(fieldName)) {
       throw new Error(`Critical environment variable ${fieldName} is missing in production`);
     }
   }
-  
+
   return fallback;
 }
 
@@ -126,14 +122,14 @@ export const config = {
   // Database
   database: {
     url: getConfigValue(
-      env.NEXT_PUBLIC_SUPABASE_URL, 
-      'https://placeholder.supabase.co',
-      'NEXT_PUBLIC_SUPABASE_URL'
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      "https://placeholder.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_URL",
     ),
     anonKey: getConfigValue(
-      env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 
-      'placeholder-anon-key',
-      'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      "placeholder-anon-key",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     ),
     serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
   },
@@ -148,20 +144,16 @@ export const config = {
   // AI Services
   ai: {
     groq: {
-      apiKey: getConfigValue(
-        env.GROQ_API_KEY, 
-        'placeholder-groq-key',
-        'GROQ_API_KEY'
-      ),
+      apiKey: getConfigValue(env.GROQ_API_KEY, "placeholder-groq-key", "GROQ_API_KEY"),
     },
   },
 
   // App
   app: {
-    url: env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    url: env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     env: env.NODE_ENV,
-    isDevelopment: env.NODE_ENV === 'development',
-    isProduction: env.NODE_ENV === 'production',
+    isDevelopment: env.NODE_ENV === "development",
+    isProduction: env.NODE_ENV === "production",
   },
 
   // Analytics

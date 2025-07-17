@@ -1,3 +1,3 @@
 export interface ZipyAnalyticsProps {
-    id: string;
+  id: string;
 }

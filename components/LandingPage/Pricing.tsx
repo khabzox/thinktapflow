@@ -61,34 +61,35 @@ const pricingTiers = [
   },
 ];
 
-
 export const Pricing = () => {
   return (
-    <section className="py-24 bg-white">
+    <section className="bg-white py-24">
       <div className="container">
         <div className="section-heading">
           <h2 className="section-title">Choose Your Content Creation Plan</h2>
           <p className="section-des mt-5">
-            Start free and scale as you grow. Unlock powerful AI content generation,
-            advanced features, and premium support with our flexible pricing options.
+            Start free and scale as you grow. Unlock powerful AI content generation, advanced
+            features, and premium support with our flexible pricing options.
           </p>
         </div>
 
-        <div className="flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-end lg:justify-center">
+        <div className="mt-10 flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:justify-center">
           {pricingTiers.map(({ title, monthlyPrice, buttonText, popular, features, inverse }) => (
             <div
               key={title}
               className={twMerge(
-                "p-10 rounded-3xl border border-[#F1F1F1] shadow-[0_7px_14px_#EAEAEA] max-w-xs w-full",
-                inverse === true && "border-black bg-black text-white"
+                "w-full max-w-xs rounded-3xl border border-[#F1F1F1] p-10 shadow-[0_7px_14px_#EAEAEA]",
+                inverse === true && "border-black bg-black text-white",
               )}
             >
               <div className="flex justify-between">
-                <h3 className={twMerge("text-lg font-bold text-black/50", inverse && "text-white/60")}>
+                <h3
+                  className={twMerge("text-lg font-bold text-black/50", inverse && "text-white/60")}
+                >
                   {title}
                 </h3>
                 {popular && (
-                  <div className="inline-flex text-sm px-4 py-1.5 rounded-xl border border-white/20">
+                  <div className="inline-flex rounded-xl border border-white/20 px-4 py-1.5 text-sm">
                     <motion.span
                       animate={{
                         backgroundPositionX: "-100%",
@@ -99,27 +100,37 @@ export const Pricing = () => {
                         ease: "linear",
                         repeatType: "loop",
                       }}
-                      className="bg-[linear-gradient(to_right,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF)] [background-size:200%] text-transparent bg-clip-text font-medium"
+                      className="bg-[linear-gradient(to_right,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF,#DD7DDF,#E1CD86,#BBCB92,#71C2EF,#3BFFFF)] bg-clip-text font-medium text-transparent [background-size:200%]"
                     >
                       Most Popular
                     </motion.span>
                   </div>
                 )}
               </div>
-              <div className="flex items-baseline gap-1 mt-[30px]">
-                <span className="text-4xl font-bold tracking-tighter leading-none">${monthlyPrice}</span>
-                <span className={twMerge("tracking-tight font-bold text-black/50", inverse && "text-white/50")}>
+              <div className="mt-[30px] flex items-baseline gap-1">
+                <span className="text-4xl font-bold leading-none tracking-tighter">
+                  ${monthlyPrice}
+                </span>
+                <span
+                  className={twMerge(
+                    "font-bold tracking-tight text-black/50",
+                    inverse && "text-white/50",
+                  )}
+                >
                   {monthlyPrice === 0 ? "/forever" : "/month"}
                 </span>
               </div>
               <button
-                className={twMerge("btn btn-primary w-full mt-[30px]", inverse && "bg-white text-black")}
+                className={twMerge(
+                  "btn btn-primary mt-[30px] w-full",
+                  inverse && "bg-white text-black",
+                )}
               >
                 {buttonText}
               </button>
-              <ul className="flex flex-col gap-5 mt-8">
-                {features.map((feature) => (
-                  <li key={feature} className="text-sm flex items-center gap-4">
+              <ul className="mt-8 flex flex-col gap-5">
+                {features.map(feature => (
+                  <li key={feature} className="flex items-center gap-4 text-sm">
                     <CheckIcon className="h-6 w-6" />
                     <span>{feature}</span>
                   </li>
@@ -131,7 +142,7 @@ export const Pricing = () => {
 
         {/* Additional Info Section */}
         <div className="mt-16 text-center">
-          <p className="text-gray-600 mb-6">
+          <p className="mb-6 text-gray-600">
             All plans include our core AI content generation engine and regular updates.
           </p>
           <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-500">

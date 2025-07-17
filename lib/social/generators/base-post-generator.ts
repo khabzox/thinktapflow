@@ -3,8 +3,8 @@ import {
   PlatformConstraints,
   PlatformPost,
   AIGenerationOptions,
-} from '@/types/ai';
-import { PLATFORM_CONSTRAINTS } from '@/constants/ai/index';
+} from "@/types/ai";
+import { PLATFORM_CONSTRAINTS } from "@/constants/ai/index";
 
 export abstract class BasePostGenerator {
   protected platform: SupportedPlatforms;
@@ -17,7 +17,7 @@ export abstract class BasePostGenerator {
 
   protected getAdjustedLength(baseLength: number, contentLength: number = 50): number {
     // Convert percentage to a multiplier (0.5 to 1.5)
-    const multiplier = 0.5 + (contentLength / 100);
+    const multiplier = 0.5 + contentLength / 100;
     return Math.floor(baseLength * multiplier);
   }
 
@@ -33,19 +33,23 @@ export abstract class BasePostGenerator {
 
   protected getPromptInstructions(options: AIGenerationOptions = {}): string {
     const instructions = [];
-    
+
     // Add base instructions based on platform constraints
     instructions.push(`- Use ${this.constraints.tone} tone`);
-    instructions.push(`- Maximum length: ${this.getAdjustedLength(this.constraints.maxLength, options.contentLength)} characters`);
-    
+    instructions.push(
+      `- Maximum length: ${this.getAdjustedLength(this.constraints.maxLength, options.contentLength)} characters`,
+    );
+
     // Add hashtag instructions
     if (options.includeHashtags !== false) {
-      instructions.push(`- Include relevant hashtags (max ${this.getHashtagCount(options.includeHashtags)})`);
+      instructions.push(
+        `- Include relevant hashtags (max ${this.getHashtagCount(options.includeHashtags)})`,
+      );
     }
 
     // Add emoji instructions
     if (options.includeEmojis) {
-      instructions.push('- Include relevant emojis');
+      instructions.push("- Include relevant emojis");
     }
 
     // Add target audience if specified
@@ -56,12 +60,12 @@ export abstract class BasePostGenerator {
     // Add creativity level instructions
     const creativity = options.creativityLevel || 50;
     if (creativity < 33) {
-      instructions.push('- Keep the tone professional and straightforward');
+      instructions.push("- Keep the tone professional and straightforward");
     } else if (creativity > 66) {
-      instructions.push('- Be creative and experimental with the content');
+      instructions.push("- Be creative and experimental with the content");
     }
 
-    return instructions.join('\n');
+    return instructions.join("\n");
   }
 
   abstract generatePrompt(content: string, options?: AIGenerationOptions): string;

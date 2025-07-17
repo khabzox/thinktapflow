@@ -1,7 +1,7 @@
-import { AIProvider } from './core/base-ai-provider';
-import { createAIProvider, AIProviderType } from './factory/provider-factory';
-import { ContentService } from '../content/content-service';
-import { SocialService } from '../social/social-service';
+import { AIProvider } from "./core/base-ai-provider";
+import { createAIProvider, AIProviderType } from "./factory/provider-factory";
+import { ContentService } from "../content/content-service";
+import { SocialService } from "../social/social-service";
 import {
   AIServiceConfig,
   AIGenerationOptions,
@@ -9,26 +9,26 @@ import {
   GeneratedPosts,
   GenerationMetrics,
   SupportedPlatforms,
-} from '@/types/ai';
-import { AI_DEFAULTS, DEFAULT_AI_PROVIDER, AI_LIMITS } from '../../constants/ai';
+} from "@/types/ai";
+import { AI_DEFAULTS, DEFAULT_AI_PROVIDER, AI_LIMITS } from "../../constants/ai";
 
 // Build default config using our AI constants
 const buildDefaultConfig = (): AIServiceConfig => ({
   provider: DEFAULT_AI_PROVIDER,
-  apiKey: process.env.GROQ_API_KEY || '',
+  apiKey: process.env.GROQ_API_KEY || "",
   temperature: AI_DEFAULTS.TEMPERATURE,
   maxTokens: AI_LIMITS.MAX_TOKENS,
   topP: AI_DEFAULTS.TOP_P,
   timeout: AI_LIMITS.TIMEOUT_MS,
   maxContentLength: AI_LIMITS.MAX_INPUT_LENGTH,
   maxInputTokens: AI_LIMITS.MAX_TOKENS,
-  maxOutputTokens: AI_LIMITS.MAX_OUTPUT_LENGTH
+  maxOutputTokens: AI_LIMITS.MAX_OUTPUT_LENGTH,
 });
 
 // Functional AI Service with state management through closure
 export const createAIService = (
-  providerType: AIProviderType = DEFAULT_AI_PROVIDER, 
-  config: Partial<AIServiceConfig> = {}
+  providerType: AIProviderType = DEFAULT_AI_PROVIDER,
+  config: Partial<AIServiceConfig> = {},
 ) => {
   const fullConfig = { ...buildDefaultConfig(), ...config };
   let aiProvider = createAIProvider(providerType, fullConfig);
@@ -50,17 +50,12 @@ export const createAIService = (
   const generateSocialPosts = async (
     content: string,
     platforms: SupportedPlatforms[],
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ): Promise<GeneratedPosts> => {
     const startTime = Date.now();
 
     try {
-      const result = await socialService.generatePosts(
-        content,
-        platforms,
-        aiProvider,
-        options
-      );
+      const result = await socialService.generatePosts(content, platforms, aiProvider, options);
 
       recordMetrics({
         requestTime: startTime,
@@ -80,14 +75,17 @@ export const createAIService = (
         characterCount: content.length,
         platformCount: platforms.length,
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       });
 
       throw error;
     }
   };
 
-  const switchProvider = (newProviderType: AIProviderType, newConfig?: Partial<AIServiceConfig>): void => {
+  const switchProvider = (
+    newProviderType: AIProviderType,
+    newConfig?: Partial<AIServiceConfig>,
+  ): void => {
     const fullNewConfig = { ...buildDefaultConfig(), ...newConfig };
     aiProvider = createAIProvider(newProviderType, fullNewConfig);
   };
@@ -101,9 +99,9 @@ export const createAIService = (
   const healthCheck = async () => {
     // Implement health check logic
     return {
-      status: 'healthy',
+      status: "healthy",
       provider: aiProvider.constructor.name,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   };
 
@@ -113,7 +111,7 @@ export const createAIService = (
     switchProvider,
     getMetrics,
     getCurrentProvider,
-    healthCheck
+    healthCheck,
   };
 };
 
@@ -128,7 +126,7 @@ export const createContentParser = (config: Partial<AIServiceConfig> = {}) => {
 
 export const createSocialGenerator = (
   providerType: AIProviderType = DEFAULT_AI_PROVIDER,
-  config: Partial<AIServiceConfig> = {}
+  config: Partial<AIServiceConfig> = {},
 ) => {
   const service = createAIService(providerType, config);
   return {

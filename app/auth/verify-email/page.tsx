@@ -1,30 +1,29 @@
 "use client";
-import { Suspense } from 'react';
-import Link from 'next/link';
-import { Icons } from '@/components/ui/icons';
-import { Button } from '@/components/ui/button';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from "react";
+import Link from "next/link";
+import { Icons } from "@/components/ui/icons";
+import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 
 // Separate component that uses useSearchParams
 function VerifyContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email');
+  const email = searchParams.get("email");
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <Icons.mail className="mx-auto h-6 w-6" />
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Check your email
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
           <p className="text-sm text-muted-foreground">
             {email ? (
               <>
-                We&apos;ve sent a verification link to <span className="font-semibold">{email}</span>
+                We&apos;ve sent a verification link to{" "}
+                <span className="font-semibold">{email}</span>
               </>
             ) : (
-              'We&apos;ve sent you a verification link'
+              "We&apos;ve sent you a verification link"
             )}
           </p>
         </div>
@@ -35,9 +34,7 @@ function VerifyContent() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                While you wait
-              </span>
+              <span className="bg-background px-2 text-muted-foreground">While you wait</span>
             </div>
           </div>
 
@@ -66,12 +63,8 @@ function VerifyLoading() {
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <Icons.mail className="mx-auto h-6 w-6" />
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Check your email
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Loading...
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     </div>

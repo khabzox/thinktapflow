@@ -1,4 +1,4 @@
-import { AIServiceConfig, AIGenerationOptions, ModelInfo } from '@/types/ai';
+import { AIServiceConfig, AIGenerationOptions, ModelInfo } from "@/types/ai";
 
 export interface AIProvider {
   generateCompletion(prompt: string, options?: AIGenerationOptions): Promise<string>;
@@ -12,10 +12,10 @@ export interface AIProviderFactory {
 
 export function createBaseAIProvider(
   generateCompletion: (
-    config: AIServiceConfig
+    config: AIServiceConfig,
   ) => (prompt: string, options?: AIGenerationOptions) => Promise<string>,
   validateCredentials: (config: AIServiceConfig) => () => Promise<boolean>,
-  getModelInfo: (config: AIServiceConfig) => () => ModelInfo
+  getModelInfo: (config: AIServiceConfig) => () => ModelInfo,
 ): AIProviderFactory {
   return (config: AIServiceConfig): AIProvider => ({
     generateCompletion: generateCompletion(config),

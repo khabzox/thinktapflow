@@ -1,13 +1,13 @@
-'use server';
+"use server";
 
-import { createServerClient } from '@/lib/supabase';
-import { cookies } from 'next/headers';
-import { aiProvider } from '@/lib/ai';
-import { generatePostsSchema } from '@/lib/api/validation';
-import { GenerationError } from '@/lib/api/errors';
+import { createServerClient } from "@/lib/supabase";
+import { cookies } from "next/headers";
+import { aiProvider } from "@/lib/ai";
+import { generatePostsSchema } from "@/lib/api/validation";
+import { GenerationError } from "@/lib/api/errors";
 
 // Type definitions
-type SubscriptionTier = 'free' | 'pro' | 'plus';
+type SubscriptionTier = "free" | "pro" | "plus";
 
 interface TierLimit {
   monthly_words: number; // -1 for unlimited
@@ -87,9 +87,9 @@ function estimateWordsFromPosts(posts: Record<string, any>): number {
     const platformPosts = posts[platform];
     if (Array.isArray(platformPosts)) {
       platformPosts.forEach((post: string | Post) => {
-        if (typeof post === 'string') {
+        if (typeof post === "string") {
           totalWords += post.split(/\s+/).filter((word: string) => word.length > 0).length;
-        } else if (post && typeof post.content === 'string') {
+        } else if (post && typeof post.content === "string") {
           totalWords += post.content.split(/\s+/).filter((word: string) => word.length > 0).length;
         }
       });
@@ -103,18 +103,18 @@ function estimateWordsFromPosts(posts: Record<string, any>): number {
 async function backfillMonthlyWordsUsage(
   supabase: any,
   userId: string,
-  monthStart: string
+  monthStart: string,
 ): Promise<number> {
   try {
     // Get all generations for this user in the current month
     const { data: monthlyGenerations, error } = await supabase
-      .from('generations')
-      .select('words_generated')
-      .eq('user_id', userId)
-      .gte('created_at', monthStart);
+      .from("generations")
+      .select("words_generated")
+      .eq("user_id", userId)
+      .gte("created_at", monthStart);
 
     if (error) {
-      console.error('[Backfill] Error fetching monthly generations:', error);
+      console.error("[Backfill] Error fetching monthly generations:", error);
       return 0;
     }
 
@@ -123,7 +123,7 @@ async function backfillMonthlyWordsUsage(
       return sum + (gen.words_generated || 0);
     }, 0);
 
-    console.log('[Backfill] Monthly words calculated:', {
+    console.log("[Backfill] Monthly words calculated:", {
       userId,
       monthStart,
       generationsCount: monthlyGenerations.length,
@@ -132,7 +132,7 @@ async function backfillMonthlyWordsUsage(
 
     return totalWordsThisMonth;
   } catch (error) {
-    console.error('[Backfill] Error:', error);
+    console.error("[Backfill] Error:", error);
     return 0;
   }
 }
@@ -149,27 +149,27 @@ export async function generateContent(formData: FormData) {
       error: authError,
     } = await supabase.auth.getUser();
 
-    console.log('[Auth] User check:', {
+    console.log("[Auth] User check:", {
       userId: user?.id,
       userEmail: user?.email,
       authError: authError?.message,
     });
 
     if (authError || !user) {
-      throw new GenerationError('Unauthorized', 'UNAUTHORIZED', 401);
+      throw new GenerationError("Unauthorized", "UNAUTHORIZED", 401);
     }
 
     // Extract data from FormData
-    const content = formData.get('content') as string;
-    const platformsStr = formData.get('platforms') as string;
-    const optionsStr = formData.get('options') as string;
+    const content = formData.get("content") as string;
+    const platformsStr = formData.get("platforms") as string;
+    const optionsStr = formData.get("options") as string;
 
     let platforms, options;
     try {
       platforms = platformsStr ? JSON.parse(platformsStr) : [];
       options = optionsStr ? JSON.parse(optionsStr) : {};
     } catch (e) {
-      throw new GenerationError('Invalid JSON in request data', 'INVALID_REQUEST', 400);
+      throw new GenerationError("Invalid JSON in request data", "INVALID_REQUEST", 400);
     }
 
     // Validate data
@@ -180,34 +180,34 @@ export async function generateContent(formData: FormData) {
     });
 
     if (!validatedData.success) {
-      throw new GenerationError('Invalid request data', 'INVALID_REQUEST', 400);
+      throw new GenerationError("Invalid request data", "INVALID_REQUEST", 400);
     }
 
     // Get user profile
     let { data: profile, error: profileError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
+      .from("users")
+      .select("*")
+      .eq("id", user.id)
       .single();
 
-    console.log('[Profile] Initial check:', {
+    console.log("[Profile] Initial check:", {
       userId: user.id,
       hasProfile: !!profile,
       profileError: profileError?.message,
       details: profileError?.details,
     });
 
-    if (profileError?.code === 'PGRST116' || !profile) {
-      console.log('[Profile] Attempting to create profile for user:', user.id);
+    if (profileError?.code === "PGRST116" || !profile) {
+      console.log("[Profile] Attempting to create profile for user:", user.id);
 
       // Try to create the profile if it doesn't exist
       const { data: newProfile, error: createError } = await supabase
-        .from('users')
+        .from("users")
         .upsert(
           {
             id: user.id,
             email: user.email,
-            subscription_tier: 'free' as SubscriptionTier,
+            subscription_tier: "free" as SubscriptionTier,
             daily_usage_count: 0,
             daily_usage_limit: TIER_LIMITS.free.daily_generations,
             monthly_words_used: 0,
@@ -216,13 +216,13 @@ export async function generateContent(formData: FormData) {
             monthly_reset_date: getMonthStart(),
           },
           {
-            onConflict: 'id',
-          }
+            onConflict: "id",
+          },
         )
         .select()
         .single();
 
-      console.log('[Profile] Creation attempt result:', {
+      console.log("[Profile] Creation attempt result:", {
         success: !!newProfile,
         error: createError
           ? {
@@ -235,9 +235,9 @@ export async function generateContent(formData: FormData) {
 
       if (createError || !newProfile) {
         throw new GenerationError(
-          `Failed to create user profile: ${createError?.message || 'Unknown error'}`,
-          'USER_NOT_FOUND',
-          404
+          `Failed to create user profile: ${createError?.message || "Unknown error"}`,
+          "USER_NOT_FOUND",
+          404,
         );
       }
 
@@ -247,7 +247,7 @@ export async function generateContent(formData: FormData) {
     // Type guard for subscription tier
     const subscriptionTier = profile.subscription_tier as SubscriptionTier;
     if (!TIER_LIMITS[subscriptionTier]) {
-      throw new GenerationError('Invalid subscription tier', 'INVALID_TIER', 400);
+      throw new GenerationError("Invalid subscription tier", "INVALID_TIER", 400);
     }
 
     // Get tier limits
@@ -268,7 +268,7 @@ export async function generateContent(formData: FormData) {
       if (needsDailyReset) {
         updateData.daily_usage_count = 0;
         updateData.daily_reset_date = new Date().toISOString();
-        console.log('[Reset] Daily reset triggered');
+        console.log("[Reset] Daily reset triggered");
       }
 
       if (needsMonthlyReset) {
@@ -276,26 +276,26 @@ export async function generateContent(formData: FormData) {
         const actualMonthlyUsage = await backfillMonthlyWordsUsage(
           supabase,
           user.id,
-          currentMonthStart
+          currentMonthStart,
         );
 
         updateData.monthly_words_used = actualMonthlyUsage;
         updateData.monthly_reset_date = currentMonthStart;
-        console.log('[Reset] Monthly reset triggered, backfilled usage:', actualMonthlyUsage);
+        console.log("[Reset] Monthly reset triggered, backfilled usage:", actualMonthlyUsage);
       }
 
       const { data: updatedProfile, error: resetError } = await supabase
-        .from('users')
+        .from("users")
         .update(updateData)
-        .eq('id', user.id)
+        .eq("id", user.id)
         .select()
         .single();
 
       if (resetError) {
-        console.error('[Reset] Error:', resetError);
+        console.error("[Reset] Error:", resetError);
       } else {
         profile = { ...profile, ...updatedProfile } as UserProfile;
-        console.log('[Reset] Profile updated successfully');
+        console.log("[Reset] Profile updated successfully");
       }
     }
 
@@ -306,8 +306,8 @@ export async function generateContent(formData: FormData) {
     ) {
       throw new GenerationError(
         `Daily generation limit reached. You can generate ${tierLimits.daily_generations} posts per day.`,
-        'DAILY_LIMIT_REACHED',
-        429
+        "DAILY_LIMIT_REACHED",
+        429,
       );
     }
 
@@ -315,7 +315,7 @@ export async function generateContent(formData: FormData) {
     const generatedArray = await aiProvider.generateContent(
       validatedData.data.content,
       validatedData.data.platforms,
-      validatedData.data.options
+      validatedData.data.options,
     );
 
     // Transform the array into the expected GenerationResult shape
@@ -333,10 +333,10 @@ export async function generateContent(formData: FormData) {
                   mentions: item.mentions || [],
                   metadata: {
                     characterCount: item.characterCount || item.content?.length || 0,
-                    model: item.metadata?.model || 'groq',
+                    model: item.metadata?.model || "groq",
                     timestamp: item.metadata?.timestamp || Date.now(),
                     formattedDate: new Date(
-                      item.metadata?.timestamp || Date.now()
+                      item.metadata?.timestamp || Date.now(),
                     ).toLocaleString(),
                     tokens: item.metadata?.tokens || 0,
                   },
@@ -352,7 +352,7 @@ export async function generateContent(formData: FormData) {
           : undefined,
     };
 
-    console.log('[Generation] Result:', {
+    console.log("[Generation] Result:", {
       platforms: validatedData.data.platforms,
       hasContent: !!result,
       postCount: Object.keys(result.posts || {}).length,
@@ -361,7 +361,7 @@ export async function generateContent(formData: FormData) {
     // Estimate words generated
     const wordsGenerated = estimateWordsFromPosts(result.posts);
 
-    console.log('[Generation] Words estimated:', {
+    console.log("[Generation] Words estimated:", {
       wordsGenerated,
       posts: result.posts,
     });
@@ -372,15 +372,15 @@ export async function generateContent(formData: FormData) {
       if (newMonthlyUsage > tierLimits.monthly_words) {
         throw new GenerationError(
           `Monthly word limit reached. You have used ${profile.monthly_words_used} of ${tierLimits.monthly_words} words this month.`,
-          'MONTHLY_LIMIT_REACHED',
-          429
+          "MONTHLY_LIMIT_REACHED",
+          429,
         );
       }
     }
 
     // Save generation
     const { data: generation, error: saveError } = await supabase
-      .from('generations')
+      .from("generations")
       .insert({
         user_id: user.id,
         input_content: validatedData.data.content,
@@ -394,8 +394,8 @@ export async function generateContent(formData: FormData) {
       .single();
 
     if (saveError) {
-      console.error('[Generation] Save error:', saveError);
-      throw new GenerationError('Failed to save generation', 'SAVE_FAILED', 500);
+      console.error("[Generation] Save error:", saveError);
+      throw new GenerationError("Failed to save generation", "SAVE_FAILED", 500);
     }
 
     // Update usage counts
@@ -410,12 +410,12 @@ export async function generateContent(formData: FormData) {
     }
 
     const { error: updateError } = await supabase
-      .from('users')
+      .from("users")
       .update(updateData)
-      .eq('id', user.id);
+      .eq("id", user.id);
 
     if (updateError) {
-      console.error('[Usage] Update error:', updateError);
+      console.error("[Usage] Update error:", updateError);
     }
 
     // Calculate remaining usage
@@ -429,7 +429,7 @@ export async function generateContent(formData: FormData) {
         ? -1
         : tierLimits.monthly_words - profile.monthly_words_used - wordsGenerated;
 
-    console.log('[Usage] Final counts:', {
+    console.log("[Usage] Final counts:", {
       dailyUsed: profile.daily_usage_count + 1,
       dailyLimit: tierLimits.daily_generations,
       monthlyWordsUsed: profile.monthly_words_used + wordsGenerated,
@@ -455,7 +455,7 @@ export async function generateContent(formData: FormData) {
       },
     };
   } catch (error) {
-    console.error('[Action] Error:', error);
+    console.error("[Action] Error:", error);
 
     // For server actions, we return the error instead of throwing
     if (error instanceof GenerationError) {
@@ -471,8 +471,8 @@ export async function generateContent(formData: FormData) {
     return {
       success: false,
       error: {
-        message: 'An unexpected error occurred',
-        code: 'UNKNOWN_ERROR',
+        message: "An unexpected error occurred",
+        code: "UNKNOWN_ERROR",
       },
     };
   }

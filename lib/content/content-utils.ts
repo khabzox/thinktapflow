@@ -1,4 +1,4 @@
-import { PLATFORMS_ARRAY, getPlatformById } from '@/constants/platforms';
+import { PLATFORMS_ARRAY, getPlatformById } from "@/constants/platforms";
 
 export interface Post {
   id: string;
@@ -23,10 +23,10 @@ export interface GenerationData {
 
 export const validatePost = (post: Partial<Post>): boolean => {
   if (!post.content || !post.platform) return false;
-  
+
   const platform = getPlatformById(post.platform);
   if (!platform) return false;
-  
+
   const characterCount = post.content.length;
   return characterCount <= platform.limit;
 };
@@ -34,7 +34,7 @@ export const validatePost = (post: Partial<Post>): boolean => {
 export const createPost = (
   platform: string,
   content: string,
-  hashtags: string[] = []
+  hashtags: string[] = [],
 ): Post | null => {
   const platformData = getPlatformById(platform);
   if (!platformData) return null;
@@ -48,14 +48,12 @@ export const createPost = (
     characterCount: content.length,
     limit: platformData.limit,
     hashtags,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 };
 
 export const formatHashtags = (hashtags: string[]): string => {
-  return hashtags
-    .map(tag => tag.startsWith('#') ? tag : `#${tag}`)
-    .join(' ');
+  return hashtags.map(tag => (tag.startsWith("#") ? tag : `#${tag}`)).join(" ");
 };
 
 export const extractHashtags = (content: string): string[] => {
@@ -76,15 +74,14 @@ export const isWithinLimit = (content: string, platformId: string): boolean => {
 export const truncateContent = (content: string, platformId: string): string => {
   const platform = getPlatformById(platformId);
   if (!platform) return content;
-  
+
   if (content.length <= platform.limit) return content;
-  
+
   // Leave space for "..." and potential hashtags
   const maxLength = platform.limit - 3;
-  return content.substring(0, maxLength) + '...';
+  return content.substring(0, maxLength) + "...";
 };
 
 function generateId(): string {
-  return Math.random().toString(36).substring(2, 15) + 
-         Math.random().toString(36).substring(2, 15);
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }

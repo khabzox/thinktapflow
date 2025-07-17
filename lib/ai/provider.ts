@@ -1,17 +1,17 @@
-import { groqService, GroqChatMessage } from './groq';
-import { aiConfig } from '@/config/ai';
-import { 
-  DEFAULT_AI_PROVIDER, 
-  AI_MODELS, 
-  AI_TONES, 
-  CONTENT_TYPES, 
+import { groqService, GroqChatMessage } from "./groq";
+import { aiConfig } from "@/config/ai";
+import {
+  DEFAULT_AI_PROVIDER,
+  AI_MODELS,
+  AI_TONES,
+  CONTENT_TYPES,
   AI_LIMITS,
-  AI_ERRORS 
-} from '@/constants/ai';
-import { AIGenerationOptions } from '@/types/ai';
+  AI_ERRORS,
+} from "@/constants/ai";
+import { AIGenerationOptions } from "@/types/ai";
 
 export interface AIMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -37,15 +37,15 @@ const createAIProviderService = () => {
     if (!preference) {
       return aiConfig.providers.groq.models.chatUltra; // Default to ADVANCED/Ultra
     }
-    
+
     switch (preference) {
-      case 'FAST':
+      case "FAST":
         return aiConfig.providers.groq.models.chat;
-      case 'ADVANCED':
+      case "ADVANCED":
         return aiConfig.providers.groq.models.chatAdvanced;
-      case 'ULTRA':
+      case "ULTRA":
         return aiConfig.providers.groq.models.chatUltra;
-      case 'BALANCED':
+      case "BALANCED":
       default:
         return aiConfig.providers.groq.models.chatUltra;
     }
@@ -64,13 +64,16 @@ const createAIProviderService = () => {
   };
 
   const getMaxTokensForPlatform = (platform: string): number => {
-    const platformConfig = aiConfig.generation.platformSpecific[platform as keyof typeof aiConfig.generation.platformSpecific];
+    const platformConfig =
+      aiConfig.generation.platformSpecific[
+        platform as keyof typeof aiConfig.generation.platformSpecific
+      ];
     return platformConfig?.maxTokens || aiConfig.generation.defaultSettings.maxTokens;
   };
 
   const buildTemplatePrompt = (templateId: string, variables: Record<string, string>): string => {
     let prompt = `Generate content using template ${templateId}`;
-    
+
     Object.entries(variables).forEach(([key, value]) => {
       prompt += ` with ${key}: ${value}`;
     });
@@ -81,7 +84,7 @@ const createAIProviderService = () => {
   const generateContent = async (
     input: string,
     platforms: string[],
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ): Promise<GeneratedContent[]> => {
     const results: GeneratedContent[] = [];
 
@@ -101,19 +104,15 @@ const createAIProviderService = () => {
   const generateForPlatform = async (
     input: string,
     platform: string,
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ): Promise<GeneratedContent> => {
     const model = selectModel(options.model);
-    const content = await groqService.generateContentForPlatform(
-      input,
-      platform,
-      {
-        tone: options.tone,
-        includeHashtags: options.includeHashtags,
-        includeEmojis: options.includeEmojis,
-        contentType: options.contentType,
-      }
-    );
+    const content = await groqService.generateContentForPlatform(input, platform, {
+      tone: options.tone,
+      includeHashtags: options.includeHashtags,
+      includeEmojis: options.includeEmojis,
+      contentType: options.contentType,
+    });
 
     // Extract hashtags and mentions if they exist
     const hashtags = extractHashtags(content);
@@ -128,7 +127,7 @@ const createAIProviderService = () => {
         model,
         timestamp: Date.now(),
         characterCount: content.trim().length,
-        formattedDate: new Date().toLocaleString()
+        formattedDate: new Date().toLocaleString(),
       },
     };
   };
@@ -137,16 +136,16 @@ const createAIProviderService = () => {
     originalContent: string,
     platform: string,
     count: number = 3,
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ): Promise<GeneratedContent[]> => {
     const variations: GeneratedContent[] = [];
 
     for (let i = 0; i < count; i++) {
       try {
         const variationPrompt = `Create a variation of this ${platform} content: "${originalContent}". Make it unique while maintaining the same message and tone.`;
-        
+
         const content = await groqService.generateCompletion(variationPrompt, {
-          temperature: 0.8 + (i * 0.1), // Increase randomness for each variation
+          temperature: 0.8 + i * 0.1, // Increase randomness for each variation
           maxTokens: getMaxTokensForPlatform(platform),
         });
 
@@ -162,7 +161,7 @@ const createAIProviderService = () => {
             model: selectModel(options.model),
             timestamp: Date.now(),
             characterCount: content.trim().length,
-            formattedDate: new Date().toLocaleString()
+            formattedDate: new Date().toLocaleString(),
           },
         });
       } catch (error) {
@@ -177,9 +176,9 @@ const createAIProviderService = () => {
     content: string,
     platform: string,
     improvements: string[],
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ): Promise<GeneratedContent> => {
-    const improvementPrompts = improvements.join(', ');
+    const improvementPrompts = improvements.join(", ");
     const prompt = `Improve this ${platform} content by: ${improvementPrompts}. Original content: "${content}"`;
 
     const improvedContent = await groqService.generateCompletion(prompt, {
@@ -199,7 +198,7 @@ const createAIProviderService = () => {
         model: selectModel(options.model),
         timestamp: Date.now(),
         characterCount: improvedContent.trim().length,
-        formattedDate: new Date().toLocaleString()
+        formattedDate: new Date().toLocaleString(),
       },
     };
   };
@@ -208,23 +207,27 @@ const createAIProviderService = () => {
     templateId: string,
     variables: Record<string, string>,
     platforms: string[],
-    options: AIGenerationOptions = {}
+    options: AIGenerationOptions = {},
   ): Promise<GeneratedContent[]> => {
     const prompt = buildTemplatePrompt(templateId, variables);
     return generateContent(prompt, platforms, options);
   };
 
-  const healthCheck = async (): Promise<{ status: string; provider: string; available: boolean }> => {
+  const healthCheck = async (): Promise<{
+    status: string;
+    provider: string;
+    available: boolean;
+  }> => {
     try {
       const isHealthy = await groqService.healthCheck();
       return {
-        status: isHealthy ? 'healthy' : 'unhealthy',
+        status: isHealthy ? "healthy" : "unhealthy",
         provider: defaultProvider,
         available: isHealthy,
       };
     } catch (error) {
       return {
-        status: 'error',
+        status: "error",
         provider: defaultProvider,
         available: false,
       };
@@ -238,7 +241,7 @@ const createAIProviderService = () => {
     improveContent,
     generateFromTemplate,
     healthCheck,
-    getProvider: () => defaultProvider
+    getProvider: () => defaultProvider,
   };
 };
 
@@ -281,7 +284,7 @@ export const createTemplateGenerator = () => {
 export const generateContentForPlatforms = (
   input: string,
   platforms: string[],
-  options: AIGenerationOptions = {}
+  options: AIGenerationOptions = {},
 ): Promise<GeneratedContent[]> => {
   return aiProvider.generateContent(input, platforms, options);
 };
@@ -289,12 +292,16 @@ export const generateContentForPlatforms = (
 export const generateSinglePlatformContent = (
   input: string,
   platform: string,
-  options: AIGenerationOptions = {}
+  options: AIGenerationOptions = {},
 ): Promise<GeneratedContent> => {
   return aiProvider.generateForPlatform(input, platform, options);
 };
 
-export const checkAIProviderHealth = (): Promise<{ status: string; provider: string; available: boolean }> => {
+export const checkAIProviderHealth = (): Promise<{
+  status: string;
+  provider: string;
+  available: boolean;
+}> => {
   return aiProvider.healthCheck();
 };
 

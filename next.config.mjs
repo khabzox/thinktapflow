@@ -36,6 +36,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+    // Enable standalone output for Docker
+  output: "standalone",
 };
 
 export default withSentryConfig(nextConfig, {

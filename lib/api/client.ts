@@ -1,100 +1,97 @@
-import { getGenerationsConfig } from '@/constants/ai/api/client';
-import { APIResponse, User, GenerationRequest, GenerationResponse } from '@/types/api';
+import { getGenerationsConfig } from "@/constants/ai/api/client";
+import { APIResponse, User, GenerationRequest, GenerationResponse } from "@/types/api";
 
 export class ThinkTapFlowAPI {
-    private baseURL: string;
-    private token: string | null = null;
+  private baseURL: string;
+  private token: string | null = null;
 
-    constructor(baseURL: string = '/api') {
-        this.baseURL = baseURL;
+  constructor(baseURL: string = "/api") {
+    this.baseURL = baseURL;
+  }
+
+  setToken(token: string) {
+    this.token = token;
+  }
+
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<APIResponse<T>> {
+    const url = `${this.baseURL}${endpoint}`;
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...(options.headers as Record<string, string>),
+    };
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`;
     }
 
-    setToken(token: string) {
-        this.token = token;
-    }
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
 
-    private async request<T>(
-        endpoint: string,
-        options: RequestInit = {}
-    ): Promise<APIResponse<T>> {
-        const url = `${this.baseURL}${endpoint}`;
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            ...options.headers as Record<string, string>,
-        };
+    return response.json();
+  }
 
-        if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
-        }
+  // Auth methods
+  async login(email: string, password: string) {
+    return this.request<{ user: any; session: any }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+  }
 
-        const response = await fetch(url, {
-            ...options,
-            headers,
-        });
+  async register(email: string, password: string, full_name: string) {
+    return this.request<{ user: any; message: string }>("/auth/", {
+      method: "POST",
+      body: JSON.stringify({ email, password, full_name }),
+    });
+  }
 
-        return response.json();
-    }
+  // Generation methods
+  async generatePosts(data: GenerationRequest) {
+    return this.request<{
+      generation_id: string;
+      posts: any;
+      remaining_usage: number;
+    }>("/generate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
 
-    // Auth methods
-    async login(email: string, password: string) {
-        return this.request<{ user: any; session: any }>('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password }),
-        });
-    }
+  async getGenerations(page = getGenerationsConfig.page, limit = getGenerationsConfig.limit) {
+    return this.request<{
+      generations: GenerationResponse[];
+      pagination: any;
+    }>(`/generations?page=${page}&limit=${limit}`);
+  }
 
-    async register(email: string, password: string, full_name: string) {
-        return this.request<{ user: any; message: string }>('/auth/', {
-            method: 'POST',
-            body: JSON.stringify({ email, password, full_name }),
-        });
-    }
+  async getUsage() {
+    return this.request<{
+      current_usage: number;
+      usage_limit: number;
+      subscription_tier: string;
+      remaining: number;
+      percentage: number;
+      analytics: any[];
+    }>("/usage");
+  }
 
-    // Generation methods
-    async generatePosts(data: GenerationRequest) {
-        return this.request<{
-            generation_id: string;
-            posts: any;
-            remaining_usage: number;
-        }>('/generate', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
-    }
+  // Subscription methods
+  async updateSubscription(tier: "free" | "pro" | "plus") {
+    return this.request<{ user: User }>("/subscription/update", {
+      method: "POST",
+      body: JSON.stringify({ tier }),
+    });
+  }
 
-    async getGenerations(page = getGenerationsConfig.page, limit = getGenerationsConfig.limit) {
-        return this.request<{
-            generations: GenerationResponse[];
-            pagination: any;
-        }>(`/generations?page=${page}&limit=${limit}`);
-    }
-
-    async getUsage() {
-        return this.request<{
-            current_usage: number;
-            usage_limit: number;
-            subscription_tier: string;
-            remaining: number;
-            percentage: number;
-            analytics: any[];
-        }>('/usage');
-    }
-
-    // Subscription methods
-    async updateSubscription(tier: 'free' | 'pro' | 'plus') {
-        return this.request<{ user: User }>('/subscription/update', {
-            method: 'POST',
-            body: JSON.stringify({ tier }),
-        });
-    }
-
-    // Admin methods
-    async getUsers(page = 1, limit = 20) {
-        return this.request<{
-            users: User[];
-            pagination: any;
-        }>(`/admin/users?page=${page}&limit=${limit}`);
-    }
+  // Admin methods
+  async getUsers(page = 1, limit = 20) {
+    return this.request<{
+      users: User[];
+      pagination: any;
+    }>(`/admin/users?page=${page}&limit=${limit}`);
+  }
 }
 
 // Usage example:

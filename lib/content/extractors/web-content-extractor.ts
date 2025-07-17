@@ -1,6 +1,6 @@
-import * as cheerio from 'cheerio';
-import { BaseContentExtractor } from './base-content-extractor';
-import { ContentParsingResult, ContentParsingError } from '@/types/ai';
+import * as cheerio from "cheerio";
+import { BaseContentExtractor } from "./base-content-extractor";
+import { ContentParsingResult, ContentParsingError } from "@/types/ai";
 
 export class WebContentExtractor extends BaseContentExtractor {
   private readonly timeout: number;
@@ -13,7 +13,7 @@ export class WebContentExtractor extends BaseContentExtractor {
   canHandle(url: string): boolean {
     try {
       const urlObj = new URL(url);
-      return ['http:', 'https:'].includes(urlObj.protocol);
+      return ["http:", "https:"].includes(urlObj.protocol);
     } catch {
       return false;
     }
@@ -26,8 +26,8 @@ export class WebContentExtractor extends BaseContentExtractor {
     try {
       const response = await fetch(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; ThinkTapFlow/2.0)',
-          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          "User-Agent": "Mozilla/5.0 (compatible; ThinkTapFlow/2.0)",
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         },
         signal: controller.signal,
       });
@@ -54,7 +54,7 @@ export class WebContentExtractor extends BaseContentExtractor {
 
   private extractFromHtml($: cheerio.CheerioAPI, url: string) {
     // Remove unwanted elements
-    $('script, style, nav, footer, aside, .sidebar, .advertisement').remove();
+    $("script, style, nav, footer, aside, .sidebar, .advertisement").remove();
 
     const title = this.extractTitle($);
     const content = this.extractContent($);
@@ -63,27 +63,27 @@ export class WebContentExtractor extends BaseContentExtractor {
   }
 
   private extractTitle($: cheerio.CheerioAPI): string {
-    const selectors = ['h1', 'title', '[property="og:title"]'];
+    const selectors = ["h1", "title", '[property="og:title"]'];
 
     for (const selector of selectors) {
       const element = $(selector).first();
       if (element.length > 0) {
-        const title = element.attr('content') || element.text();
+        const title = element.attr("content") || element.text();
         if (title?.trim()) return title.trim();
       }
     }
 
-    return 'Untitled Content';
+    return "Untitled Content";
   }
 
   private extractContent($: cheerio.CheerioAPI): string {
     const selectors = [
-      'article',
-      'main',
-      '.post-content',
-      '.entry-content',
-      '.article-content',
-      '.main-content',
+      "article",
+      "main",
+      ".post-content",
+      ".entry-content",
+      ".article-content",
+      ".main-content",
     ];
 
     for (const selector of selectors) {
@@ -94,13 +94,13 @@ export class WebContentExtractor extends BaseContentExtractor {
       }
     }
 
-    return this.cleanContent($('body').text());
+    return this.cleanContent($("body").text());
   }
 
   private cleanContent(content: string): string {
     return content
-      .replace(/\s+/g, ' ')
-      .replace(/\n\s*\n/g, '\n')
+      .replace(/\s+/g, " ")
+      .replace(/\n\s*\n/g, "\n")
       .trim();
   }
 

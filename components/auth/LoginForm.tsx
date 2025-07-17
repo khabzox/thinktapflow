@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -13,12 +13,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+} from "@/components/ui/form";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 interface LoginFormProps {
   redirectTo?: string | null;
@@ -29,8 +29,8 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -40,7 +40,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
     await signIn(data.email, data.password, redirectTo);
   };
 
-  const handleProviderSignIn = async (provider: 'google' | 'github') => {
+  const handleProviderSignIn = async (provider: "google" | "github") => {
     await signInWithProvider(provider, redirectTo);
   };
 
@@ -102,7 +102,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                   <FormLabel>Password</FormLabel>
                   <Link
                     href="/auth/forgot-password"
-                    className="text-sm text-muted-foreground hover:text-primary underline underline-offset-4"
+                    className="text-sm text-muted-foreground underline underline-offset-4 hover:text-primary"
                   >
                     Forgot password?
                   </Link>
@@ -112,7 +112,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="••••••••"
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       disabled={isLoading}
                       className="pl-10 pr-10"
                       {...field}
@@ -163,7 +163,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
                 Signing in...
               </>
             ) : (
-              'Sign In'
+              "Sign In"
             )}
           </Button>
         </form>
@@ -174,9 +174,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           <Separator />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
+          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div>
 
@@ -184,7 +182,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
         <Button
           variant="outline"
           disabled={isLoading}
-          onClick={() => handleProviderSignIn('google')}
+          onClick={() => handleProviderSignIn("google")}
         >
           {isLoading ? (
             <svg
@@ -232,7 +230,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
         <Button
           variant="outline"
           disabled={isLoading}
-          onClick={() => handleProviderSignIn('github')}
+          onClick={() => handleProviderSignIn("github")}
         >
           {isLoading ? (
             <svg
